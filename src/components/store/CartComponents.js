@@ -14,11 +14,19 @@ const PROVINCES = [
 ];
 
 /* ── Shared helpers ──────────────────────────────────────────────────────────── */
-function CkField({ label, className = '', as: As = 'input', ...props }) {
+function CkField({ label, className = '', as: As = 'input', error = '', ...props }) {
+  const describedBy = error ? `${props.name || label.replace(/\s+/g, '-').toLowerCase()}-error` : props['aria-describedby'];
+
   return (
     <div className={`ck-field ${className}`}>
       <label className="ck-field__label">{label}</label>
-      <As {...props} className="ck-field__input" />
+      <As
+        {...props}
+        aria-describedby={describedBy}
+        aria-invalid={error ? 'true' : props['aria-invalid']}
+        className={`ck-field__input ${error ? 'ck-field__input--error' : ''}`}
+      />
+      {error && <p id={describedBy} className="ck-field__error">{error}</p>}
     </div>
   );
 }
@@ -363,6 +371,8 @@ export function CheckoutPage({ onBack, onSuccess }) {
   const couponDiscount = coupon?.discount || 0;
   const codFee         = form.payment === 'COD' ? (settings?.cod?.codFee || 0) : 0;
   const total          = Math.max(0, subtotal + delivery - couponDiscount + codFee);
+  const mobileNumber   = form.phone.trim();
+  const mobileMissing  = !mobileNumber;
 
   const idemKey = useRef(`idem_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`);
 
@@ -413,7 +423,8 @@ export function CheckoutPage({ onBack, onSuccess }) {
     if (!form.name.trim())     { setError('Please enter your full name.'); return; }
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
                                { setError('Please enter a valid email address.'); return; }
-    if (form.phone.trim() && !isValidSaPhone(form.phone))
+    if (!mobileNumber)         { setError('Mobile number is required.'); return; }
+    if (!isValidSaPhone(mobileNumber))
                                { setError('Please enter a valid South African phone number (e.g. 067 101 4345).'); return; }
     if (!form.addrLine.trim()) { setError('Please enter your street address.'); return; }
     if (!form.addrCity.trim()) { setError('Please enter your city or town.'); return; }
@@ -426,7 +437,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
       .filter(Boolean).join(', ');
 
     const payload = {
-      customer:       { name: form.name.trim(), email: form.email.trim(), phone: form.phone.trim() },
+      customer:       { name: form.name.trim(), email: form.email.trim(), phone: mobileNumber },
       address:        addrString,
       addressDetails: { line: form.addrLine.trim(), city: form.addrCity.trim(), province: form.addrProvince, postalCode: form.addrPostal.trim(), country: form.addrCountry },
       items:          detailed.map(({ product, qty, variation, price, size }) => ({ productId: product.id, variation, name: `${product.name} (${size})`, qty, price })),
@@ -491,7 +502,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
       <div className="cart-page__main">
         <div className="cart-page__grid">
 
-          <form id="ck-form" onSubmit={placeOrder} className="checkout-form">
+          <form id="ck-form" onSubmit={placeOrder} className="checkout-form" noValidate>
             {/* Sign-in prompt */}
             {!isLoggedIn && (
               <div className="checkout-section checkout-auth-prompt">
@@ -511,7 +522,17 @@ export function CheckoutPage({ onBack, onSuccess }) {
               <div className="checkout-section__grid">
                 <CkField label="Full name *" value={form.name} onChange={f('name')} placeholder="Your full name" required style={{ gridColumn: '1 / -1' }} />
                 <CkField label="Email address *" type="email" value={form.email} onChange={f('email')} placeholder="your@email.com" required />
-                <CkField label="Phone number" type="tel" value={form.phone} onChange={f('phone')} placeholder="067 000 0000" />
+                <CkField
+                  label="Mobile number *"
+                  name="phone"
+                  type="tel"
+                  value={form.phone}
+                  onChange={f('phone')}
+                  placeholder="067 000 0000"
+                  autoComplete="tel"
+                  aria-required="true"
+                  error={mobileMissing ? 'Mobile number is required.' : ''}
+                />
               </div>
             </div>
 
@@ -718,7 +739,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
               <span>{money(total)}</span>
             </div>
 
-            <button type="submit" form="ck-form" disabled={placing} className="order-summary__btn">
+            <button type="submit" form="ck-form" disabled={placing || mobileMissing} className="order-summary__btn">
               {placing ? <Spinner size={18} /> : <><Lock size={16} /> Place Order</>}
             </button>
             <p className="order-summary__secure">

@@ -706,6 +706,18 @@
     color: $amber-800;
 
     p { margin: 0; }
+
+    &--paid {
+      background-color: rgba(#d1fae5, 0.6);
+      border-color: #6ee7b7;
+      color: #065f46;
+    }
+  }
+
+  &__cod-paid-note {
+    font-size: 0.75rem;
+    margin-top: 0.125rem;
+    opacity: 0.8;
   }
 
   &__cod-amount {

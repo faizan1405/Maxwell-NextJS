@@ -812,7 +812,8 @@ export async function PATCH(req) {
     /* Stock and Coupon adjustment on status change */
     const effectiveNewStatus = patch.status ?? prev.status;
     const DEDUCTED_STATES = ['confirmed', 'processing', 'shipped', 'delivered'];
-    const shouldBeDeducted = DEDUCTED_STATES.includes(effectiveNewStatus);
+    const statusActuallyChanged = patch.status !== undefined;
+    const shouldBeDeducted = statusActuallyChanged && DEDUCTED_STATES.includes(effectiveNewStatus);
     const isCurrentlyDeducted = !!prev.stockDeducted;
     
     if (shouldBeDeducted && !isCurrentlyDeducted) {

@@ -447,9 +447,10 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
   const isCOD     = payMethod === 'COD';
   const orderStatus = order.orderStatus || order.status || '';
   const payStatus   = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : order.payment?.status) || '';
-  const isCancelled = orderStatus === 'Cancelled' || orderStatus === 'cancelled';
-  const isDelivered = orderStatus === 'Delivered' || orderStatus === 'delivered';
-  const codFee      = order.codFee || 0;
+  const isCancelled   = orderStatus === 'Cancelled' || orderStatus === 'cancelled';
+  const isDelivered   = orderStatus === 'Delivered' || orderStatus === 'delivered';
+  const isCashPaid    = payStatus === 'Paid' || order.payment?.status === 'paid';
+  const codFee        = order.codFee || 0;
 
   function saveNote() { onNoteChange(order.id, note); setNoteEdit(false); }
   function saveTracking() { onTrackingChange(order.id, trackNum.trim(), carrier.trim(), trackLink.trim(), dispatchDate); setTrackEdit(false); }
@@ -735,10 +736,17 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <PayStatusBadge status={payStatus}/>
                   </div>
                   
-                  <div className="admin-order-detail__cod-box">
-                    <p className="admin-order-detail__cod-amount">Amount due on delivery: <span className="admin-order-detail__cod-grand">{fmtMoney(order.total)}</span></p>
-                    {codFee > 0 && <p className="admin-order-detail__cod-fee">Includes COD fee: {fmtMoney(codFee)}</p>}
-                  </div>
+                  {isCashPaid ? (
+                    <div className="admin-order-detail__cod-box admin-order-detail__cod-box--paid">
+                      <p className="admin-order-detail__cod-amount">Amount collected: <span className="admin-order-detail__cod-grand">{fmtMoney(order.total)}</span></p>
+                      <p className="admin-order-detail__cod-paid-note">Cash collected · Amount due: R0.00</p>
+                    </div>
+                  ) : (
+                    <div className="admin-order-detail__cod-box">
+                      <p className="admin-order-detail__cod-amount">Amount due on delivery: <span className="admin-order-detail__cod-grand">{fmtMoney(order.total)}</span></p>
+                      {codFee > 0 && <p className="admin-order-detail__cod-fee">Includes COD fee: {fmtMoney(codFee)}</p>}
+                    </div>
+                  )}
                   
                   <div className="admin-order-detail__actions-section">
                     <CodActions order={order} onAction={handleCodAction}/>
@@ -923,7 +931,8 @@ export default function OrdersPage() {
         const data = await res.json();
         const updated = (data && data.id) ? data : { paymentStatus: newPayStatus };
         setViewing(v => v ? { ...v, ...updated } : null);
-        updatePaymentStatus(id, newPayStatus === 'Paid' ? 'paid' : 'pending');
+        const simpleStatus = ['Paid', 'paid'].includes(newPayStatus) ? 'paid' : ['Failed', 'failed'].includes(newPayStatus) ? 'failed' : ['Refunded', 'refunded'].includes(newPayStatus) ? 'refunded' : 'pending';
+        updatePaymentStatus(id, simpleStatus, newPayStatus);
         showToast(`Payment status → ${newPayStatus}`);
       } else {
         showToast('Failed to update payment status', 'error');

@@ -353,18 +353,13 @@ export function AdminProvider({ children }) {
     }
   }, [session, fetchOrders]);
 
-  const updatePaymentStatus = useCallback(async (id, paymentStatus) => {
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, payment: { ...o.payment, status: paymentStatus }, updatedAt: Date.now() } : o));
-    try {
-      await fetch(`${API_BASE}/api/orders`, {
-        method: 'PATCH',
-        headers: apiHeaders(session?.token),
-        body: JSON.stringify({ id, paymentStatus }),
-      });
-    } catch (e) {
-      fetchOrders(session?.token);
-    }
-  }, [session, fetchOrders]);
+  const updatePaymentStatus = useCallback((id, simpleStatus, descriptiveStatus) => {
+    setOrders(prev => prev.map(o => {
+      if (o.id !== id) return o;
+      const desc = descriptiveStatus || (simpleStatus === 'paid' ? 'Paid' : o.paymentStatus);
+      return { ...o, payment: { ...o.payment, status: simpleStatus }, paymentStatus: desc, updatedAt: Date.now() };
+    }));
+  }, []);
 
   const updateTracking = useCallback(async (id, trackingNumber, carrier, trackingLink, dispatchDate) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, trackingNumber, carrier, trackingLink, dispatchDate, updatedAt: Date.now() } : o));

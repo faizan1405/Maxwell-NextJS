@@ -70,8 +70,15 @@ export function getSecondImg(p) {
 const ProductsContext = createContext({ products: [], categories: DEFAULT_CATEGORIES, settings: null });
 export const useProducts = () => useContext(ProductsContext);
 
+const FALLBACK_PRODUCTS = [
+  { id: "all-purpose-cleaner", name: "All Purpose Cleaner", cat: "household", size: "500ml", desc: "Versatile Multi-Surface Cleaning Solution", price: 45, was: 65, badge: "Bestseller", img: "/assets/products/all-purpose-cleaner.jpg", media: [], stock: 100, rating: 4.8, reviews: 120 },
+  { id: "carpet-upholstery-shampoo", name: "Carpet & Upholstery Shampoo", cat: "household", size: "5L", desc: "Deep Cleaning Fabric & Carpet Care", price: 180, was: 200, badge: "Bestseller", img: "/assets/products/carpet-upholstery-shampoo.png", media: [], stock: 50, rating: 4.9, reviews: 85 },
+  { id: "hand-surface-sanitiser", name: "Hand & Surface Sanitiser", cat: "sanitiser", size: "5L", desc: "Isopropyl Alcohol 85% — Kills 99.9% of germs", price: 250, was: 300, badge: "Bestseller", img: "/assets/products/hand-surface-sanitiser.jpg", media: [], stock: 200, rating: 4.9, reviews: 340 },
+  { id: "tyre-dash-shine", name: "Tyre & Dash Shine", cat: "car", size: "5L", desc: "Interior & Exterior Dressing Combo", price: 220, img: "/assets/products/tyre-shine.jpg", media: [], stock: 150, rating: 4.7, reviews: 95 }
+];
+
 export function ProductsProvider({ children }) {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [settings, setSettings] = useState(null);
 
@@ -82,9 +89,11 @@ export function ProductsProvider({ children }) {
         const res = await fetch(`${API_BASE}/api/products`);
         if (!res.ok) return;
         const data = await res.json();
-        if (Array.isArray(data) && data.length) {
+        if (Array.isArray(data) && data.length > 0) {
           setProducts(data);
           try { localStorage.setItem("ab_products", JSON.stringify(data)); } catch {}
+        } else {
+          setProducts(FALLBACK_PRODUCTS);
         }
       } catch {
         // Fallback to localStorage

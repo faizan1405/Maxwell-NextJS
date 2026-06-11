@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import fs from 'fs';
-import path from 'path';
 import Product from '../models/Product';
 import Category from '../models/Category';
 import ShippingRate from '../models/ShippingRate';
 import Setting from '../models/Setting';
+import demoProducts from '../../data/maxwell-products.json';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -114,35 +113,24 @@ async function seedDatabase() {
       console.log('[db] Seeded default shipping rate.');
     }
 
-    // 4. Seed Products — upsert from JSON so demo products are always present
-    const jsonPath = path.join(process.cwd(), 'data', 'maxwell-products.json');
-    if (fs.existsSync(jsonPath)) {
-      const raw = fs.readFileSync(jsonPath, 'utf8');
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const ops = parsed.map(p => ({
-          updateOne: {
-            filter: { id: p.id },
-            update: {
-              $setOnInsert: {
-                ...p,
-                variants: Array.isArray(p.variants) ? p.variants : [],
-                media: Array.isArray(p.media) ? p.media : [],
-              },
+    // 4. Seed Products — upsert from imported JSON so demo products are always present
+    if (Array.isArray(demoProducts) && demoProducts.length > 0) {
+      const ops = demoProducts.map(p => ({
+        updateOne: {
+          filter: { id: p.id },
+          update: {
+            $setOnInsert: {
+              ...p,
+              variants: Array.isArray(p.variants) ? p.variants : [],
+              media: Array.isArray(p.media) ? p.media : [],
             },
-            upsert: true,
           },
-        }));
-        const result = await Product.bulkWrite(ops, { ordered: false });
-        if (result.upsertedCount > 0) {
-          console.log(`[db] Seeded ${result.upsertedCount} new products from JSON.`);
-        }
-      }
-    } else {
-      // Fallback: seed empty DB from legacy path if JSON missing
-      const productCount = await Product.countDocuments();
-      if (productCount === 0) {
-        console.log('[db] No product JSON found and DB empty — add data/maxwell-products.json to seed products.');
+          upsert: true,
+        },
+      }));
+      const result = await Product.bulkWrite(ops, { ordered: false });
+      if (result.upsertedCount > 0) {
+        console.log(`[db] Seeded ${result.upsertedCount} new products from JSON.`);
       }
     }
   } catch (err) {

@@ -4,6 +4,7 @@ import { connectToDatabase } from '../../../lib/mongoose';
 import { Order } from '../../../lib/models';
 import { verifySession, verifyCustomerSession } from '../../../lib/auth';
 import { sendEmail } from '../../../lib/email';
+import { formatZar } from '../../../utils/currency';
 
 const MAX_PROOF_BYTES = 5 * 1024 * 1024; // 5 MB
 
@@ -26,12 +27,6 @@ const UPLOAD_ALLOWED_STATUSES = new Set([
   'Payment Rejected',
 ]);
 
-function R(n) {
-  const abs = Math.abs(n || 0).toFixed(2);
-  const [int, dec] = abs.split('.');
-  return 'R ' + int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + dec;
-}
-
 async function sendProofAdminEmail(order) {
   const KEY = process.env.RESEND_API_KEY;
   const FROM = process.env.FROM_EMAIL || 'Amahle Blue <noreply@amahle-blue.co.za>';
@@ -48,10 +43,10 @@ async function sendProofAdminEmail(order) {
   <div style="padding:28px 36px;">
     <p style="font-size:14px;color:#334155;margin:0 0 16px;line-height:1.6;">
       <strong>${order.customer?.name}</strong> (${order.customer?.email}) has uploaded a proof of payment for
-      order <strong>${order.orderNumber}</strong> totalling <strong>${R(order.total)}</strong>.
+      order <strong>${order.orderNumber}</strong> totalling <strong>${formatZar(order.total)}</strong>.
     </p>
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 4px;">${order.orderNumber} — ${R(order.total)}</p>
+      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 4px;">${order.orderNumber} — ${formatZar(order.total)}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">EFT Reference: <strong>${order.eftReference || order.orderNumber}</strong></p>
     </div>
     <p style="font-size:13px;color:#64748b;margin:0;">Log in to the admin panel to view the proof and verify or reject the payment.</p>
@@ -63,7 +58,7 @@ async function sendProofAdminEmail(order) {
 </body></html>`;
 
   try {
-    await sendEmail(to, `Proof of Payment — ${order.orderNumber} (${R(order.total)})`, html);
+    await sendEmail(to, `Proof of Payment — ${order.orderNumber} (${formatZar(order.total)})`, html);
   } catch (e) {
     console.error('[proof] admin email error:', e.message);
   }

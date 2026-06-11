@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useCart, useCustomer, BRAND } from '../../lib/storeContext';
+import { useCart, useCustomer, BRAND, FREE_SHIP, money } from '../../lib/storeContext';
 import { 
   Truck, Award, Tag, Phone, Menu, Search, User, 
   ChevronDown, Package, LogOut, Cart, X, ChevronRight 
@@ -40,7 +40,7 @@ export const Wordmark = ({ className = "", light = false, compact = false, onCli
 };
 
 const ANNOUNCEMENTS = [
-  { icon: Truck, text: "Free delivery in Gauteng on orders over R750" },
+  { icon: Truck, text: `Free delivery in Gauteng on orders over ${money(FREE_SHIP)}` },
   { icon: Award, text: "Proudly manufactured in South Africa 🇿🇦" },
   { icon: Tag, text: "Bulk & trade pricing available — ask about wholesale" },
 ];

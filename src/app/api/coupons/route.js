@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Coupon } from '../../../lib/models';
 import { verifySession } from '../../../lib/auth';
+import { formatZar } from '../../../utils/currency';
 
 function calcDiscount(coupon, cartTotal) {
   if (coupon.type === 'percentage') {
@@ -34,7 +35,7 @@ export async function POST(req) {
     if (c.expiresAt && Date.now() > c.expiresAt) return NextResponse.json({ error: 'This coupon has expired.' }, { status: 400 });
     if (c.maxUses > 0 && c.usedCount >= c.maxUses) return NextResponse.json({ error: 'This coupon has reached its usage limit.' }, { status: 400 });
     if (c.minOrderValue > 0 && cartTotal < c.minOrderValue) {
-      return NextResponse.json({ error: `Minimum order value of R ${c.minOrderValue.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')} required.` }, { status: 400 });
+      return NextResponse.json({ error: `Minimum order value of ${formatZar(c.minOrderValue)} required.` }, { status: 400 });
     }
 
     const discount = calcDiscount(c, cartTotal);

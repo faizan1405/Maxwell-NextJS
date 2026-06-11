@@ -2,14 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Order, Product, Settings, Coupon, ShippingRate } from '../../../lib/models';
 import { verifySession, verifyCustomerSession } from '../../../lib/auth';
-
-/* ── Money formatter ─────────────────────────────────────────────── */
-function R(n) {
-  const abs = Math.abs(n || 0).toFixed(2);
-  const [int, dec] = abs.split('.');
-  const formatted = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return 'R ' + formatted + '.' + dec;
-}
+import { formatZar } from '../../../utils/currency';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
 async function nextInvoiceAndOrderNumber() {
@@ -106,24 +99,24 @@ function buildItemRows(order) {
     `<tr>
       <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">${i.name}</td>
       <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${i.qty}</td>
-      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:14px;font-weight:700;color:#0B2545;">${R(i.price * i.qty)}</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:14px;font-weight:700;color:#0B2545;">${formatZar(i.price * i.qty)}</td>
     </tr>`
   ).join('');
 }
 
 function buildTotalsTable(order) {
   const couponRow = (order.couponDiscount || 0) > 0
-    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${order.couponCode})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#159A4C;">−${R(order.couponDiscount)}</td></tr>`
+    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${order.couponCode})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#159A4C;">−${formatZar(order.couponDiscount)}</td></tr>`
     : '';
   const codFeeRow = (order.codFee || 0) > 0
-    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">COD Fee</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">${R(order.codFee)}</td></tr>`
+    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">COD Fee</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">${formatZar(order.codFee)}</td></tr>`
     : '';
   return `
-    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Subtotal</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;">${R(order.subtotal)}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Subtotal</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;">${formatZar(order.subtotal)}</td></tr>
     ${couponRow}
-    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Delivery</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;color:${order.delivery===0?'#159A4C':'#0B2545'}">${order.delivery===0?'FREE':R(order.delivery)}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Delivery</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;color:${order.delivery===0?'#159A4C':'#0B2545'}">${order.delivery===0?'FREE':formatZar(order.delivery)}</td></tr>
     ${codFeeRow}
-    <tr style="border-top:2px solid #e2e8f0;"><td style="padding:14px 16px;font-size:16px;font-weight:800;color:#0B2545;">Total</td><td></td><td style="padding:14px 16px;font-size:16px;font-weight:800;text-align:right;color:#1E50E0;">${R(order.total)}</td></tr>
+    <tr style="border-top:2px solid #e2e8f0;"><td style="padding:14px 16px;font-size:16px;font-weight:800;color:#0B2545;">Total</td><td></td><td style="padding:14px 16px;font-size:16px;font-weight:800;text-align:right;color:#1E50E0;">${formatZar(order.total)}</td></tr>
   `;
 }
 
@@ -214,7 +207,7 @@ async function sendEFTEmail(order) {
       <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Bank Details</p>
       <table style="width:100%;border-collapse:collapse;background:#f8fafc;border-radius:8px;overflow:hidden;"><tbody>${bankRows}</tbody></table>
       <div style="background:#1E50E0;color:#fff;padding:12px 16px;border-radius:8px;margin-top:8px;text-align:center;">
-        <p style="font-size:13px;font-weight:700;margin:0;">Amount Payable: ${R(order.total)}</p>
+        <p style="font-size:13px;font-weight:700;margin:0;">Amount Payable: ${formatZar(order.total)}</p>
       </div>
     </div>` : ''}
     <p style="font-size:13px;color:#64748b;margin:0 0 24px;line-height:1.6;background:#f8fafc;border-radius:8px;padding:14px 16px;">
@@ -261,12 +254,12 @@ async function sendAdminEmail(order) {
       </tr></thead>
       <tbody>${buildItemRows(order)}</tbody>
     </table>
-    <p style="font-size:15px;font-weight:800;color:#1E50E0;text-align:right;margin:0 0 12px;">Order Total: ${R(order.total)}</p>
+    <p style="font-size:15px;font-weight:800;color:#1E50E0;text-align:right;margin:0 0 12px;">Order Total: ${formatZar(order.total)}</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
       <p style="font-size:12px;color:#64748b;margin:0;">Delivery to: ${order.address}</p>
     </div>
   `;
-  await sendEmail(to, `New Order ${order.orderNumber} — ${R(order.total)} (${payLabel(order.paymentMethod || order.payment?.method)})`, emailWrapper(header, body));
+  await sendEmail(to, `New Order ${order.orderNumber} — ${formatZar(order.total)} (${payLabel(order.paymentMethod || order.payment?.method)})`, emailWrapper(header, body));
 }
 
 async function sendOrderConfirmedEmail(order) {
@@ -285,7 +278,7 @@ async function sendOrderConfirmedEmail(order) {
     </div>
     ${isCOD ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">&#128181; Cash on Delivery</p>
-      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please have <strong>${R(order.total)}</strong> in cash ready when your order is delivered.</p>
+      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please have <strong>${formatZar(order.total)}</strong> in cash ready when your order is delivered.</p>
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Your order has been confirmed and is being prepared for dispatch. We'll send you another email when it's on its way.</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
@@ -311,7 +304,7 @@ async function sendOrderDispatchedEmail(order) {
     </div>
     ${isCOD ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">&#128181; Cash Payment Reminder</p>
-      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please have <strong>${R(order.total)}</strong> in cash ready for the delivery driver.</p>
+      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please have <strong>${formatZar(order.total)}</strong> in cash ready for the delivery driver.</p>
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Your order is on its way to you. ${order.trackingNumber ? `Tracking: <strong>${order.carrier || ''} ${order.trackingNumber}</strong>` : ''}</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
@@ -337,7 +330,7 @@ async function sendOrderDeliveredEmail(order) {
     </div>
     ${isCOD ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">&#128181; Cash Payment Due</p>
-      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please pay <strong>${R(order.total)}</strong> in cash to the delivery driver.</p>
+      <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please pay <strong>${formatZar(order.total)}</strong> in cash to the delivery driver.</p>
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Thank you for shopping with Amahle Blue! We hope you enjoy your order. If you have any questions, please don't hesitate to contact us.</p>
   `;
@@ -354,10 +347,10 @@ async function sendCashCollectedEmail(order) {
   </div>`;
   const body = `
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${R(order.total)}</p>
+      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#159A4C;font-weight:700;">Paid (Cash Collected)</span></p>
     </div>
-    <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Thank you for your payment of <strong>${R(order.total)}</strong>. Your transaction is now complete.</p>
+    <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Thank you for your payment of <strong>${formatZar(order.total)}</strong>. Your transaction is now complete.</p>
   `;
   await sendEmail(order.customer.email, `Payment received for order ${order.orderNumber} — Amahle Blue`, emailWrapper(header, body));
 }
@@ -372,11 +365,11 @@ async function sendPaymentVerifiedEmail(order) {
   </div>`;
   const body = `
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${R(order.total)}</p>
+      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#159A4C;font-weight:700;">Paid · Verified</span></p>
     </div>
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">
-      We have verified your EFT payment of <strong>${R(order.total)}</strong>. Your order has been confirmed and is being prepared for dispatch.
+      We have verified your EFT payment of <strong>${formatZar(order.total)}</strong>. Your order has been confirmed and is being prepared for dispatch.
       You will receive another email when your order is on its way.
     </p>
   `;
@@ -428,7 +421,7 @@ async function sendCorrectedProofEmail(order, note) {
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">
       Please log in to your account and upload a corrected proof of payment. Make sure your proof clearly shows the payment amount of
-      <strong>${R(order.total)}</strong> and the reference <strong style="font-family:monospace;">${order.eftReference || order.orderNumber}</strong>.
+      <strong>${formatZar(order.total)}</strong> and the reference <strong style="font-family:monospace;">${order.eftReference || order.orderNumber}</strong>.
     </p>
   `;
   await sendEmail(order.customer.email, `Corrected proof of payment needed — ${order.orderNumber}`, emailWrapper(header, body));
@@ -530,10 +523,10 @@ export async function POST(req) {
       const minCOD = settings.cod?.minOrderAmount || 0;
       const maxCOD = settings.cod?.maxOrderAmount || 0;
       if (minCOD > 0 && subtotal < minCOD) {
-        return NextResponse.json({ error: `Cash on Delivery requires a minimum order of ${R(minCOD)}.` }, { status: 400 });
+        return NextResponse.json({ error: `Cash on Delivery requires a minimum order of ${formatZar(minCOD)}.` }, { status: 400 });
       }
       if (maxCOD > 0 && subtotal > maxCOD) {
-        return NextResponse.json({ error: `Cash on Delivery is only available for orders up to ${R(maxCOD)}.` }, { status: 400 });
+        return NextResponse.json({ error: `Cash on Delivery is only available for orders up to ${formatZar(maxCOD)}.` }, { status: 400 });
       }
     }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useCart, useCustomer, money, getPrimaryImg, catOf } from '../../lib/storeContext';
+import { formatZar } from '../../utils/currency';
 import { 
   ArrowLeft, Cart as CartIcon, CheckCircle, Trash, Minus, Plus, Bag, Lock, Shield, 
   User, MapPin, CreditCard, Tag, X, AlertCircle, FileText as Copy, Download, Home
@@ -33,12 +34,6 @@ function CkField({ label, className = '', as: As = 'input', error = '', ...props
 
 /* ── Invoice generator ───────────────────────────────────────────────────────── */
 export function printInvoice(order) {
-  const Rfmt = (n) => {
-    const abs = Math.abs(n || 0).toFixed(2);
-    const [int, dec] = abs.split('.');
-    return 'R ' + int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + dec;
-  };
-
   const s        = typeof window !== 'undefined' ? window.__settings || {} : {};
   const biz      = s.business || {};
   const bank     = order.eftBankDetails || s.eft || {};
@@ -65,8 +60,8 @@ export function printInvoice(order) {
     <tr>
       <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;">${i.name}${i.variation ? ` <span style="color:#94a3b8;font-size:11px">(${i.variation})</span>` : ''}</td>
       <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${i.qty}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:#64748b;">${Rfmt(i.price)}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#0B2545;">${Rfmt(i.price * i.qty)}</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:#64748b;">${formatZar(i.price)}</td>
+      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#0B2545;">${formatZar(i.price * i.qty)}</td>
     </tr>`).join('');
 
   const html = `<!DOCTYPE html>
@@ -116,7 +111,7 @@ export function printInvoice(order) {
     <tbody>
       <tr style="border-top:2px solid #e2e8f0;">
         <td colspan="3" style="padding:14px 14px;text-align:right;font-size:16px;font-weight:800;color:#0B2545;">Total (incl. VAT)</td>
-        <td style="padding:14px 14px;text-align:right;font-size:18px;font-weight:800;color:#1E50E0;">${Rfmt(order.total)}</td>
+        <td style="padding:14px 14px;text-align:right;font-size:18px;font-weight:800;color:#1E50E0;">${formatZar(order.total)}</td>
       </tr>
     </tbody>
   </table>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useContext, useCallback, useMemo, createContext } from 'react';
 import { calculateOrderStats } from '../../utils/accounting';
+import { formatZar } from '../../utils/currency';
 
 const SESSION_KEY = 'ab_admin_session_v2';
 
@@ -12,7 +13,7 @@ export const useAuth = () => useContext(AuthContext);
 export const useAdmin = () => useContext(DataContext);
 
 export function fmtMoney(n) {
-  return 'R' + (n || 0).toFixed(2);
+  return formatZar(n);
 }
 
 export function fmtDate(ts) {

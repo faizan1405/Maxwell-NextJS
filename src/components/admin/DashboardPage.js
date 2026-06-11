@@ -4,6 +4,7 @@ import React from 'react';
 import { useAdmin } from './AdminProvider';
 import { StatCard, Btn, Avatar, Badge } from '../ui/index';
 import { Icon } from '../ui/Icons';
+import { formatZar, formatZarCompact } from '../../utils/currency';
 import '../../styles/admin/_dashboard.scss';
 
 function RevenueChart({ orders }) {
@@ -12,7 +13,7 @@ function RevenueChart({ orders }) {
     const d = new Date(); d.setDate(d.getDate()-6+i);
     return { label: d.toLocaleDateString('en-ZA',{weekday:'short'}), date: d.toDateString(), revenue:0 };
   });
-  orders.filter(o => o.payment.status==='paid').forEach(o => {
+  orders.filter(o => o.payment?.status==='paid').forEach(o => {
     const d = new Date(o.createdAt).toDateString();
     const found = days.find(day => day.date===d);
     if (found) found.revenue += o.total;
@@ -28,7 +29,7 @@ function RevenueChart({ orders }) {
     <div className="revenue-chart">
       <div className="revenue-chart__header">
         <h3 className="revenue-chart__title">Revenue — Last 7 Days</h3>
-        <span className="revenue-chart__total">R{orders.filter(o=>o.payment.status==='paid').reduce((s,o)=>s+o.total,0).toFixed(0)} total</span>
+        <span className="revenue-chart__total">{formatZar(orders.filter(o=>o.payment?.status==='paid').reduce((s,o)=>s+o.total,0))} total</span>
       </div>
       <svg viewBox={`0 0 100 ${H+16}`} preserveAspectRatio="none" className="revenue-chart__svg">
         <defs>
@@ -89,7 +90,7 @@ export default function DashboardPage({ setPage }) {
     <div className="dashboard-page">
       {/* Stats grid */}
       <div className="dashboard-page__stats">
-        <StatCard icon="💰" label="Collected Revenue" value={`R${(stats.revenue/1000).toFixed(1)}k`}  color="cobalt"  sub="Confirmed & paid" />
+        <StatCard icon="💰" label="Collected Revenue" value={formatZarCompact(stats.revenue)}  color="cobalt"  sub="Confirmed & paid" />
         <StatCard icon="📦" label="Total Orders"  value={stats.totalOrders}  color="purple" sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`} onClick={() => setPage('orders')} />
         <StatCard icon="🛒" label="Products"      value={stats.activeProducts} color="green"  sub={stats.lowStockCount>0?`${stats.lowStockCount} low stock`:null} onClick={() => setPage('products')} />
         <StatCard icon="👥" label="Customers"     value={stats.totalCustomers} color="amber"  sub="Unique buyers"  onClick={() => setPage('customers')} />

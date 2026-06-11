@@ -97,29 +97,38 @@ export default function ReportsPage() {
     document.body.removeChild(link);
   };
 
+  const escapeCSVCell = (cell) => {
+    if (cell == null) return '""';
+    const str = String(cell);
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  };
+
   const exportOrders = () => {
     const headers = ["Order Number", "Date", "Customer", "Email", "Total", "Payment Method", "Status"];
     const rows = filteredOrders.map(o => [
       o.orderNumber,
       new Date(o.createdAt).toLocaleString(),
-      `"${o.customer?.name || ''}"`,
-      `"${o.customer?.email || ''}"`,
-      o.total,
+      o.customer?.name || '',
+      o.customer?.email || '',
+      fmtMoney(o.total),
       (o.paymentMethod || o.payment?.method || '').toUpperCase() === 'COD' ? 'COD' : 'EFT',
       o.status
     ]);
-    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const csv = [headers.map(escapeCSVCell).join(","), ...rows.map(r => r.map(escapeCSVCell).join(","))].join("\n");
     downloadCSV(csv, `orders_export_${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   const exportSales = () => {
     const headers = ["Product Name", "Units Sold", "Revenue"];
     const rows = productSales.map(p => [
-      `"${p.name}"`,
+      p.name,
       p.units,
-      p.revenue
+      fmtMoney(p.revenue)
     ]);
-    const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+    const csv = [headers.map(escapeCSVCell).join(","), ...rows.map(r => r.map(escapeCSVCell).join(","))].join("\n");
     downloadCSV(csv, `product_sales_export_${new Date().toISOString().split('T')[0]}.csv`);
   };
 

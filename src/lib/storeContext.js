@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useMemo, useRef, createContext, useContext } from 'react';
+import { formatZar } from '../utils/currency';
 
 /* ── Brand constants ─────────────────────────────────────────────────────────── */
 export const BRAND = {
@@ -28,12 +29,8 @@ export const FREE_SHIP = 750;
 const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
   ? '' : '';
 
-/* ── Money formatter — South African Rand: R 1,250.00 ─────────────────────── */
-export const money = (n) => {
-  const abs = Math.abs(n || 0).toFixed(2);
-  const [int, dec] = abs.split('.');
-  return 'R ' + int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + dec;
-};
+/* ── Money formatter — South African Rand: R1,250.00 ─────────────────────── */
+export const money = formatZar;
 
 export const catOf = (id, categories) => (categories || DEFAULT_CATEGORIES).find((c) => c.id === id);
 

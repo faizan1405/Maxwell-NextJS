@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/db';
-import Product from '@/models/Product';
+import dbConnect from '../../../lib/db';
+import Product from '../../../models/Product';
 import demoProducts from '../../../../data/maxwell-products.json';
 
 export async function GET(req) {

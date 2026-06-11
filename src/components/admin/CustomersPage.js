@@ -303,7 +303,7 @@ export default function CustomersPage() {
       <div className="admin-customers__stats">
         <StatCard icon="👥" label="Total Customers"     value={customers.length}      color="cobalt"/>
         <StatCard icon="🔑" label="Registered Accounts" value={accountCount}          color="cobalt"/>
-        <StatCard icon="💰" label="Total Revenue"       value={`R${(totalRevenue/1000).toFixed(1)}k`} color="green"/>
+        <StatCard icon="💰" label="Collected Revenue"       value={`R${(totalRevenue/1000).toFixed(1)}k`} color="green"/>
         <StatCard icon="🧾" label="Avg. Order Value"    value={fmtMoney(avgSpend)}   color="amber"/>
       </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useContext, useCallback, useMemo, createContext } from 'react';
+import { calculateOrderStats } from '../../utils/accounting';
 
 const SESSION_KEY = 'ab_admin_session_v2';
 
@@ -583,7 +584,8 @@ export function AdminProvider({ children }) {
       if (!map[key]) map[key] = { ...c, orders: [], totalSpent: 0, orderCount: 0, lastOrderAt: 0 };
       map[key].orders.push(o);
       map[key].orderCount++;
-      if (o.payment?.status === 'paid') map[key].totalSpent += o.total;
+      const isPaid = o.payment?.status === 'paid' || o.paymentStatus === 'Paid';
+      if (isPaid) map[key].totalSpent += o.total;
       if (o.createdAt > map[key].lastOrderAt) map[key].lastOrderAt = o.createdAt;
     });
 
@@ -619,8 +621,7 @@ export function AdminProvider({ children }) {
   }, [orders, registeredCustomers]);
 
   const stats = useMemo(() => {
-    const paid = orders.filter(o => o.payment?.status === 'paid');
-    const revenue = paid.reduce((s, o) => s + o.total, 0);
+    const acc = calculateOrderStats(orders);
     const active = products.filter(p => p.status === 'active');
     const lowStock = products.filter(p => {
       if (p.status !== 'active') return false;
@@ -636,8 +637,9 @@ export function AdminProvider({ children }) {
       return a;
     }, {});
     return {
-      revenue,
-      totalOrders: orders.length,
+      accounting: acc,
+      revenue: acc.collectedRevenue, // Backwards compatible with existing code
+      totalOrders: acc.totalValidOrders,
       activeProducts: active.length,
       totalCustomers: customers.length,
       lowStockProducts: lowStock,

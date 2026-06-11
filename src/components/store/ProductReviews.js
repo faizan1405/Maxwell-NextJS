@@ -2,21 +2,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../../lib/storeContext';
-import { Star, Stars, CheckCircle, Pencil, User } from '../ui/Icons';
+import { Star, CheckCircle, Pencil, User } from '../ui/Icons';
+import { Stars } from '../ui/index';
 
 function StarPicker({ value, onChange, size = 28 }) {
   const [hover, setHover] = useState(0);
   return (
-    <div className="flex gap-1">
+    <div style={{ display: 'flex', gap: 4 }}>
       {[1, 2, 3, 4, 5].map(n => (
         <button key={n} type="button"
           onClick={() => onChange(n)}
           onMouseEnter={() => setHover(n)}
           onMouseLeave={() => setHover(0)}
-          className="transition-transform hover:scale-110 active:scale-95"
+          style={{ transition: 'transform 0.1s', lineHeight: 1 }}
           aria-label={`${n} star${n !== 1 ? 's' : ''}`}>
           <Star size={size} fill={(hover || value) >= n ? '#f59e0b' : 'none'} strokeWidth={1.5}
-            className={(hover || value) >= n ? 'text-amber-400' : 'text-slate-300'} />
+            style={{ color: (hover || value) >= n ? '#f59e0b' : '#cbd5e1' }} />
         </button>
       ))}
     </div>
@@ -105,7 +106,7 @@ function ReviewForm({ productId, sessionToken, existingReview, onSubmitted, apiB
           placeholder="Share your experience with this product…"
           className="review-form__input" />
       </div>
-      {error && <p className="text-[12px] text-red-500">{error}</p>}
+      {error && <p style={{ fontSize: 12, color: '#ef4444', margin: '0 0 4px' }}>{error}</p>}
       <button type="submit" disabled={saving || !rating} className="review-form__btn">
         {saving ? <><AccSpinner2 /> Submitting…</> : (existingReview ? 'Update review' : 'Submit review')}
       </button>
@@ -163,7 +164,7 @@ export function ProductReviews({ productId }) {
         <div className="product-reviews__summary">
           <div className="product-reviews__score-wrap">
             <div className="product-reviews__score">{avgRating.toFixed(1)}</div>
-            <Stars value={avgRating} size={14} className="mt-1" />
+            <Stars value={avgRating} size={14} style={{ marginTop: 4 }} />
             <p className="product-reviews__count">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
           </div>
           <div className="product-reviews__bars">
@@ -173,7 +174,7 @@ export function ProductReviews({ productId }) {
               return (
                 <div key={n} className="product-reviews__bar-row">
                   <span className="product-reviews__bar-label">{n}</span>
-                  <Star size={10} fill="#f59e0b" className="text-amber-400 shrink-0" />
+                  <Star size={10} fill="#f59e0b" style={{ color: '#f59e0b', flexShrink: 0 }} />
                   <div className="product-reviews__bar-track">
                     <div className="product-reviews__bar-fill" style={{ width: `${pct}%` }} />
                   </div>
@@ -226,18 +227,18 @@ export function ProductReviews({ productId }) {
 
       {/* Review list */}
       {reviews === null && (
-        <div className="flex justify-center py-6">
-          <span className="w-6 h-6 rounded-full border-2 border-cobalt/20 border-t-cobalt" style={{ animation: 'spin .7s linear infinite', display: 'inline-block' }} />
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
+          <span style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid rgba(30,80,224,.2)', borderTopColor: '#1E50E0', animation: 'spin .7s linear infinite', display: 'inline-block' }} />
         </div>
       )}
 
       {reviews?.length > 0 ? (
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {reviews.map(r => <ReviewCard key={r.id} review={r} />)}
         </div>
       ) : reviews !== null && (
         <div className="product-reviews__empty">
-          <Star size={28} className="mx-auto text-slate-300 mb-2" />
+          <Star size={28} style={{ display: 'block', margin: '0 auto 8px', color: '#cbd5e1' }} />
           <p className="product-reviews__empty-title">No reviews yet</p>
           <p className="product-reviews__empty-desc">Be the first to review this product.</p>
         </div>

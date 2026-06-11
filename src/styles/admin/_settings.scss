@@ -457,3 +457,17 @@
     }
   }
 }
+
+.settings__loading {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 14px;
+  color: $slate-400;
+}
+
+.settings__error {
+  padding: 48px 0;
+  text-align: center;
+  font-size: 14px;
+  color: $red-500;
+}

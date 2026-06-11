@@ -53,8 +53,8 @@ function PaymentSettingsTab({ token }) {
     setSaving(false);
   }
 
-  if (loading) return <div className="py-12 text-center text-slate-400 text-sm">Loading payment settings…</div>;
-  if (!data) return <div className="py-12 text-center text-red-500 text-sm">Could not load payment settings.</div>;
+  if (loading) return <div className="settings__loading">Loading payment settings…</div>;
+  if (!data) return <div className="settings__error">Could not load payment settings.</div>;
 
   const eft = data.eft || {};
   const cod = data.cod || {};

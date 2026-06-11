@@ -6,6 +6,7 @@ import {
   Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, Cart, Minus, Tag
 } from '../ui/Icons';
 import { Reveal, Stars, BadgeChip } from '../ui/index';
+import { ProductReviews } from './ProductReviews';
 
 /* ── Global QuickView Event Emitter ── */
 export const openQuickView = (product) => {
@@ -36,13 +37,23 @@ export const ProductCard = ({ p }) => {
   const primaryImgUrl = getPrimaryImg(p);
   const secondImgUrl  = getSecondImg(p);
 
-  const [wished,    setWished]    = useState(false);
+  const [wished,    setWished]    = useState(() => {
+    try { return JSON.parse(localStorage.getItem('ab_wishlist') || '[]').includes(p._id); } catch { return false; }
+  });
   const [heartAnim, setHeartAnim] = useState(false);
   const [added,     setAdded]     = useState(false);
 
   function handleWish(e) {
     e.stopPropagation();
-    setWished(v => !v);
+    setWished(v => {
+      const next = !v;
+      try {
+        const list = JSON.parse(localStorage.getItem('ab_wishlist') || '[]');
+        const updated = next ? [...list.filter(id => id !== p._id), p._id] : list.filter(id => id !== p._id);
+        localStorage.setItem('ab_wishlist', JSON.stringify(updated));
+      } catch {}
+      return next;
+    });
     setHeartAnim(true);
     setTimeout(() => setHeartAnim(false), 600);
   }
@@ -614,6 +625,8 @@ export const QuickView = () => {
                   </React.Fragment>
                 );
               })()}
+
+              <ProductReviews productId={product._id} />
             </div>
           </div>
         )}

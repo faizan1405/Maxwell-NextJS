@@ -124,6 +124,8 @@ input, select, textarea {
   }
 }
 
+.font-mono { font-family: monospace; }
+
 // Accessibility
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

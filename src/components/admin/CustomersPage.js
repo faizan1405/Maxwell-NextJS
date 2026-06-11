@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth, useAdmin, fmtMoney, fmtDate } from './AdminProvider';
 import * as Icon from '../ui/Icons';
 import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast, Badge, StatCard } from '../ui/index';
+import { formatZarCompact } from '../../utils/currency';
 
 const CUST_PER_PAGE = 10;
 
@@ -43,7 +44,7 @@ function CustomerDetail({ customer, onClose }) {
             <div className="admin-customer-detail__stat-val admin-customer-detail__stat-val--avg">
               {(() => {
                 const paidOrders = (customer.orders || []).filter(o => o.payment?.status === 'paid');
-                return paidOrders.length > 0 ? fmtMoney(customer.totalSpent / paidOrders.length) : 'R0.00';
+                return paidOrders.length > 0 ? fmtMoney(customer.totalSpent / paidOrders.length) : fmtMoney(0);
               })()}
             </div>
             <div className="admin-customer-detail__stat-label">Avg. Order</div>
@@ -196,7 +197,7 @@ export default function CustomersPage() {
         c.orders?.[0]?.address || '—',
         c.hasAccount ? new Date(c.accountSince).toLocaleString('en-ZA') : '—',
         c.orderCount || 0,
-        c.totalSpent || 0,
+        fmtMoney(c.totalSpent || 0),
         c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleString('en-ZA') : '—'
       ];
     });
@@ -255,7 +256,7 @@ export default function CustomersPage() {
         c.orders?.[0]?.address || '—',
         c.hasAccount ? new Date(c.accountSince).toLocaleDateString('en-ZA') : '—',
         c.orderCount || 0,
-        `R${(c.totalSpent || 0).toFixed(2)}`,
+        fmtMoney(c.totalSpent || 0),
         c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString('en-ZA') : '—'
       ]);
 
@@ -303,7 +304,7 @@ export default function CustomersPage() {
       <div className="admin-customers__stats">
         <StatCard icon="👥" label="Total Customers"     value={customers.length}      color="cobalt"/>
         <StatCard icon="🔑" label="Registered Accounts" value={accountCount}          color="cobalt"/>
-        <StatCard icon="💰" label="Collected Revenue"       value={`R${(totalRevenue/1000).toFixed(1)}k`} color="green"/>
+        <StatCard icon="💰" label="Collected Revenue"       value={formatZarCompact(totalRevenue)} color="green"/>
         <StatCard icon="🧾" label="Avg. Order Value"    value={fmtMoney(avgSpend)}   color="amber"/>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useCart, useProducts, DEFAULT_CATEGORIES, getPrimaryImg } from '../../lib/storeContext';
+import { useCart, useProducts, DEFAULT_CATEGORIES, FREE_SHIP, money, getPrimaryImg } from '../../lib/storeContext';
 import { 
   Sparkles, ArrowRight, Car, Shield, Plus, Leaf, Truck, Award, Tag 
 } from '../ui/Icons';
@@ -118,7 +118,7 @@ export const Hero = ({ onShopCat }) => {
 
 const TRUST = [
   { icon: Award, title: "Locally Manufactured", sub: "Made in Gauteng, SA" },
-  { icon: Truck, title: "Free Delivery over R750", sub: "Fast nationwide shipping" },
+  { icon: Truck, title: `Free Delivery over ${money(FREE_SHIP)}`, sub: "Fast nationwide shipping" },
   { icon: Shield, title: "Kills 99.9% of Germs", sub: "High-purity sanitisers" },
   { icon: Tag, title: "Bulk & Trade Pricing", sub: "Wholesale volumes welcome" },
 ];

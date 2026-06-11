@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Truck, Lock, Award, Whatsapp, Facebook, Instagram, MapPin, Phone, Mail } from '../ui/Icons';
-import { BRAND, DEFAULT_CATEGORIES } from '../../lib/storeContext';
+import { BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money } from '../../lib/storeContext';
 import { FadeReveal } from '../ui/index';
 import { Wordmark } from './Header';
 
@@ -12,7 +12,7 @@ export const Footer = ({ onShopCat }) => (
       {/* mini trust row */}
       <div className="footer-trust">
         {[
-          { icon: Truck, t: "Nationwide delivery", s: "Free over R750 in Gauteng" },
+          { icon: Truck, t: "Nationwide delivery", s: `Free over ${money(FREE_SHIP)} in Gauteng` },
           { icon: Lock, t: "Secure checkout", s: "Your details stay protected" },
           { icon: Award, t: "Quality guaranteed", s: "Consistent, tested batches" },
           { icon: Whatsapp, t: "Talk to us", s: "Quick help on WhatsApp" },

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth, useAdmin, fmtMoney, fmtDate, fmtDateTime, initials } from './AdminProvider';
 import * as Icon from '../ui/Icons';
 import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast } from '../ui/index';
+import { formatZar } from '../../utils/currency';
 
 const API_BASE = '/api'; // Adjust if needed based on typical Next.js setup, or maybe the legacy file just used window.API_BASE. The legacy file had `fetch(\`\${API_BASE}/api/orders\`)`. Actually, usually it's just `/api/...` in Next.js. The legacy had `API_BASE`, let's just leave it empty string if it's relative.
 // Let's check how a-orders.jsx handled API_BASE. It was just an undeclared global, or imported? It wasn't imported. We'll define `const API_BASE = '';`
@@ -105,12 +106,6 @@ function PayStatusBadge({ status }) {
   return <span className={`admin-badge ${payStatusClass(status)}`}>{label}</span>;
 }
 
-function R(n) {
-  const abs = Math.abs(n || 0).toFixed(2);
-  const [int, dec] = abs.split('.');
-  return 'R ' + int.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + dec;
-}
-
 function printInvoice(order) {
   const payMethod   = order.paymentMethod || order.payment?.method || '';
   const payStatus   = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : '');
@@ -127,107 +122,255 @@ function printInvoice(order) {
     settings = window.__settings;
   }
   
-  const vatNumber   = (settings.business && settings.business.vatNumber) || '';
+  const vatNumber   = "4930324332";
   const bankDetails = settings.eft || {};
   const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-ZA', { day:'numeric', month:'long', year:'numeric' }) : '';
+  const bName = (settings.business && settings.business.name) || 'Amahle Blue';
+  const bAddress = (settings.business && settings.business.address) || 'Unit H, 13 Main Reef Road, Dunswart, Boksburg, Gauteng, South Africa';
+  const bPhone = (settings.business && settings.business.phone) || '067 101 4345';
+  const bEmail = (settings.business && settings.business.email) || 'info@amahle-blue.co.za';
 
-  const itemRows = (order.items || []).map(item => `
+  const itemRows = (order.items || []).map(item => {
+    const itemTotal = (item.qty || 1) * (item.price || 0);
+    const itemVat = itemTotal - (itemTotal / (1 + vatRate));
+    return `
     <tr>
-      <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9">${item.name}${item.variation ? ` <span style="color:#94a3b8;font-size:11px">(${item.variation})</span>` : ''}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;text-align:right">${item.qty}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;text-align:right">${R(item.price)}</td>
-      <td style="padding:8px 12px;border-bottom:1px solid #f1f5f9;text-align:right;font-weight:600">${R((item.qty || 1) * (item.price || 0))}</td>
-    </tr>`).join('');
-
-  const couponRow = order.couponDiscount > 0 ? `
-    <tr>
-      <td colspan="3" style="padding:8px 12px;text-align:right;color:#159A4C">Coupon ${order.couponCode ? `(${order.couponCode})` : ''}</td>
-      <td style="padding:8px 12px;text-align:right;color:#159A4C;font-weight:600">−${R(order.couponDiscount)}</td>
-    </tr>` : '';
-
-  const codRow = codFee > 0 ? `
-    <tr>
-      <td colspan="3" style="padding:8px 12px;text-align:right;color:#d97706">COD Fee</td>
-      <td style="padding:8px 12px;text-align:right;color:#d97706;font-weight:600">${R(codFee)}</td>
-    </tr>` : '';
+      <td>
+        <span class="item-name">${item.name}</span>
+        ${item.variation ? `<span class="item-meta">Variation: ${item.variation}</span>` : ''}
+      </td>
+      <td style="text-align:center">${item.qty}</td>
+      <td style="text-align:right">${formatZar(item.price)}</td>
+      <td style="text-align:right;color:#64748b">${formatZar(itemVat)}</td>
+      <td>${formatZar(itemTotal)}</td>
+    </tr>`;
+  }).join('');
 
   const eftSection = payMethod === 'EFT' && !isPaid ? `
-    <div style="margin-top:24px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:16px 20px;">
-      <p style="font-weight:700;color:#1E50E0;margin:0 0 8px;font-size:13px">EFT Payment Instructions</p>
-      <p style="margin:2px 0;font-size:12px;color:#334155">Reference: <strong>${eftRef}</strong></p>
-      ${bankDetails.bankName   ? `<p style="margin:2px 0;font-size:12px;color:#334155">Bank: ${bankDetails.bankName}</p>` : ''}
-      ${bankDetails.accountHolder ? `<p style="margin:2px 0;font-size:12px;color:#334155">Account Holder: ${bankDetails.accountHolder}</p>` : ''}
-      ${bankDetails.accountNumber ? `<p style="margin:2px 0;font-size:12px;color:#334155">Account Number: ${bankDetails.accountNumber}</p>` : ''}
-      ${bankDetails.branchCode    ? `<p style="margin:2px 0;font-size:12px;color:#334155">Branch Code: ${bankDetails.branchCode}</p>` : ''}
-      ${bankDetails.accountType   ? `<p style="margin:2px 0;font-size:12px;color:#334155">Account Type: ${bankDetails.accountType}</p>` : ''}
-      <p style="margin:6px 0 0;font-size:11px;color:#64748b">Please use your order number as your payment reference.</p>
+    <div class="pay-box eft">
+      <p class="pay-title" style="color:#1E50E0">EFT Payment Instructions</p>
+      <p class="pay-detail">Reference: <strong>${eftRef}</strong></p>
+      ${bankDetails.bankName   ? `<p class="pay-detail">Bank: ${bankDetails.bankName}</p>` : ''}
+      ${bankDetails.accountHolder ? `<p class="pay-detail">Account Holder: ${bankDetails.accountHolder}</p>` : ''}
+      ${bankDetails.accountNumber ? `<p class="pay-detail">Account Number: ${bankDetails.accountNumber}</p>` : ''}
+      ${bankDetails.branchCode    ? `<p class="pay-detail">Branch Code: ${bankDetails.branchCode}</p>` : ''}
+      ${bankDetails.accountType   ? `<p class="pay-detail">Account Type: ${bankDetails.accountType}</p>` : ''}
+      <p class="pay-detail" style="margin-top:8px;color:#64748b;font-size:11px">Please use your order number as your payment reference.</p>
     </div>` : '';
 
   const codSection = payMethod === 'COD' && !isPaid ? `
-    <div style="margin-top:24px;background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;">
-      <p style="font-weight:700;color:#92400e;margin:0 0 4px;font-size:13px">Cash on Delivery</p>
-      <p style="margin:0;font-size:12px;color:#92400e;">Amount due on delivery: <strong>${R(order.total)}</strong></p>
+    <div class="pay-box cod">
+      <p class="pay-title" style="color:#92400e">Cash on Delivery</p>
+      <p class="pay-detail" style="color:#92400e">Amount due on delivery: <strong>${formatZar(order.total)}</strong></p>
     </div>` : '';
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice ${order.invoiceNumber || order.orderNumber}</title>
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice ${order.invoiceNumber || order.orderNumber}</title>
 <style>
-body{font-family:Arial,sans-serif;color:#0B2545;margin:0;padding:24px;font-size:13px}
-h1{margin:0;font-size:22px;color:#1E50E0}
-table{width:100%;border-collapse:collapse;margin-top:16px}
-th{background:#f8fafc;padding:8px 12px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:#64748b}
-.hdr{display:flex;justify-content:space-between;margin-bottom:32px;border-bottom:2px solid #1E50E0;padding-bottom:20px}
-@media print{button{display:none}}
-</style></head><body>
-<div class="hdr">
-  <div>
-    <h1>${(settings.business && settings.business.name) || 'Amahle Blue'}</h1>
-    <p style="margin:4px 0;color:#64748b;font-size:12px">${(settings.business && settings.business.address) || 'Unit H, 13 Main Reef Road, Dunswart, Boksburg, Gauteng, South Africa'}</p>
-    <p style="margin:2px 0;color:#64748b;font-size:12px">${(settings.business && settings.business.phone) || '067 101 4345'} · ${(settings.business && settings.business.email) || 'info@amahle-blue.co.za'}</p>
-    ${vatNumber ? `<p style="margin:2px 0;color:#64748b;font-size:11px">VAT No: ${vatNumber}</p>` : ''}
-  </div>
-  <div style="text-align:right">
-    <p style="font-size:18px;font-weight:700;margin:0">${order.invoiceNumber || order.orderNumber}</p>
-    <p style="color:#64748b;margin:4px 0;font-size:12px">Date: ${date}</p>
-    <p style="color:#64748b;margin:2px 0;font-size:12px">Order: ${order.orderNumber}</p>
-    <p style="margin:4px 0;font-size:12px"><strong>Order Status:</strong> ${orderStatus}</p>
-    <p style="margin:2px 0;font-size:12px"><strong>Payment:</strong> ${payStatus || (isPaid ? 'Paid' : 'Pending')} · ${payMethod}</p>
-  </div>
-</div>
-<div style="display:flex;gap:32px;margin-bottom:24px">
-  <div>
-    <p style="font-weight:700;margin-bottom:4px">Bill To</p>
-    <p style="margin:2px 0">${order.customer?.name || ''}</p>
-    <p style="margin:2px 0;color:#64748b">${order.customer?.email || ''}</p>
-    <p style="margin:2px 0;color:#64748b">${order.customer?.phone || ''}</p>
-  </div>
-  <div>
-    <p style="font-weight:700;margin-bottom:4px">Deliver To</p>
-    <p style="margin:2px 0;color:#64748b">${order.address || ''}</p>
-  </div>
-</div>
-<table>
-  <thead><tr><th>Item</th><th style="text-align:right">Qty</th><th style="text-align:right">Price</th><th style="text-align:right">Total</th></tr></thead>
-  <tbody>
-    ${itemRows}
-    <tr><td colspan="3" style="padding:8px 12px;text-align:right;color:#64748b">Subtotal</td><td style="padding:8px 12px;text-align:right">${R(order.subtotal)}</td></tr>
-    <tr><td colspan="3" style="padding:8px 12px;text-align:right;color:#64748b">Delivery</td><td style="padding:8px 12px;text-align:right">${order.delivery === 0 ? 'Free' : R(order.delivery)}</td></tr>
-    ${couponRow}
-    ${codRow}
-    <tr><td colspan="3" style="padding:8px 12px;text-align:right;color:#94a3b8;font-size:11px">VAT (15%, included in total)</td><td style="padding:8px 12px;text-align:right;color:#94a3b8;font-size:11px">${R(vatAmount)}</td></tr>
-    <tr style="font-weight:700;font-size:15px;color:#1E50E0;border-top:2px solid #e2e8f0">
-      <td colspan="3" style="padding:10px 12px;text-align:right">Total (incl. VAT)</td>
-      <td style="padding:10px 12px;text-align:right">${R(order.total)}</td>
-    </tr>
-  </tbody>
-</table>
-${eftSection}${codSection}
-<p style="margin-top:32px;font-size:11px;color:#94a3b8;text-align:center">Thank you for your purchase · ${(settings.business && settings.business.name) || 'Amahle Blue'} · ${(settings.business && settings.business.email) || 'info@amahle-blue.co.za'}</p>
-<script>window.onload=function(){window.print();};</script>
-</body></html>`;
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    background: #f8fafc;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .invoice-wrapper {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 48px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  @media print {
+    body { background: #fff; }
+    .invoice-wrapper { margin: 0; padding: 0; box-shadow: none; max-width: 100%; border-radius: 0; }
+  }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; }
+  .header-left { display: flex; flex-direction: column; gap: 4px; }
+  .logo-text { font-size: 28px; font-weight: 700; color: #0f172a; margin: 0 0 8px 0; letter-spacing: -0.02em; }
+  .business-details p { margin: 0; color: #64748b; font-size: 13px; line-height: 1.5; }
+  
+  .header-right { text-align: right; }
+  .invoice-title { font-size: 32px; font-weight: 700; color: #3b82f6; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .invoice-meta { display: grid; grid-template-columns: auto auto; gap: 6px 16px; text-align: right; justify-content: end; }
+  .meta-label { color: #64748b; font-size: 12px; font-weight: 500; text-transform: uppercase; }
+  .meta-value { color: #0f172a; font-size: 13px; font-weight: 600; }
 
-  const w = window.open('', '_blank', 'width=820,height=680');
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+  .info-block { background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .info-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin: 0 0 12px 0; letter-spacing: 0.05em; }
+  .info-content p { margin: 0 0 4px 0; font-size: 13px; color: #334155; line-height: 1.4; word-wrap: break-word; }
+  .info-content .name { font-weight: 600; color: #0f172a; font-size: 14px; margin-bottom: 6px; }
+
+  table { width: 100%; border-collapse: separate; border-spacing: 0; margin-bottom: 32px; }
+  th { background: #f1f5f9; padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; }
+  th:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+  th:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; text-align: right; }
+  td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; vertical-align: top; }
+  td:last-child { text-align: right; font-weight: 600; color: #0f172a; }
+  .item-name { font-weight: 600; color: #0f172a; margin-bottom: 4px; display: block; }
+  .item-meta { font-size: 12px; color: #64748b; display: block; }
+
+  .totals-wrapper { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+  .payment-instructions { flex: 1; max-width: 400px; }
+  .totals-box { width: 320px; background: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; }
+  .total-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: #475569; }
+  .total-row.grand-total { margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 0; }
+  .total-row.grand-total .val { color: #3b82f6; }
+  
+  .footer { margin-top: 64px; text-align: center; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+  .thank-you { font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 8px 0; }
+  .footer-contact { font-size: 13px; color: #64748b; margin: 0; }
+
+  .badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .badge.paid { background: #dcfce7; color: #166534; }
+  .badge.pending { background: #fef9c3; color: #854d0e; }
+  .badge.slate { background: #f1f5f9; color: #475569; }
+  
+  .pay-box { background: #fff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin-top: 16px; }
+  .pay-box.eft { border-color: #bfdbfe; background: #eff6ff; }
+  .pay-box.cod { border-color: #fde68a; background: #fef3c7; }
+  .pay-title { font-weight: 700; font-size: 13px; margin: 0 0 8px 0; }
+  .pay-detail { margin: 0 0 4px 0; font-size: 12px; color: #334155; }
+  
+  @media (max-width: 600px) {
+    .header, .totals-wrapper { flex-direction: column; }
+    .header-right { text-align: left; margin-top: 24px; }
+    .invoice-meta { justify-content: start; text-align: left; }
+    .info-grid { grid-template-columns: 1fr; }
+    .totals-box { width: auto; align-self: stretch; margin-top: 24px; }
+    .invoice-wrapper { padding: 24px; margin: 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="invoice-wrapper">
+  <div class="header">
+    <div class="header-left">
+      <h1 class="logo-text">${bName}</h1>
+      <div class="business-details">
+        <p>${bAddress}</p>
+        <p>${bPhone} · ${bEmail}</p>
+        ${vatNumber ? \`<p><strong>VAT Number:</strong> \${vatNumber}</p>\` : ''}
+      </div>
+    </div>
+    <div class="header-right">
+      <h2 class="invoice-title">Invoice</h2>
+      <div class="invoice-meta">
+        <span class="meta-label">Invoice No:</span>
+        <span class="meta-value">${order.invoiceNumber || order.orderNumber}</span>
+        <span class="meta-label">Date:</span>
+        <span class="meta-value">${date}</span>
+        <span class="meta-label">Order No:</span>
+        <span class="meta-value">${order.orderNumber}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-block">
+      <h3 class="info-title">Bill To</h3>
+      <div class="info-content">
+        <p class="name">${order.customer?.name || '-'}</p>
+        <p>${order.customer?.email || '-'}</p>
+        <p>${order.customer?.phone || '-'}</p>
+      </div>
+    </div>
+    <div class="info-block">
+      <h3 class="info-title">Deliver To</h3>
+      <div class="info-content">
+        <p>${order.address || '-'}</p>
+      </div>
+    </div>
+    <div class="info-block">
+      <h3 class="info-title">Payment Details</h3>
+      <div class="info-content">
+        <p><strong>Method:</strong> ${payMethod}</p>
+        <p><strong>Status:</strong> <span class="badge ${isPaid ? 'paid' : (payStatus ? 'pending' : 'slate')}">${payStatus || (isPaid ? 'Paid' : 'Pending')}</span></p>
+        <p><strong>Order:</strong> ${orderStatus}</p>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th style="text-align:center">Qty</th>
+        <th style="text-align:right">Price</th>
+        <th style="text-align:right">VAT (15%)</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${itemRows}
+    </tbody>
+  </table>
+
+  <div class="totals-wrapper">
+    <div class="payment-instructions">
+      ${eftSection}
+      ${codSection}
+    </div>
+    
+    <div class="totals-box">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <span>${formatZar(order.subtotal)}</span>
+      </div>
+      <div class="total-row">
+        <span>Delivery</span>
+        <span>${order.delivery === 0 ? 'Free' : formatZar(order.delivery)}</span>
+      </div>
+      ${order.couponDiscount > 0 ? \`
+      <div class="total-row" style="color: #16a34a">
+        <span>Coupon \${order.couponCode ? \`(\${order.couponCode})\` : ''}</span>
+        <span>−\${formatZar(order.couponDiscount)}</span>
+      </div>\` : ''}
+      ${codFee > 0 ? \`
+      <div class="total-row" style="color: #d97706">
+        <span>COD Fee</span>
+        <span>\${formatZar(codFee)}</span>
+      </div>\` : ''}
+      <div class="total-row" style="color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 8px; padding-top: 8px;">
+        <span>VAT Included</span>
+        <span>${formatZar(vatAmount)}</span>
+      </div>
+      <div class="total-row grand-total">
+        <span>Grand Total</span>
+        <span class="val">${formatZar(order.total)}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p class="thank-you">Thank you for your business!</p>
+    <p class="footer-contact">If you have any questions, please contact us at ${bEmail} or call ${bPhone}</p>
+  </div>
+</div>
+<script>
+  window.onload = function() {
+    setTimeout(function() {
+      window.print();
+    }, 500);
+  };
+</script>
+</body>
+</html>\`;
+
+  const w = window.open('', '_blank');
   if (!w) { alert('Allow popups to print the invoice.'); return; }
-  w.document.open(); w.document.write(html); w.document.close();
+  w.document.open(); 
+  w.document.write(html); 
+  w.document.close();
 }
 
 function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequired, confirmLabel, confirmVariant='danger', onConfirm, onCancel }) {
@@ -754,7 +897,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                   {isCashPaid ? (
                     <div className="admin-order-detail__cod-box admin-order-detail__cod-box--paid">
                       <p className="admin-order-detail__cod-amount">Amount collected: <span className="admin-order-detail__cod-grand">{fmtMoney(order.total)}</span></p>
-                      <p className="admin-order-detail__cod-paid-note">Cash collected · Amount due: R0.00</p>
+                      <p className="admin-order-detail__cod-paid-note">Cash collected · Amount due: {fmtMoney(0)}</p>
                     </div>
                   ) : (
                     <div className="admin-order-detail__cod-box">
@@ -1083,7 +1226,7 @@ export default function OrdersPage() {
           o.customer?.email || '—',
           o.address || '—',
           products,
-          `R${(o.total || 0).toFixed(2)}`,
+          fmtMoney(o.total),
           effectivePayMethod(o),
           effectivePayStatus(o),
           effectiveOrderStatus(o)

@@ -10,10 +10,9 @@ function isVercelBlob(url) {
 
 function sanitize(input) {
   const VALID_STATUS = ['active','draft','archived'];
-  const VALID_CAT    = ['household','sanitiser','car','car-exterior','industrial'];
   const out = {};
   if (input.name      !== undefined) out.name      = String(input.name).trim().slice(0, 120);
-  if (input.cat       !== undefined) out.cat       = VALID_CAT.includes(input.cat) ? input.cat : 'household';
+  if (input.cat       !== undefined) out.cat       = String(input.cat || '').trim().toLowerCase().slice(0, 60) || 'household';
   if (input.sub       !== undefined) out.sub       = String(input.sub).trim().slice(0, 200);
   if (input.price     !== undefined) out.price     = Math.max(0, Number(input.price) || 0);
   if (input.was       !== undefined) out.was       = input.was == null ? null : Math.max(0, Number(input.was) || 0);

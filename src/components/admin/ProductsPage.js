@@ -446,6 +446,7 @@ function ProductForm({ open, onClose, initial, onSave }) {
 }
 
 function StockAdjustmentModal({ open, onClose, product, onSave }) {
+  const { session } = useAuth();
   const [variation, setVariation] = useState('');
   const [mode, setMode] = useState('increase');
   const [qty, setQty] = useState('');
@@ -500,7 +501,6 @@ function StockAdjustmentModal({ open, onClose, product, onSave }) {
         }
       };
       
-      const session = JSON.parse(localStorage.getItem('ab_admin_session_v2') || '{}');
       const res = await fetch('/api/products', {
         method: 'PATCH',
         headers: {
@@ -574,6 +574,7 @@ function StockAdjustmentModal({ open, onClose, product, onSave }) {
 }
 
 function StockHistoryModal({ open, onClose }) {
+  const { session } = useAuth();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -588,7 +589,6 @@ function StockHistoryModal({ open, onClose }) {
     setLoading(true);
     setError('');
     try {
-      const session = JSON.parse(localStorage.getItem('ab_admin_session_v2') || '{}');
       const res = await fetch('/api/settings?resource=stock-history', {
         headers: {
           'Authorization': `Bearer ${session?.token || ''}`

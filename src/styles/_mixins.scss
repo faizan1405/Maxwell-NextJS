@@ -1,0 +1,47 @@
+// Responsive Breakpoint Mixins
+@mixin sm {
+  @media (min-width: 640px) { @content; }
+}
+
+@mixin md {
+  @media (min-width: 768px) { @content; }
+}
+
+@mixin lg {
+  @media (min-width: 1024px) { @content; }
+}
+
+@mixin xl {
+  @media (min-width: 1280px) { @content; }
+}
+
+@mixin max-sm {
+  @media (max-width: 639px) { @content; }
+}
+
+@mixin max-md {
+  @media (max-width: 767px) { @content; }
+}
+
+@mixin max-lg {
+  @media (max-width: 1023px) { @content; }
+}
+
+// Layout Helper Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin grid-layout($cols, $gap: 1.5rem) {
+  display: grid;
+  grid-template-columns: repeat($cols, minmax(0, 1fr));
+  gap: $gap;
+}

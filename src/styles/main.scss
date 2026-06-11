@@ -1,0 +1,30 @@
+// Configuration & Design Tokens
+@import "variables";
+@import "mixins";
+@import "global";
+
+// Component-specific SCSS files will be imported here as we migrate them
+@import "store/header";
+@import "store/hero";
+@import "store/shop";
+@import "store/cart";
+@import "store/checkout";
+@import "store/account";
+@import "store/footer";
+@import "store/auth";
+@import "store/faq";
+
+@import "admin/layout";
+@import "admin/dashboard";
+@import "admin/products";
+@import "admin/orders";
+@import "admin/auth";
+@import "admin/customers";
+@import "admin/reports";
+@import "admin/categories";
+@import "admin/coupons";
+@import "admin/reviews";
+@import "admin/faqs";
+@import "admin/abandoned";
+@import "admin/shipping";
+@import "admin/settings";

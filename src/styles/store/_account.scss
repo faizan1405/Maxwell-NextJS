@@ -1,0 +1,769 @@
+@import "../variables";
+@import "../mixins";
+
+.account-page {
+  min-height: 100vh;
+  background-color: $slate-50;
+}
+
+.account-header {
+  background-color: white;
+  border-bottom: 1px solid $slate-200;
+}
+
+.account-header__inner {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 1.25rem 1rem;
+  
+  @include sm {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.account-header__back {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: $slate-500;
+  transition: color $transition-base;
+  margin-bottom: 1.25rem;
+  
+  &:hover {
+    color: $cobalt;
+  }
+}
+
+.account-header__main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.account-header__title {
+  font-family: $font-display;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: $ink;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.account-header__meta {
+  font-size: 13px;
+  color: $slate-400;
+  margin-top: 0.125rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-bottom: 0;
+}
+
+.account-header__verified {
+  color: $grass;
+  font-weight: 600;
+}
+
+.account-header__logout {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 1rem;
+  border-radius: $radius-xl;
+  border: 1px solid $slate-200;
+  font-size: 13px;
+  font-weight: 600;
+  color: $slate-500;
+  transition: all $transition-base;
+  
+  &:hover {
+    border-color: #fecaca; // red-200
+    color: $red-600;
+    background-color: #fef2f2; // red-50
+  }
+}
+
+.account-main {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 2rem 1rem;
+  
+  @include sm {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.account-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background-color: white;
+  border-radius: $radius-2xl;
+  padding: 0.375rem;
+  border: 1px solid $slate-100;
+  box-shadow: $shadow-sm;
+  width: max-content;
+  margin-bottom: 2rem;
+}
+
+.account-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  border-radius: $radius-xl;
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  
+  &--active {
+    background-color: $cobalt;
+    color: white;
+    box-shadow: $shadow-sm;
+    transform: scale(0.99);
+  }
+  
+  &--inactive {
+    color: $slate-500;
+    &:hover {
+      background-color: $slate-50;
+      color: $slate-700;
+    }
+  }
+}
+
+.account-empty {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+}
+
+.account-empty__icon {
+  display: grid;
+  height: 5rem;
+  width: 5rem;
+  place-items: center;
+  border-radius: $radius-2xl;
+  background-color: rgba(30, 80, 224, 0.1);
+  color: $cobalt;
+  margin-bottom: 1.25rem;
+}
+
+.account-empty__title {
+  font-family: $font-display;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $ink;
+  margin: 0;
+}
+
+.account-empty__desc {
+  margin-top: 0.5rem;
+  font-size: 15px;
+  color: $slate-500;
+  max-width: 20rem;
+}
+
+.account-empty__actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.75rem;
+  
+  button {
+    height: 3rem;
+    padding: 0 1.5rem;
+    border-radius: $radius-full;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all $transition-base;
+    
+    &.primary {
+      background-color: $cobalt;
+      color: white;
+      &:hover { background-color: $cobalt-700; }
+    }
+    
+    &.secondary {
+      border: 1px solid $slate-200;
+      color: $slate-600;
+      &:hover { background-color: $slate-50; }
+    }
+  }
+}
+
+/* Common form styles for account */
+.acc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 28rem;
+}
+
+.acc-field {
+  &__label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: $slate-700;
+    margin-bottom: 0.375rem;
+  }
+  
+  &__input {
+    width: 100%;
+    height: 2.75rem;
+    border-radius: $radius-xl;
+    border: 1px solid $slate-200;
+    padding: 0 1rem;
+    font-size: 13.5px;
+    outline: none;
+    transition: all $transition-base;
+    background-color: white;
+    
+    &:focus {
+      border-color: $cobalt;
+      box-shadow: 0 0 0 4px rgba(30, 80, 224, 0.1);
+    }
+  }
+}
+
+.acc-btn {
+  height: 2.75rem;
+  padding: 0 1.5rem;
+  border-radius: $radius-xl;
+  background-color: $cobalt;
+  color: white;
+  font-weight: 700;
+  font-size: 13.5px;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  &:hover:not(:disabled) {
+    background-color: $cobalt-700;
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* Orders Tab */
+.acc-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.acc-order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  border-radius: $radius-2xl;
+  border: 1px solid $slate-100;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    box-shadow: $shadow-sm;
+    border-color: rgba(30, 80, 224, 0.3);
+  }
+  
+  &--needs-action {
+    border-color: #fde68a; // amber-200
+    &:hover { border-color: #fcd34d; } // amber-300
+  }
+}
+
+.acc-order-card__icon {
+  display: grid;
+  height: 2.75rem;
+  width: 2.75rem;
+  place-items: center;
+  border-radius: $radius-xl;
+  color: $cobalt;
+  background-color: rgba(30, 80, 224, 0.08);
+  flex-shrink: 0;
+  
+  &--amber {
+    background-color: #fffbeb; // amber-50
+  }
+}
+
+/* Address Tab */
+.acc-addresses {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 32rem;
+}
+
+.acc-address-card {
+  border-radius: $radius-2xl;
+  border: 1px solid $slate-200;
+  padding: 1rem;
+  background-color: white;
+  transition: all $transition-base;
+  
+  &--default {
+    border-color: rgba(30, 80, 224, 0.4);
+    background-color: rgba(30, 80, 224, 0.03);
+  }
+}
+
+/* Proof Upload Widget */
+.proof-widget {
+  &__dropzone {
+    border-radius: $radius-xl;
+    border: 2px dashed $slate-200;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    transition: all $transition-base;
+    cursor: pointer;
+    
+    &:hover { border-color: rgba(30, 80, 224, 0.4); }
+    
+    &--active {
+      border-color: $cobalt;
+      background-color: rgba(30, 80, 224, 0.05);
+    }
+    
+    &--file {
+      border-color: $grass;
+      background-color: #f0fdf4;
+    }
+  }
+}
+
+/* Order Tracker */
+.order-tracker {
+  display: flex;
+  align-items: center;
+}
+
+.order-tracker__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.order-tracker__circle {
+  display: grid;
+  height: 1.75rem;
+  width: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  transition: all $transition-base;
+  
+  &--done { background-color: $cobalt; color: white; }
+  &--current { background-color: $cobalt; color: white; box-shadow: 0 0 0 2px white, 0 0 0 4px $cobalt; }
+  &--pending { background-color: white; border: 2px solid $slate-200; color: $slate-300; }
+}
+
+.order-tracker__line {
+  margin-bottom: 1rem;
+  flex: 1;
+  height: 2px;
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+  
+  &--done { background-color: $cobalt; }
+  &--pending { background-color: $slate-200; }
+}
+
+/* Appended for modal, badges, and remaining UI */
+.acc-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.625rem;
+  border-radius: $radius-full;
+  font-size: 11.5px;
+  font-weight: 700;
+  box-shadow: 0 0 0 1px inset;
+
+  &--amber { color: #d97706; background-color: #fffbeb; box-shadow: 0 0 0 1px inset #fde68a; }
+  &--blue { color: #2563eb; background-color: #eff6ff; box-shadow: 0 0 0 1px inset #bfdbfe; }
+  &--indigo { color: $indigo-600; background-color: $indigo-50; box-shadow: 0 0 0 1px inset $indigo-200; }
+  &--violet { color: $violet-600; background-color: $violet-50; box-shadow: 0 0 0 1px inset $violet-200; }
+  &--sky { color: $sky-600; background-color: $sky-50; box-shadow: 0 0 0 1px inset $sky-200; }
+  &--green { color: $grass; background-color: $green-50; box-shadow: 0 0 0 1px inset $green-200; }
+  &--red { color: $red-600; background-color: $red-50; box-shadow: 0 0 0 1px inset $red-200; }
+  &--orange { color: $orange-600; background-color: $orange-50; box-shadow: 0 0 0 1px inset $orange-200; }
+  &--purple { color: $purple-600; background-color: $purple-50; box-shadow: 0 0 0 1px inset $purple-200; }
+}
+
+.acc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+  padding-top: 3rem;
+  overflow-y: auto;
+}
+
+.acc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(11, 37, 69, 0.6); // ink/60
+  backdrop-filter: blur(4px);
+}
+
+.acc-modal {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  border-radius: $radius-2xl;
+  background-color: white;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  margin-bottom: 2rem;
+  animation: ab-modal-enter 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.acc-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $slate-100;
+  padding: 1rem 1.5rem;
+}
+
+.acc-modal__title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.acc-modal__title {
+  font-family: $font-display;
+  font-weight: 800;
+  color: $ink;
+  margin: 0;
+}
+
+.acc-modal__meta {
+  font-size: 12.5px;
+  color: $slate-400;
+  margin-top: 0.125rem;
+  margin-bottom: 0;
+}
+
+.acc-modal__close {
+  display: grid;
+  height: 2.25rem;
+  width: 2.25rem;
+  place-items: center;
+  border-radius: $radius-xl;
+  color: $slate-400;
+  transition: all $transition-base;
+  
+  &:hover {
+    background-color: $slate-100;
+  }
+}
+
+.acc-modal__body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.acc-modal__section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $slate-400;
+  margin-bottom: 0.75rem;
+}
+
+.acc-panel {
+  border-radius: $radius-xl;
+  padding: 1rem;
+  
+  &--amber { background-color: #fffbeb; border: 1px solid #fde68a; }
+  &--green { background-color: $green-50; border: 1px solid $green-200; }
+  &--red { background-color: $red-50; border: 1px solid $red-200; }
+  &--orange { background-color: $orange-50; border: 1px solid $orange-200; }
+  &--blue { background-color: #eff6ff; border: 1px solid #bfdbfe; }
+  &--cobalt-light { background-color: rgba(30, 80, 224, 0.05); border: 1px solid rgba(30, 80, 224, 0.15); }
+  &--white { background-color: white; border: 1px solid $slate-200; }
+  &--slate { background-color: $slate-50; border: 1px solid $slate-100; }
+}
+
+.acc-panel-flex {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.acc-panel-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.acc-panel-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin-bottom: 0.125rem;
+  
+  &--amber { color: $amber-800; }
+  &--green { color: $green-800; }
+  &--red { color: $red-700; }
+  &--orange { color: $orange-700; }
+  &--blue { color: $blue-700; }
+}
+
+.acc-panel-text {
+  font-size: 12.5px;
+  line-height: 1.4;
+  margin: 0;
+  
+  &--amber { color: $amber-700; }
+  &--green { color: $green-700; }
+  &--red { color: $red-600; }
+  &--orange { color: $orange-600; }
+  &--blue { color: #2563eb; }
+  &--slate { color: $slate-500; }
+}
+
+.acc-bank-details {
+  border-radius: $radius-xl;
+  border: 1px solid $slate-200;
+  background-color: white;
+  overflow: hidden;
+}
+
+.acc-bank-details__header {
+  background-color: $slate-50;
+  padding: 0.625rem 1rem;
+  border-bottom: 1px solid $slate-100;
+  font-size: 11px;
+  font-weight: 700;
+  color: $slate-500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.acc-bank-details__list {
+  padding: 0.25rem 1rem;
+}
+
+.acc-bank-details__row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.625rem 0;
+  font-size: 13px;
+  border-bottom: 1px solid $slate-50;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.acc-bank-details__label {
+  color: $slate-500;
+}
+
+.acc-bank-details__value {
+  font-weight: 700;
+  color: $ink;
+  
+  &--mono {
+    font-family: monospace;
+  }
+}
+
+.acc-bank-details__total {
+  background-color: $cobalt;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.acc-modal__footer {
+  border-top: 1px solid $slate-100;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.acc-btn-outline {
+  height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: $radius-xl;
+  border: 1px solid $slate-200;
+  font-size: 13px;
+  font-weight: 600;
+  color: $slate-600;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  background-color: white;
+  cursor: pointer;
+  
+  &:hover { background-color: $slate-50; }
+  
+  &--red {
+    border-color: $red-200;
+    color: $red-600;
+    &:hover { background-color: $red-50; }
+  }
+}
+
+.acc-btn-primary {
+  flex: 1;
+  height: 2.75rem;
+  border-radius: $radius-xl;
+  background-color: $cobalt;
+  color: white;
+  font-size: 13.5px;
+  font-weight: 700;
+  transition: all $transition-base;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: none;
+  
+  &:hover:not(:disabled) { background-color: $cobalt-700; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.acc-review-card {
+  background-color: white;
+  border-radius: $radius-2xl;
+  border: 1px solid $slate-100;
+  padding: 1.25rem;
+}
+
+.acc-address-form {
+  border-radius: $radius-2xl;
+  border: 1px solid rgba(30, 80, 224, 0.3);
+  background-color: rgba(30, 80, 224, 0.03);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.acc-address-form__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.acc-address-form__col-full {
+  grid-column: span 2;
+}
+
+.acc-address-form__input {
+  width: 100%;
+  height: 2.5rem;
+  border-radius: $radius-xl;
+  border: 1px solid $slate-200;
+  padding: 0 0.75rem;
+  font-size: 13px;
+  outline: none;
+  background-color: white;
+  
+  &:focus {
+    border-color: $cobalt;
+    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+  }
+}
+
+.acc-address-form__select {
+  width: 100%;
+  height: 2.5rem;
+  border-radius: $radius-xl;
+  border: 1px solid $slate-200;
+  padding: 0 0.75rem;
+  font-size: 13px;
+  outline: none;
+  background-color: white;
+  
+  &:focus {
+    border-color: $cobalt;
+  }
+}
+
+.acc-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 12.5px;
+  color: $slate-600;
+  font-weight: 600;
+}
+
+.acc-checkbox {
+  width: 1rem;
+  height: 1rem;
+  accent-color: $cobalt;
+  border-radius: 0.25rem;
+}
+
+.acc-icon-btn {
+  display: grid;
+  height: 2rem;
+  width: 2rem;
+  place-items: center;
+  border-radius: $radius-lg;
+  color: $slate-400;
+  transition: all $transition-base;
+  background: none;
+  border: none;
+  cursor: pointer;
+  
+  &--edit {
+    &:hover { color: $cobalt; background-color: rgba(30, 80, 224, 0.1); }
+  }
+  
+  &--delete {
+    &:hover { color: $red-500; background-color: $red-50; }
+  }
+}
+
+.acc-badge-pill {
+  padding: 0.125rem 0.5rem;
+  border-radius: $radius-full;
+  font-size: 10.5px;
+  font-weight: 700;
+  
+  &--cobalt {
+    color: $cobalt;
+    background-color: rgba(30, 80, 224, 0.1);
+  }
+}
+
+.acc-flex-between {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}

@@ -1,0 +1,121 @@
+'use client';
+
+import React from 'react';
+import { Truck, Lock, Award, Whatsapp, Facebook, Instagram, MapPin, Phone, Mail } from '../ui/Icons';
+import { BRAND, DEFAULT_CATEGORIES } from '../../lib/storeContext';
+import { FadeReveal } from '../ui/index';
+import { Wordmark } from './Header';
+
+export const Footer = ({ onShopCat }) => (
+  <footer className="footer">
+    <div className="footer__inner">
+      {/* mini trust row */}
+      <div className="footer-trust">
+        {[
+          { icon: Truck, t: "Nationwide delivery", s: "Free over R750 in Gauteng" },
+          { icon: Lock, t: "Secure checkout", s: "Your details stay protected" },
+          { icon: Award, t: "Quality guaranteed", s: "Consistent, tested batches" },
+          { icon: Whatsapp, t: "Talk to us", s: "Quick help on WhatsApp" },
+        ].map((x, i) => (
+          <FadeReveal key={x.t} delay={i * 60} className="footer-trust__item">
+            <span className="footer-trust__icon"><x.icon size={20} /></span>
+            <div className="footer-trust__text">
+              <p className="footer-trust__title">{x.t}</p>
+              <p className="footer-trust__desc">{x.s}</p>
+            </div>
+          </FadeReveal>
+        ))}
+      </div>
+
+      <div className="footer-main">
+        <div className="footer-about">
+          <Wordmark light />
+          <p className="footer-about__desc">Premium, locally-manufactured cleaning, car-care and sanitising solutions. Powerful results with a fresh, clean finish — delivered across South Africa.</p>
+          <div className="footer-socials">
+            <a href={BRAND?.facebook} target="_blank" rel="noopener noreferrer" className="footer-socials__link" aria-label="Facebook"><Facebook size={18} /></a>
+            <a href={BRAND?.instagram} target="_blank" rel="noopener noreferrer" className="footer-socials__link" aria-label="Instagram"><Instagram size={18} /></a>
+            <a href={BRAND?.wa} target="_blank" rel="noopener noreferrer" className="footer-socials__link footer-socials__link--wa" aria-label="WhatsApp"><Whatsapp size={18} /></a>
+          </div>
+        </div>
+
+        <div className="footer-links">
+          <h4 className="footer-links__title">Shop</h4>
+          <ul className="footer-links__list">
+            {DEFAULT_CATEGORIES.map(c => (
+              <li key={c.id}>
+                <button onClick={() => onShopCat && onShopCat(c.id)} className="footer-links__link">{c.name}</button>
+              </li>
+            ))}
+            <li><button onClick={() => onShopCat && onShopCat("all")} className="footer-links__link">All Products</button></li>
+          </ul>
+        </div>
+
+        <div className="footer-links">
+          <h4 className="footer-links__title">Company</h4>
+          <ul className="footer-links__list">
+            <li>
+              <button onClick={(e) => { 
+                e.preventDefault(); 
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'home' })); 
+                  setTimeout(() => { const el = document.getElementById('about'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
+                }
+              }} className="footer-links__link">About us</button>
+            </li>
+            <li>
+              <button onClick={(e) => { 
+                e.preventDefault(); 
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'home' })); 
+                  setTimeout(() => { const el = document.getElementById('contact'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
+                }
+              }} className="footer-links__link">Contact</button>
+            </li>
+            <li><a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to inquire about bulk and trade pricing.")}`} target="_blank" rel="noopener noreferrer" className="footer-links__link text-left block w-full">Bulk &amp; trade</a></li>
+            <li><button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'faq' }))} className="footer-links__link">Delivery &amp; returns</button></li>
+            <li>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'faq' }))} className="footer-links__link">FAQs</button>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer-contact">
+          <h4 className="footer-links__title">Get in touch</h4>
+          <ul className="footer-contact__list">
+            <li className="footer-contact__item">
+              <MapPin size={18} className="footer-contact__icon" /> 
+              <span className="footer-contact__text">{BRAND?.address}</span>
+            </li>
+            <li className="footer-contact__item">
+              <Phone size={18} className="footer-contact__icon" /> 
+              <a href={`tel:${BRAND?.phoneRaw}`} className="footer-contact__text footer-contact__text--link">{BRAND?.phone}</a>
+            </li>
+            <li className="footer-contact__item">
+              <Mail size={18} className="footer-contact__icon" /> 
+              <a href={`mailto:${BRAND?.email}`} className="footer-contact__text footer-contact__text--link">{BRAND?.email}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <span>© 2026 Amahle Blue Cleaning Solutions. All rights reserved.</span>
+        <span className="footer-bottom__badges">
+          <span>Secure payments</span>
+          <span className="footer-bottom__secure"><Lock size={13} /> SSL encrypted</span>
+          <span className="footer-bottom__made">Made in 🇿🇦</span>
+        </span>
+      </div>
+    </div>
+  </footer>
+);
+
+export const WhatsappFab = () => (
+  <a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I need some help.")}`} target="_blank" rel="noopener noreferrer"
+    className="wa-fab group" aria-label="Chat on WhatsApp">
+    <Whatsapp size={26} />
+    <span className="wa-fab__text">Need help?</span>
+  </a>
+);
+
+export default Footer;

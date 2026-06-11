@@ -1,0 +1,244 @@
+@import '../variables';
+@import '../mixins';
+
+.abandoned {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__header {
+    &-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: $slate-800;
+    }
+    &-subtitle {
+      font-size: 0.875rem;
+      color: $slate-400;
+      margin-top: 0.125rem;
+    }
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    &-hidden-sm {
+      display: none;
+      @media (min-width: 640px) {
+        display: block;
+      }
+    }
+  }
+
+  &__card {
+    background: #fff;
+    border-radius: $radius-2xl;
+    border: 1px solid $slate-100;
+    box-shadow: $shadow-sm;
+  }
+
+  &__search {
+    padding: 1rem;
+    border-bottom: 1px solid $slate-50;
+  }
+
+  &__table-wrapper {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    font-size: 0.875rem;
+    text-align: left;
+    border-collapse: collapse;
+
+    thead {
+      tr {
+        border-bottom: 1px solid $slate-50;
+        background: rgba(#f8fafc, 0.5); /* $slate-50 */
+      }
+      th {
+        padding: 0.75rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: $slate-400;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+
+        &.hidden-sm { display: none; @media (min-width: 640px) { display: table-cell; } }
+        &.hidden-md { display: none; @media (min-width: 768px) { display: table-cell; } }
+        &.hidden-lg { display: none; @media (min-width: 1024px) { display: table-cell; } }
+      }
+    }
+
+    tbody {
+      tr {
+        &.border-b { border-bottom: 1px solid $slate-50; }
+      }
+    }
+  }
+
+  &__row {
+    border-bottom: 1px solid $slate-50;
+    transition: background-color $transition-fast;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(#f8fafc, 0.5);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+
+      &.hidden-sm { display: none; @media (min-width: 640px) { display: table-cell; } }
+      &.hidden-md { display: none; @media (min-width: 768px) { display: table-cell; } }
+      &.hidden-lg { display: none; @media (min-width: 1024px) { display: table-cell; } }
+    }
+  }
+
+  &__customer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &-info {
+      min-width: 0;
+    }
+
+    &-name {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $slate-700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+
+      span {
+        color: $slate-400;
+        font-style: italic;
+      }
+    }
+
+    &-id {
+      font-size: 0.75rem;
+      color: $slate-400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+  }
+
+  &__items-count {
+    color: $slate-500;
+  }
+
+  &__value {
+    font-weight: 600;
+    color: $slate-700;
+  }
+
+  &__date {
+    color: $slate-400;
+    font-size: 0.75rem;
+  }
+
+  &__chevron {
+    width: 1rem;
+    height: 1rem;
+    color: $slate-400;
+    transition: transform $transition-fast;
+
+    &--expanded {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__expanded {
+    td {
+      padding: 0 1rem 1rem 1rem;
+    }
+    &-content {
+      background: $slate-50;
+      border-radius: $radius-xl;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    &-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: $slate-500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      margin-bottom: 0.5rem;
+    }
+    &-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+    &-item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      img {
+        width: 2rem;
+        height: 2rem;
+        border-radius: $radius-md;
+        object-fit: cover;
+        background: $slate-100;
+      }
+      .name { color: $slate-600; }
+      .qty { color: $slate-400; }
+    }
+    &-item-price {
+      font-weight: 600;
+      color: $slate-700;
+    }
+    &-footer {
+      padding-top: 0.5rem;
+      border-top: 1px solid $slate-100;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      a {
+        font-size: 0.75rem;
+        color: $cobalt;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+
+        svg {
+          width: 0.75rem;
+          height: 0.75rem;
+        }
+      }
+      span {
+        font-size: 0.75rem;
+        color: $slate-400;
+      }
+    }
+  }
+
+  &__pagination {
+    padding: 0 1rem 1rem 1rem;
+  }
+}

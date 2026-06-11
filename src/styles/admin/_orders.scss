@@ -1,0 +1,941 @@
+@import '../variables';
+@import '../mixins';
+
+.admin-orders {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: $slate-800;
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+    color: $slate-400;
+    margin-top: 0.125rem;
+    margin-bottom: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__attention {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: $amber-50;
+    border: 1px solid $amber-200;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+
+    &-text {
+      color: $amber-600;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+  }
+
+  &__export-spin {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 0.25rem;
+  }
+
+  &__filters {
+    background-color: $white;
+    border-radius: 1rem;
+    border: 1px solid $slate-100;
+    box-shadow: $shadow-sm;
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  &__filter-select {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid $slate-200;
+    font-size: 0.875rem;
+    outline: none;
+    background-color: $white;
+    
+    &:focus {
+      border-color: $cobalt;
+    }
+  }
+
+  &__custom-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &-input {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid $slate-200;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    &-sep {
+      color: $slate-400;
+    }
+  }
+
+  &__clear-filters {
+    font-size: 0.75rem;
+    color: $slate-400;
+    text-decoration: underline;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      color: $slate-600;
+    }
+  }
+
+  &__table-container {
+    background-color: $white;
+    border-radius: 1rem;
+    border: 1px solid $slate-100;
+    box-shadow: $shadow-sm;
+    overflow: hidden;
+  }
+
+  &__table-scroll {
+    overflow-x: auto;
+  }
+
+  &__table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+    
+    thead {
+      tr {
+        border-bottom: 1px solid $slate-100;
+        background-color: rgba($slate-50, 0.5);
+      }
+    }
+    
+    th {
+      text-align: left;
+      padding: 0.875rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: $slate-500;
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+
+      &.hidden-sm { display: none; @include sm { display: table-cell; } }
+      &.hidden-md { display: none; @include md { display: table-cell; } }
+      &.hidden-lg { display: none; @include lg { display: table-cell; } }
+      &.hidden-xl { display: none; @include xl { display: table-cell; } }
+    }
+    
+    tbody {
+      tr {
+        border-bottom: 1px solid $slate-50;
+        transition: background-color 0.2s;
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        &:hover {
+          background-color: rgba($slate-50, 0.5);
+        }
+
+        &.admin-orders__tr--attention {
+          border-left: 4px solid $amber-400;
+        }
+      }
+    }
+    
+    td {
+      padding: 0.875rem 1rem;
+
+      &.hidden-sm { display: none; @include sm { display: table-cell; } }
+      &.hidden-md { display: none; @include md { display: table-cell; } }
+      &.hidden-lg { display: none; @include lg { display: table-cell; } }
+      &.hidden-xl { display: none; @include xl { display: table-cell; } }
+    }
+  }
+
+  &__order-num {
+    font-weight: 700;
+    color: $cobalt;
+    font-size: 0.875rem;
+  }
+
+  &__review-tag {
+    margin-left: 0.375rem;
+    font-size: 0.625rem;
+    background-color: $amber-100;
+    color: $amber-700;
+    padding: 0.125rem 0.375rem;
+    border-radius: 9999px;
+    font-weight: 700;
+  }
+
+  &__customer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &-info {
+      min-width: 0;
+    }
+
+    &-name {
+      font-weight: 500;
+      color: $slate-700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      margin: 0;
+    }
+
+    &-email {
+      font-size: 0.75rem;
+      color: $slate-400;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 120px;
+      margin: 0;
+    }
+  }
+
+  &__items {
+    font-size: 0.75rem;
+    color: $slate-500;
+  }
+
+  &__total {
+    font-weight: 700;
+    color: $slate-800;
+  }
+
+  &__method {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $slate-500;
+    text-transform: uppercase;
+  }
+
+  &__date {
+    font-size: 0.75rem;
+    color: $slate-400;
+  }
+
+  &__action-btn {
+    padding: 0.375rem;
+    color: $slate-400;
+    background: none;
+    border: none;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover {
+      color: $cobalt;
+      background-color: rgba($cobalt, 0.1);
+    }
+  }
+
+  &__pagination-wrap {
+    padding: 0.25rem 1.25rem 1rem;
+  }
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+
+  &--blue { background-color: $blue-100; color: $blue-700; }
+  &--amber { background-color: $amber-100; color: $amber-700; }
+  &--teal { background-color: $teal-100; color: $teal-700; }
+  &--indigo { background-color: $indigo-100; color: $indigo-700; }
+  &--green { background-color: $green-100; color: $green-700; }
+  &--red { background-color: $red-100; color: $red-600; }
+  &--purple { background-color: $purple-100; color: $purple-700; }
+  &--orange { background-color: $orange-100; color: $orange-700; }
+  &--slate { background-color: $slate-100; color: $slate-600; }
+}
+
+.admin-order-detail {
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  &__footer-actions {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__header-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid $slate-100;
+  }
+
+  &__pay-method {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: $slate-400;
+  }
+
+  &__created-at {
+    font-size: 0.75rem;
+    color: $slate-400;
+    margin-left: auto;
+  }
+
+  &__tabs {
+    display: flex;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid $slate-100;
+  }
+
+  &__tab {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    cursor: pointer;
+    color: $slate-500;
+
+    &:hover {
+      color: $slate-700;
+    }
+
+    &--active {
+      border-color: $cobalt;
+      color: $cobalt;
+      
+      &:hover {
+        color: $cobalt;
+      }
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  &__section {
+    background-color: $slate-50;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    
+    &--transparent {
+      background-color: transparent;
+      padding: 0;
+    }
+
+    &--flex-between {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+  }
+
+  &__section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $slate-500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+  }
+
+  &__status-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__status-cancelled {
+    font-size: 0.75rem;
+    color: $red-500;
+    font-weight: 500;
+  }
+
+  &__status-update {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  &__status-label {
+    font-size: 0.75rem;
+    color: $slate-400;
+    font-weight: 500;
+  }
+
+  &__status-select {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid $slate-200;
+    font-size: 0.75rem;
+    font-weight: 600;
+    outline: none;
+    background-color: $white;
+    cursor: pointer;
+
+    &:focus {
+      border-color: $cobalt;
+    }
+  }
+
+  &__grid-2 {
+    display: grid;
+    gap: 1rem;
+    @include sm {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  &__customer-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__customer-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $slate-800;
+    margin: 0;
+  }
+
+  &__customer-email {
+    font-size: 0.75rem;
+    color: $slate-400;
+    margin: 0;
+  }
+
+  &__customer-phone {
+    font-size: 0.75rem;
+    color: $slate-500;
+    margin: 0;
+  }
+
+  &__address-text {
+    font-size: 0.875rem;
+    color: $slate-600;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__items-list {
+    border: 1px solid $slate-100;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+
+    & + & {
+      border-top: 1px solid $slate-50;
+    }
+  }
+
+  &__item-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $slate-700;
+    margin: 0;
+  }
+
+  &__item-meta {
+    font-size: 0.75rem;
+    color: $slate-400;
+    margin: 0;
+  }
+
+  &__item-total {
+    font-weight: 600;
+    color: $slate-800;
+    margin: 0;
+  }
+
+  &__totals {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  &__total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+
+    &-label {
+      color: $slate-500;
+    }
+
+    &-val {
+      font-weight: 500;
+    }
+
+    &--coupon {
+      color: $grass;
+      .admin-order-detail__total-row-label,
+      .admin-order-detail__total-row-val { color: $grass; }
+    }
+
+    &--cod {
+      color: $amber-600;
+      .admin-order-detail__total-row-label,
+      .admin-order-detail__total-row-val { color: $amber-600; }
+    }
+
+    &--grand {
+      font-weight: 700;
+      font-size: 1rem;
+      padding-top: 0.25rem;
+      border-top: 1px solid $slate-200;
+      
+      .admin-order-detail__total-row-label { color: inherit; }
+      .admin-order-detail__total-row-val { color: $cobalt; }
+    }
+  }
+
+  &__header-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  &__edit-btn {
+    font-size: 0.75rem;
+    color: $cobalt;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__form-space {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__grid-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
+
+  &__form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: $slate-500;
+    margin-bottom: 0.25rem;
+  }
+
+  &__input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid $slate-200;
+    font-size: 0.875rem;
+    outline: none;
+    
+    &:focus {
+      border-color: $cobalt;
+      box-shadow: 0 0 0 2px rgba($cobalt, 0.2);
+    }
+
+    &--textarea {
+      resize: none;
+    }
+  }
+
+  &__form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+
+  &__info-box {
+    background-color: $slate-50;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: $slate-600;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    &--empty {
+      color: $slate-400;
+      font-style: italic;
+    }
+  }
+
+  &__tracking-carrier {
+    font-weight: 600;
+  }
+
+  &__tracking-link {
+    color: $cobalt;
+    font-size: 0.75rem;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__tracking-date {
+    font-size: 0.75rem;
+    color: $slate-500;
+    margin: 0;
+  }
+
+  &__notes-box {
+    background-color: $slate-50;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: $slate-500;
+    min-height: 40px;
+  }
+
+  &__payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+
+    &-label {
+      color: $slate-500;
+      font-weight: 500;
+    }
+  }
+
+  &__payment-ref {
+    font-weight: 600;
+    font-family: monospace;
+    background-color: $slate-100;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+  }
+
+  &__proof-section {
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba($slate-200, 0.6);
+  }
+
+  &__actions-section {
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba($slate-200, 0.6);
+  }
+
+  &__cod-box {
+    background-color: rgba($amber-100, 0.5);
+    border: 1px solid $amber-200;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    color: $amber-800;
+
+    p { margin: 0; }
+  }
+
+  &__cod-amount {
+    font-weight: 500;
+  }
+
+  &__cod-grand {
+    font-weight: 700;
+    color: $amber-900;
+  }
+
+  &__cod-fee {
+    font-size: 0.75rem;
+    color: $amber-600;
+    margin-top: 0.125rem;
+  }
+
+  &__internal-notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__internal-note {
+    background-color: $yellow-50;
+    border: 1px solid $yellow-100;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+
+    &-text {
+      font-size: 0.875rem;
+      color: $slate-700;
+      margin: 0;
+    }
+
+    &-meta {
+      font-size: 0.75rem;
+      color: $slate-400;
+      margin: 0.25rem 0 0 0;
+    }
+  }
+
+  &__history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__history-item {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  &__history-dot {
+    flex-shrink: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: rgba($cobalt, 0.4);
+    margin-top: 0.375rem;
+  }
+
+  &__history-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__history-change {
+    display: flex;
+    align-items: center;
+  }
+
+  &__history-prev {
+    font-weight: 600;
+    color: $slate-600;
+  }
+
+  &__history-arrow {
+    color: $slate-400;
+    margin: 0 0.25rem;
+  }
+
+  &__history-next {
+    font-weight: 600;
+    color: $cobalt;
+  }
+
+  &__history-note {
+    color: $slate-500;
+    margin: 0.125rem 0 0 0;
+    font-style: italic;
+  }
+
+  &__history-meta {
+    color: $slate-400;
+    margin: 0.125rem 0 0 0;
+  }
+
+  &__proof-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background-color: $blue-50;
+    border: 1px solid $blue-100;
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  &__proof-icon {
+    font-size: 1.5rem;
+  }
+
+  &__proof-info {
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__proof-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $slate-700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+  }
+
+  &__proof-meta {
+    font-size: 0.75rem;
+    color: $slate-400;
+    margin: 0;
+  }
+
+  &__proof-view {
+    flex-shrink: 0;
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.5rem;
+    background-color: $cobalt;
+    color: $white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: rgba($cobalt, 0.9);
+    }
+  }
+
+  &__actions-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__action-msg {
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin: 0;
+
+    &--success { color: $green-600; }
+    &--wait { color: $amber-600; font-size: 0.75rem; font-style: italic; font-weight: 400; }
+  }
+}
+
+.admin-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(11, 37, 69, 0.55);
+
+  &__card {
+    background-color: $white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    width: 100%;
+    max-width: 24rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__title {
+    font-weight: 700;
+    color: $slate-800;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  &__msg {
+    font-size: 0.875rem;
+    color: $slate-500;
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__note-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: $slate-600;
+    margin-bottom: 0.25rem;
+  }
+
+  &__textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid $slate-200;
+    font-size: 0.875rem;
+    outline: none;
+    resize: none;
+
+    &:focus {
+      border-color: $cobalt;
+      box-shadow: 0 0 0 2px rgba($cobalt, 0.2);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    padding-top: 0.25rem;
+  }
+}

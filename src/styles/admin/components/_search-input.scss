@@ -1,0 +1,28 @@
+.search-input {
+  position: relative;
+
+  &__icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $slate-400;
+    pointer-events: none;
+  }
+
+  &__field {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border-radius: $radius-lg;
+    border: 1px solid $slate-200;
+    font-size: 14px;
+    background: $white;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+
+    &:focus {
+      border-color: $cobalt;
+      box-shadow: 0 0 0 3px rgba($cobalt, 0.2);
+    }
+  }
+}

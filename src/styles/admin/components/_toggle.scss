@@ -1,0 +1,40 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  &__track {
+    position: relative;
+    width: 40px;
+    height: 24px;
+    border-radius: $radius-full;
+    background: $slate-300;
+    transition: background-color 0.2s;
+
+    &--on {
+      background: $cobalt;
+    }
+  }
+
+  &__thumb {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 16px;
+    height: 16px;
+    border-radius: $radius-full;
+    background: $white;
+    box-shadow: $shadow-sm;
+    transition: left 0.2s;
+
+    &--on {
+      left: 20px;
+    }
+  }
+
+  &__label {
+    font-size: 14px;
+    color: $slate-700;
+  }
+}

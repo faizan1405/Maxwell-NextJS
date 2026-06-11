@@ -239,17 +239,13 @@ export function Avatar({ name, size = 32 }) {
 
 /* ── Btn ─────────────────────────────────────────────────────────────────────── */
 export function Btn({ children, variant = 'primary', size = 'md', onClick, disabled, type = 'button', className = '' }) {
-  const base = 'inline-flex items-center gap-1.5 rounded-lg font-[600] transition-all cursor-pointer border-0 outline-none';
-  const sizes = { sm: 'px-3 py-1.5 text-sm', md: 'px-4 py-2 text-sm', lg: 'px-5 py-2.5 text-base' };
-  const variants = {
-    primary:   'bg-cobalt text-white hover:bg-cobalt-d active:scale-95 shadow-sm',
-    secondary: 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 active:scale-95 shadow-sm',
-    danger:    'bg-red-500 text-white hover:bg-red-600 active:scale-95 shadow-sm',
-    ghost:     'bg-transparent text-slate-700 hover:bg-slate-100 active:scale-95',
-    success:   'bg-green-500 text-white hover:bg-green-600 active:scale-95 shadow-sm',
-  };
   return (
-    <button type={type} onClick={onClick} disabled={disabled} className={`${base} ${sizes[size]} ${variants[variant]} ${disabled ? 'opacity-50 pointer-events-none' : ''} ${className}`}>
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`btn btn--${size} btn--${variant} ${disabled ? 'btn--disabled' : ''} ${className}`}
+    >
       {children}
     </button>
   );
@@ -258,11 +254,11 @@ export function Btn({ children, variant = 'primary', size = 'md', onClick, disab
 /* ── Input ───────────────────────────────────────────────────────────────────── */
 export function Input({ label, error, hint, className = '', ...props }) {
   return (
-    <div className={className}>
-      {label && <label className="block text-sm font-[600] text-slate-700 mb-1">{label}</label>}
-      <input {...props} className={`w-full px-3 py-2 rounded-lg border text-sm transition-colors outline-none ${error ? 'border-red-400 focus:ring-2 focus:ring-red-200' : 'border-slate-200 focus:border-cobalt focus:ring-2 focus:ring-cobalt/20'} bg-white`} />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+    <div className={`form-field ${className}`}>
+      {label && <label className="form-field__label">{label}</label>}
+      <input {...props} className={`form-field__input ${error ? 'form-field__input--error' : ''}`} />
+      {error && <p className="form-field__error">{error}</p>}
+      {hint && <p className="form-field__hint">{hint}</p>}
     </div>
   );
 }
@@ -270,11 +266,11 @@ export function Input({ label, error, hint, className = '', ...props }) {
 /* ── Textarea ────────────────────────────────────────────────────────────────── */
 export function Textarea({ label, error, hint, rows = 3, className = '', ...props }) {
   return (
-    <div className={className}>
-      {label && <label className="block text-sm font-[600] text-slate-700 mb-1">{label}</label>}
-      <textarea rows={rows} {...props} className={`w-full px-3 py-2 rounded-lg border text-sm transition-colors outline-none resize-y ${error ? 'border-red-400 focus:ring-2 focus:ring-red-200' : 'border-slate-200 focus:border-cobalt focus:ring-2 focus:ring-cobalt/20'} bg-white`} />
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
-      {hint && <p className="text-xs text-slate-400 mt-1">{hint}</p>}
+    <div className={`form-field ${className}`}>
+      {label && <label className="form-field__label">{label}</label>}
+      <textarea rows={rows} {...props} className={`form-field__textarea ${error ? 'form-field__textarea--error' : ''}`} />
+      {error && <p className="form-field__error">{error}</p>}
+      {hint && <p className="form-field__hint">{hint}</p>}
     </div>
   );
 }
@@ -282,12 +278,12 @@ export function Textarea({ label, error, hint, rows = 3, className = '', ...prop
 /* ── Select ──────────────────────────────────────────────────────────────────── */
 export function Select({ label, error, children, className = '', ...props }) {
   return (
-    <div className={className}>
-      {label && <label className="block text-sm font-[600] text-slate-700 mb-1">{label}</label>}
-      <select {...props} className={`w-full px-3 py-2 rounded-lg border text-sm transition-colors outline-none bg-white ${error ? 'border-red-400' : 'border-slate-200 focus:border-cobalt focus:ring-2 focus:ring-cobalt/20'}`}>
+    <div className={`form-field ${className}`}>
+      {label && <label className="form-field__label">{label}</label>}
+      <select {...props} className={`form-field__select ${error ? 'form-field__select--error' : ''}`}>
         {children}
       </select>
-      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+      {error && <p className="form-field__error">{error}</p>}
     </div>
   );
 }
@@ -295,11 +291,11 @@ export function Select({ label, error, children, className = '', ...props }) {
 /* ── Toggle ──────────────────────────────────────────────────────────────────── */
 export function Toggle({ checked, onChange, label }) {
   return (
-    <label className="flex items-center gap-2 cursor-pointer">
-      <div onClick={() => onChange(!checked)} className={`relative w-10 h-6 rounded-full transition-colors ${checked ? 'bg-cobalt' : 'bg-slate-300'}`}>
-        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${checked ? 'left-5' : 'left-1'}`} />
+    <label className="toggle">
+      <div onClick={() => onChange(!checked)} className={`toggle__track ${checked ? 'toggle__track--on' : ''}`}>
+        <div className={`toggle__thumb ${checked ? 'toggle__thumb--on' : ''}`} />
       </div>
-      {label && <span className="text-sm text-slate-700">{label}</span>}
+      {label && <span className="toggle__label">{label}</span>}
     </label>
   );
 }
@@ -324,37 +320,28 @@ export function Modal({ open, onClose, title, children, size = 'md', footer }) {
   const large = size === 'lg' || size === 'xl' || size === 'full';
 
   const modal = (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
-      onClick={e => e.target === e.currentTarget && onClose()}
-    >
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" style={{ position: 'absolute', inset: 0 }} onClick={onClose} />
+    <div className="modal" onClick={e => e.target === e.currentTarget && onClose()}>
+      <div className="modal__backdrop" onClick={onClose} />
       <div
-        className="relative bg-white rounded-2xl shadow-2xl w-full ab-modal-enter animate-fadein"
+        className="modal__dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="admin-modal-title"
         data-modal-size={size}
         style={{
-          position: 'relative',
-          display: 'grid',
           gridTemplateRows: footer ? 'auto minmax(0, 1fr) auto' : 'auto minmax(0, 1fr)',
-          width: '100%',
           maxWidth: widths[size] || widths.md,
           height: large ? 'min(90dvh, calc(100dvh - 32px))' : 'auto',
-          maxHeight: 'calc(100dvh - 32px)',
-          overflow: 'hidden',
         }}
       >
-        <div style={{ flexShrink: 0 }} className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-          <h2 id="admin-modal-title" className="text-base font-[700] text-slate-800">{title}</h2>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+        <div className="modal__header">
+          <h2 id="admin-modal-title" className="modal__title">{title}</h2>
+          <button onClick={onClose} className="modal__close" aria-label="Close">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>
         </div>
-        <div style={{ overflowY: 'auto', minHeight: 0, WebkitOverflowScrolling: 'touch' }} className="px-6 py-5">{children}</div>
-        {footer && <div style={{ flexShrink: 0 }} className="px-6 py-4 border-t border-slate-100 flex justify-end gap-2">{footer}</div>}
+        <div className="modal__body">{children}</div>
+        {footer && <div className="modal__footer">{footer}</div>}
       </div>
     </div>
   );
@@ -396,10 +383,10 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
 /* ── Empty State ─────────────────────────────────────────────────────────────── */
 export function Empty({ icon, title, description, action }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      {icon && <div className="text-4xl mb-3 text-slate-300">{icon}</div>}
-      <p className="text-sm font-[600] text-slate-600 mb-1">{title}</p>
-      {description && <p className="text-xs text-slate-400 mb-4">{description}</p>}
+    <div className="empty-state">
+      {icon && <div className="empty-state__icon">{icon}</div>}
+      <p className="empty-state__title">{title}</p>
+      {description && <p className="empty-state__description">{description}</p>}
       {action}
     </div>
   );
@@ -407,25 +394,19 @@ export function Empty({ icon, title, description, action }) {
 
 /* ── Stat Card ───────────────────────────────────────────────────────────────── */
 export function StatCard({ icon, label, value, sub, color = 'cobalt', trend, onClick, className = '' }) {
-  const colors = {
-    cobalt: 'bg-cobalt/10 text-cobalt',
-    green:  'bg-green-100 text-green-600',
-    amber:  'bg-amber-100 text-amber-600',
-    purple: 'bg-purple-100 text-purple-600',
-  };
   return (
-    <div className={`bg-white rounded-2xl p-5 shadow-sm border border-slate-100 transition-all duration-200 ${onClick ? 'cursor-pointer hover:border-cobalt/30 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0' : ''} ${className}`} onClick={onClick}>
-      <div className="flex items-start justify-between mb-3">
-        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${colors[color]}`}>{icon}</div>
+    <div className={`stat-card ${onClick ? 'stat-card--clickable' : ''} ${className}`} onClick={onClick}>
+      <div className="stat-card__header">
+        <div className={`stat-card__icon stat-card__icon--${color}`}>{icon}</div>
         {trend !== undefined && (
-          <span className={`text-xs font-[600] px-2 py-1 rounded-full ${trend >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'}`}>
+          <span className={`stat-card__trend ${trend >= 0 ? 'stat-card__trend--up' : 'stat-card__trend--down'}`}>
             {trend >= 0 ? '↑' : '↓'}{Math.abs(trend)}%
           </span>
         )}
       </div>
-      <div className="text-2xl font-[800] text-slate-800 mb-0.5">{value}</div>
-      <div className="text-xs font-[600] text-slate-500 uppercase tracking-wide">{label}</div>
-      {sub && <div className="text-xs text-slate-400 mt-1">{sub}</div>}
+      <div className="stat-card__value">{value}</div>
+      <div className="stat-card__label">{label}</div>
+      {sub && <div className="stat-card__sub">{sub}</div>}
     </div>
   );
 }
@@ -433,12 +414,16 @@ export function StatCard({ icon, label, value, sub, color = 'cobalt', trend, onC
 /* ── Search Input ────────────────────────────────────────────────────────────── */
 export function SearchInput({ value, onChange, placeholder = 'Search…' }) {
   return (
-    <div className="relative">
-      <svg className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <div className="search-input">
+      <svg className="search-input__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
       </svg>
-      <input value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="pl-9 pr-3 py-2 rounded-lg border border-slate-200 text-sm w-full outline-none focus:border-cobalt focus:ring-2 focus:ring-cobalt/20 bg-white" />
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="search-input__field"
+      />
     </div>
   );
 }
@@ -450,16 +435,16 @@ export function Pagination({ page, total, pageSize, onChange }) {
   const start = (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
   return (
-    <div className="flex items-center justify-between mt-4">
-      <span className="text-xs text-slate-500">Showing {start}–{end} of {total}</span>
-      <div className="flex gap-1">
-        <button onClick={() => onChange(page - 1)} disabled={page <= 1} className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-default transition-colors">‹ Prev</button>
+    <div className="pagination">
+      <span className="pagination__info">Showing {start}–{end} of {total}</span>
+      <div className="pagination__list">
+        <button onClick={() => onChange(page - 1)} disabled={page <= 1} className="pagination__btn">‹ Prev</button>
         {Array.from({ length: pages }, (_, i) => i + 1).filter(p => Math.abs(p - page) <= 2 || p === 1 || p === pages).reduce((acc, p, i, arr) => {
-          if (i > 0 && arr[i - 1] !== p - 1) acc.push(<span key={`e${p}`} className="px-2 text-slate-400 text-xs self-center">…</span>);
-          acc.push(<button key={p} onClick={() => onChange(p)} className={`w-8 h-8 text-xs rounded-lg border transition-colors ${p === page ? 'bg-cobalt text-white border-cobalt' : 'border-slate-200 hover:bg-slate-50'}`}>{p}</button>);
+          if (i > 0 && arr[i - 1] !== p - 1) acc.push(<span key={`e${p}`} className="pagination__ellipsis">…</span>);
+          acc.push(<button key={p} onClick={() => onChange(p)} className={`pagination__page ${p === page ? 'pagination__page--active' : ''}`}>{p}</button>);
           return acc;
         }, [])}
-        <button onClick={() => onChange(page + 1)} disabled={page >= pages} className="px-3 py-1.5 text-xs rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-default transition-colors">Next ›</button>
+        <button onClick={() => onChange(page + 1)} disabled={page >= pages} className="pagination__btn">Next ›</button>
       </div>
     </div>
   );
@@ -467,16 +452,10 @@ export function Pagination({ page, total, pageSize, onChange }) {
 
 /* ── Alert ───────────────────────────────────────────────────────────────────── */
 export function Alert({ type = 'info', message, onClose }) {
-  const styles = {
-    info:    'bg-blue-50 text-blue-700 border-blue-200',
-    success: 'bg-green-50 text-green-700 border-green-200',
-    warning: 'bg-amber-50 text-amber-700 border-amber-200',
-    error:   'bg-red-50 text-red-700 border-red-200',
-  };
   return (
-    <div className={`flex items-start gap-3 px-4 py-3 rounded-xl border text-sm ab-fade-in ${styles[type]}`}>
-      <span className="flex-1">{message}</span>
-      {onClose && <button onClick={onClose} className="opacity-60 hover:opacity-100 transition-opacity shrink-0 mt-0.5">✕</button>}
+    <div className={`alert alert--${type}`}>
+      <span className="alert__message">{message}</span>
+      {onClose && <button onClick={onClose} className="alert__close" aria-label="Close">✕</button>}
     </div>
   );
 }
@@ -484,13 +463,11 @@ export function Alert({ type = 'info', message, onClose }) {
 /* ── Toast (admin) ───────────────────────────────────────────────────────────── */
 export function AdminToast({ message, type = 'success', visible }) {
   if (!visible) return null;
-  const colors = { success: 'bg-slate-800 text-white', error: 'bg-red-600 text-white' };
   const icon = type === 'success'
-    ? <span className="grid h-5 w-5 place-items-center rounded-full bg-green-500 text-white shrink-0 ab-succ-enter"><Icons.Check /></span>
-    : <span className="grid h-5 w-5 place-items-center rounded-full bg-red-400 text-white shrink-0">!</span>;
+    ? <span className="admin-toast__icon admin-toast__icon--success"><Icons.Check /></span>
+    : <span className="admin-toast__icon admin-toast__icon--error">!</span>;
   return (
-    <div className={`fixed bottom-6 right-6 z-[100] flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-sm font-[500] ab-fade-in ${colors[type]}`}
-      style={{ animation: 'abmodal .3s cubic-bezier(.16,1,.3,1)' }}>
+    <div className={`admin-toast admin-toast--${type}`}>
       {icon}
       {message}
     </div>

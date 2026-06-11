@@ -30,3 +30,15 @@
 @import "admin/abandoned";
 @import "admin/shipping";
 @import "admin/settings";
+
+// Shared admin UI components (plain CSS, one file per component)
+@import "admin/components/statcard";
+@import "admin/components/btn";
+@import "admin/components/search-input";
+@import "admin/components/pagination";
+@import "admin/components/modal";
+@import "admin/components/alert";
+@import "admin/components/admin-toast";
+@import "admin/components/empty";
+@import "admin/components/form-field";
+@import "admin/components/toggle";

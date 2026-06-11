@@ -4,6 +4,16 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  async rewrites() {
+    return [
+      { source: '/shop',            destination: '/' },
+      { source: '/cart',            destination: '/' },
+      { source: '/checkout',        destination: '/' },
+      { source: '/account',         destination: '/' },
+      { source: '/faq',             destination: '/' },
+      { source: '/order-confirmed', destination: '/' },
+    ];
+  },
 };
 
 module.exports = nextConfig;

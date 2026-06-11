@@ -443,8 +443,15 @@ export function CheckoutPage({ onBack, onSuccess }) {
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       const res  = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload), signal: controller.signal });
       clearTimeout(tid);
-      const data = await res.json();
+
+      const text = await res.text();
+      let data = {};
+      try { data = text ? JSON.parse(text) : {}; }
+      catch { data = { error: `Unexpected response from server (status ${res.status}).` }; }
+
       if (!res.ok) { setError(data.error || 'Failed to place order. Please try again.'); return; }
+      if (!data || !data.id) { setError('Order response was incomplete. Please refresh and check My Orders before retrying.'); return; }
+
       clear();
       try { localStorage.removeItem('ab_products'); } catch {}
       onSuccess(data);

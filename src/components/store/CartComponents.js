@@ -436,17 +436,24 @@ export function CheckoutPage({ onBack, onSuccess }) {
       idempotencyKey: idemKey.current,
     };
 
+    const controller = new AbortController();
+    const tid = setTimeout(() => controller.abort(), 30000);
     try {
       const headers = { 'Content-Type': 'application/json' };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
-      const res  = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload) });
+      const res  = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload), signal: controller.signal });
+      clearTimeout(tid);
       const data = await res.json();
-      if (!res.ok) { setError(data.error || 'Failed to place order. Please try again.'); setPlacing(false); return; }
+      if (!res.ok) { setError(data.error || 'Failed to place order. Please try again.'); return; }
       clear();
       try { localStorage.removeItem('ab_products'); } catch {}
       onSuccess(data);
-    } catch { setError('Network error. Please check your connection and try again.'); }
-    setPlacing(false);
+    } catch (err) {
+      clearTimeout(tid);
+      setError(err.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Network error. Please check your connection and try again.');
+    } finally {
+      setPlacing(false);
+    }
   }
 
   if (count === 0) {

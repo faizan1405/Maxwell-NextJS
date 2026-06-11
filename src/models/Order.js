@@ -25,7 +25,11 @@ const OrderSchema = new mongoose.Schema(
       id: { type: String, default: null },
       name: { type: String, required: true },
       email: { type: String, required: true, index: true },
-      phone: { type: String, default: '' },
+      phone: {
+        type: String,
+        required: [true, 'Mobile number is required.'],
+        trim: true,
+      },
     },
     addressDetails: { type: mongoose.Schema.Types.Mixed, default: null },
     address: { type: String, required: true },

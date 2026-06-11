@@ -67,6 +67,11 @@ function payLabel(method) {
   return method === 'COD' ? 'Cash on Delivery' : method === 'EFT' ? 'EFT / Bank Transfer' : (method || '');
 }
 
+function isValidSaMobile(raw) {
+  const digits = String(raw || '').replace(/[^\d+]/g, '');
+  return /^(\+?27|0)[6-8]\d{8}$/.test(digits);
+}
+
 /* ════════════════════════════════════════════════════════════════════════════════
    EMAIL FUNCTIONS
    ════════════════════════════════════════════════════════════════════════════════ */
@@ -452,8 +457,13 @@ export async function POST(req) {
     }
 
     const customer = body.customer || {};
+    const customerPhone = String(customer.phone || '').trim();
     if (!customer.name?.trim())  return NextResponse.json({ error: 'Customer name is required.' }, { status: 400 });
     if (!customer.email?.trim()) return NextResponse.json({ error: 'Customer email is required.' }, { status: 400 });
+    if (!customerPhone)          return NextResponse.json({ error: 'Mobile number is required.' }, { status: 400 });
+    if (!isValidSaMobile(customerPhone)) {
+      return NextResponse.json({ error: 'Please enter a valid South African mobile number (e.g. 067 101 4345).' }, { status: 400 });
+    }
     if (!body.address?.trim())   return NextResponse.json({ error: 'Delivery address is required.' }, { status: 400 });
 
     const items = Array.isArray(body.items) ? body.items : [];
@@ -572,7 +582,7 @@ export async function POST(req) {
       customer: {
         name:  customer.name.trim(),
         email: customer.email.trim().toLowerCase(),
-        phone: (customer.phone || '').trim(),
+        phone: customerPhone,
         id:    custSession?.customerId || null,
       },
       addressDetails: body.addressDetails || null,

@@ -440,21 +440,11 @@ async function sendCorrectedProofEmail(order, note) {
 
 export async function POST(req) {
   try {
-    await connectToDatabase();
     let body;
     try { body = await req.json(); } catch { body = {}; }
     
     const custSession = verifyCustomerSession(req);
-    
-    /* Idempotency */
     const idemKey = (body.idempotencyKey || '').trim();
-    if (idemKey) {
-      const existing = await Order.findOne({ idempotencyKey: idemKey }).lean();
-      if (existing) {
-        const { eftBankDetails, internalNotes, ...safeOrder } = existing;
-        return NextResponse.json(safeOrder, { status: 200 });
-      }
-    }
 
     const customer = body.customer || {};
     const customerPhone = String(customer.phone || '').trim();
@@ -472,6 +462,17 @@ export async function POST(req) {
     const VALID_PAY = ['EFT', 'COD'];
     const payMethod = VALID_PAY.includes(body.payment?.method) ? body.payment.method : null;
     if (!payMethod) return NextResponse.json({ error: 'Please select a valid payment method (COD or EFT).' }, { status: 400 });
+
+    await connectToDatabase();
+
+    /* Idempotency */
+    if (idemKey) {
+      const existing = await Order.findOne({ idempotencyKey: idemKey }).lean();
+      if (existing) {
+        const { eftBankDetails, internalNotes, ...safeOrder } = existing;
+        return NextResponse.json(safeOrder, { status: 200 });
+      }
+    }
 
     let sDoc = await Settings.findOne({ key: 'global_settings' }).lean();
     let settings = sDoc?.value || {};

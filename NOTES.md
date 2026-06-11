@@ -9,18 +9,18 @@
 Instead of using an expensive platform like Shopify or WooCommerce, this project is a "custom-built" solution using Next.js. This gives the business 100% control over the design, speed, and database without paying monthly subscription fees to third-party e-commerce platforms.
 
 ### Project Statistics
-* **Total Files:** 115
-* **Total Folders:** 35
+* **Total Files:** ~120
+* **Total Folders:** ~38
 * **HTML Files:** 0 *(Next.js dynamically generates HTML using JavaScript)*
-* **CSS/SCSS Files:** 29
-* **JavaScript Files:** 65
+* **CSS/SCSS Files:** 39
+* **JavaScript Files:** ~66
 * **TypeScript Files:** 0
-* **React Components:** ~30
+* **React Components:** ~28
 * **Next.js Pages:** 2 main entry points (Storefront and Admin Panel) which dynamically render sub-pages.
-* **API Routes:** 14 (Products, Orders, Carts, etc.)
+* **API Routes:** 15 (Products, Orders, Carts, Reviews, Settings, Shipping, Categories, FAQs, Coupons, Upload, Proof, Auth, Customer Auth, Customers, Seed-Demo)
 * **Database Models:** 11
 * **Images/Assets:** 14
-* **Configuration Files:** ~4 (`package.json`, `next.config.mjs`, etc.)
+* **Configuration Files:** ~5 (`package.json`, `next.config.js`, `vercel.json`, etc.)
 
 ---
 
@@ -43,11 +43,21 @@ Amahle Blue E-Commerce
 │   ├── Products API
 │   ├── Orders API
 │   ├── Carts API (Guest & Logged in)
+│   ├── Customers API
+│   ├── Reviews API
+│   ├── Categories API
+│   ├── Coupons API
+│   ├── FAQs API
+│   ├── Shipping Rates API
+│   ├── Settings API
+│   ├── Image Upload API
 │   ├── Proof of Payment (PoP) Upload API
-│   └── Admin/Customer Authentication API
+│   ├── Admin / Customer Authentication API
+│   └── Seed Demo API (admin/dev utility — upserts demo products on demand)
 ├── Database (MongoDB)
-│   ├── Collections (Tables): Products, Orders, Customers, Carts
-│   └── Tracking: Stock History, Abandoned Carts
+│   ├── Collections: Products, Orders, Customers, Carts
+│   ├── Collections: Categories, Coupons, FAQs, Reviews, Settings, ShippingRates
+│   └── Tracking: StockHistory, Abandoned Carts
 ├── Authentication
 │   ├── JWT (JSON Web Tokens)
 │   ├── Admin Login
@@ -65,23 +75,44 @@ Amahle Blue E-Commerce
 The codebase is organized cleanly to separate the frontend visuals from the backend logic.
 
 ```text
-src/
-├── app/                  # The Next.js App Router (Controls what pages load where)
-│   ├── admin/            # The Admin Panel page loader
-│   ├── api/              # The Backend API (All server logic lives here)
-│   └── page.js           # The Main Storefront page loader
-├── components/           # The Building Blocks of the website (Buttons, Cards, Headers)
-│   ├── admin/            # Admin Panel specific components
-│   ├── store/            # Storefront specific components (Hero, Shop, Checkout)
-│   └── ui/               # Reusable small design pieces (Icons, Spinners, Badges)
-├── lib/                  # Helper tools and background logic
-│   ├── auth.js           # Handles logging people in and out securely
-│   ├── mongoose.js       # Connects the website to the MongoDB Database
-│   └── storeContext.js   # The "Brain" of the storefront (remembers the cart, user, etc.)
-├── models/               # The Database Schemas (Blueprints for what an Order or Product looks like)
-└── styles/               # The Visual Design rules (Colors, Spacing, Typography)
-    ├── admin/            # SCSS files for the Admin Panel
-    └── store/            # SCSS files for the Storefront
+Maxwell-NextJS/
+├── data/                      # Static seed data bundled with serverless functions via import
+│   └── maxwell-products.json  # 20 demo products across 5 categories
+├── scripts/                   # Standalone Node scripts (local use only, not deployed)
+│   └── seed-products.mjs      # Local DB seeder (blocked by Atlas IP allowlist locally)
+├── next.config.js             # Next.js config — SPA path rewrites for storefront pages
+├── vercel.json                # Vercel config — headers and targeted API rewrites
+└── src/
+    ├── app/                   # Next.js App Router
+    │   ├── admin/             # Admin Panel entry (layout.js + page.js)
+    │   ├── api/               # Backend API routes (15 routes — one file per resource)
+    │   ├── layout.js          # Root HTML shell
+    │   └── page.js            # Storefront entry point
+    ├── components/            # React UI components
+    │   ├── admin/             # Admin Panel pages (Dashboard, Products, Orders, etc.)
+    │   ├── store/             # Storefront pages (Hero, Shop, Cart, Checkout, Account)
+    │   └── ui/                # Shared micro-components (Icons, index re-exports)
+    ├── lib/                   # Shared server + client utilities
+    │   ├── auth.js            # JWT helpers — sign and verify admin/customer tokens
+    │   ├── db.js              # DB bootstrap: connect + seed demo products on cold start
+    │   ├── email.js           # Email utility (transactional emails, future use)
+    │   ├── models.js          # Central re-export of all Mongoose models
+    │   ├── mongoose.js        # MongoDB connection with global cache (prevents reconnects)
+    │   └── storeContext.js    # Storefront global state — cart, user, active page
+    ├── models/                # Mongoose schemas (11 total)
+    │   ├── Product.js / Order.js / Customer.js / Cart.js
+    │   ├── Category.js / Coupon.js / Faq.js / Review.js
+    │   └── Setting.js / ShippingRate.js / StockHistory.js
+    ├── scripts/               # One-off data migration utilities (src-local)
+    │   └── migrateData.js
+    └── styles/                # SCSS design system (39 files)
+        ├── _global.scss       # Site-wide base styles
+        ├── _mixins.scss       # Reusable SCSS mixins
+        ├── _variables.scss    # Design tokens (colors, spacing, fonts)
+        ├── main.scss          # SCSS entry point — imports all partials
+        ├── admin/             # Admin Panel page styles
+        │   └── components/    # Reusable admin UI styles (modals, buttons, badges, etc.)
+        └── store/             # Storefront page styles
 ```
 
 ---

@@ -163,7 +163,6 @@ function StoreRouter() {
       <Footer onShopCat={onShopCat} />
       <Toast />
       <QuickView />
-      <AuthModal />
       <WhatsappFab />
     </>
   );
@@ -176,6 +175,7 @@ export default function StorePage() {
       <CustomerProvider>
         <CartProvider>
           <StoreRouter />
+          <AuthModal />
         </CartProvider>
       </CustomerProvider>
     </ProductsProvider>

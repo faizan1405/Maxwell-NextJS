@@ -220,7 +220,7 @@ export const Header = ({ onNavCat }) => {
               </button>
             )}
             
-            <button onClick={() => setOpen(true)} className="header__cart-btn" aria-label="Open cart">
+            <button onClick={() => setPage('cart')} className="header__cart-btn" aria-label="Open cart">
               <Cart size={20} />
               {count > 0 && (
                 <span key={count} className="header__cart-count">

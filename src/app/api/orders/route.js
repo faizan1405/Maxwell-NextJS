@@ -445,7 +445,10 @@ export async function POST(req) {
     const idemKey = (body.idempotencyKey || '').trim();
     if (idemKey) {
       const existing = await Order.findOne({ idempotencyKey: idemKey }).lean();
-      if (existing) return NextResponse.json(existing, { status: 200 });
+      if (existing) {
+        const { eftBankDetails, internalNotes, ...safeOrder } = existing;
+        return NextResponse.json(safeOrder, { status: 200 });
+      }
     }
 
     const customer = body.customer || {};

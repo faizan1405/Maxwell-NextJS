@@ -230,10 +230,10 @@ export function CartPage({ onGoHome, onCheckout }) {
                             <Plus size={14} />
                           </button>
                         </div>
-                        <span className="cart-item__price-total">{money(product.price * qty)}</span>
+                        <span className="cart-item__price-total">{money(price * qty)}</span>
                       </div>
-                      {typeof product.stock === 'number' && product.stock > 0 && product.stock <= 10 && (
-                        <p className="cart-item__stock-warning">Only {product.stock} left in stock</p>
+                      {typeof maxStock === 'number' && maxStock > 0 && maxStock <= 10 && !outOfStock && (
+                        <p className="cart-item__stock-warning">Only {maxStock} left in stock</p>
                       )}
                     </div>
                   </div>
@@ -704,7 +704,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
               <span>{money(total)}</span>
             </div>
 
-            <button onClick={placeOrder} disabled={placing} className="order-summary__btn">
+            <button type="submit" form="ck-form" disabled={placing} className="order-summary__btn">
               {placing ? <Spinner size={18} /> : <><Lock size={16} /> Place Order</>}
             </button>
             <p className="order-summary__secure">
@@ -724,7 +724,8 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
   const [upError,  setUpError]  = useState('');
   const [upOk,     setUpOk]     = useState(false);
   const [settings, setSettings] = useState(null);
-  const { apiBase } = useCustomer();
+  const { apiBase, sessionToken, isLoggedIn } = useCustomer();
+  const fileRef = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -752,6 +753,29 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
     navigator.clipboard.writeText(text);
   }
 
+  async function uploadProof(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ALLOWED = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf']);
+    if (!ALLOWED.has(file.type)) { setUpError('Only PDF, JPG, PNG, or WEBP files are allowed.'); return; }
+    if (file.size > 5 * 1024 * 1024) { setUpError('File must be under 5 MB.'); return; }
+    setProof(file);
+    setUpError('');
+    setUploading(true);
+    try {
+      const headers = { 'Content-Type': file.type, 'x-filename': file.name };
+      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
+      const res = await fetch(`${apiBase}/api/proof?orderId=${encodeURIComponent(order.id)}`, {
+        method: 'POST', headers, body: file,
+      });
+      const data = await res.json();
+      if (!res.ok) { setUpError(data.error || 'Upload failed. Please try again.'); setProof(null); setUploading(false); return; }
+      setUpOk(true);
+      setProof(null);
+    } catch { setUpError('Network error. Please try again.'); }
+    setUploading(false);
+  }
+
   return (
     <div className="order-confirmed ab-page-enter">
       <div className="order-confirmed__container">
@@ -762,7 +786,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             </div>
             <h1 className="order-confirmed__title">Order Confirmed!</h1>
             <p className="order-confirmed__sub">Thank you for shopping with Amahle Blue.</p>
-            <span className="order-confirmed__number">Order #{order.orderNumber}</span>
+            <span className="order-confirmed__number">Order {order.orderNumber}</span>
           </div>
 
           <div className="order-confirmed__body">
@@ -797,6 +821,52 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                 <p className="order-confirmed__eft-note">
                   Please use <strong>{order.eftReference || order.orderNumber}</strong> as your payment reference.
                 </p>
+              </div>
+            )}
+
+            {showEFTInfo && (
+              <div style={{ marginTop: '1rem', padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0B2545', marginTop: 0, marginBottom: '0.75rem' }}>
+                  Upload Proof of Payment
+                </h3>
+                {upOk ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+                    <CheckCircle size={16} style={{ color: '#159A4C', flexShrink: 0 }} />
+                    <p style={{ fontSize: '13px', color: '#15803d', margin: 0 }}>Proof uploaded! We'll verify and confirm your order shortly.</p>
+                  </div>
+                ) : isLoggedIn ? (
+                  <>
+                    <p style={{ fontSize: '13px', color: '#64748b', marginTop: 0, marginBottom: '0.75rem' }}>
+                      Already paid? Upload your proof of payment to speed up order verification.
+                    </p>
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp,application/pdf"
+                      onChange={uploadProof}
+                      style={{ display: 'none' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: uploading ? '#94a3b8' : '#1E50E0', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: uploading ? 'not-allowed' : 'pointer', width: '100%' }}
+                    >
+                      {uploading ? 'Uploading…' : (proof ? `Uploading: ${proof.name.slice(0, 28)}…` : 'Select & Upload Proof')}
+                    </button>
+                    {upError && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca' }}>
+                        <AlertCircle size={13} style={{ color: '#dc2626', flexShrink: 0 }} />
+                        <p style={{ fontSize: '12px', color: '#dc2626', margin: 0 }}>{upError}</p>
+                      </div>
+                    )}
+                    <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '0.5rem', marginBottom: 0 }}>Accepted: PDF, JPG, PNG, WEBP · Max 5 MB</p>
+                  </>
+                ) : (
+                  <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
+                    <button type="button" onClick={onGoOrders} style={{ color: '#1E50E0', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0, fontSize: '13px' }}>Sign in &amp; go to My Orders</button>{' '}to upload your proof of payment.
+                  </p>
+                )}
               </div>
             )}
 

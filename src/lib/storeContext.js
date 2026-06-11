@@ -124,6 +124,19 @@ export function ProductsProvider({ children }) {
         if (typeof window !== 'undefined') window.__settings = s;
       } catch {}
     })();
+
+    // Fetch shipping rates for cart/checkout delivery estimates
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/shipping`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data) && typeof window !== 'undefined') {
+          window.SHIPPING_RATES = data;
+          window.dispatchEvent(new Event('ab:shipping-loaded'));
+        }
+      } catch {}
+    })();
   }, []);
 
   const value = useMemo(() => ({ products, categories, settings }), [products, categories, settings]);

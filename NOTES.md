@@ -278,10 +278,32 @@ Seed 20 demo products across all 5 categories (4 per category): household, indus
    **Fix:** Committed `data/` and `scripts/` to git (commit `6bde2a4`) and pushed to `master`.
 
 ### Verification Steps
-1. Wait for Vercel git-triggered deployment (commit `6bde2a4`) to finish (~1 min).
-2. Hit any page on `maxwell-nextjs.vercel.app` to trigger a cold start.
-3. Refresh `/shop` — should show 24 products (4 existing + 20 new demo).
-4. Check MongoDB Atlas → Browse Collections → `products` to confirm 24 documents.
+1. Wait for Vercel git-triggered deployment to finish (~1-2 min per push).
+2. Hit `/api/seed-demo?secret=seed-now-2026` once to force-run the upsert.
+3. Refresh `/shop` — products appear (4 per category × 5 categories = 20 demos).
+4. Check MongoDB Atlas → Browse Collections → `products` to confirm documents.
+
+### Issues 5–7 (later in the session)
+
+5. **`fs.readFileSync` silently failed on Vercel.**
+   After committing `data/maxwell-products.json` to git, the seed *still* did not run on Vercel and emitted no logs. Root cause: Next.js serverless functions only package files reachable via static `import` / `require`. The JSON file was in the git repo but was never copied into the deployed function bundle, so `fs.existsSync(jsonPath)` returned `false` and the seed skipped without warning.
+   **Fix:** Replaced `fs.readFileSync` with `import demoProducts from '../../data/maxwell-products.json'`. Webpack/Turbopack then bundles the file with the function.
+
+6. **`dbConnect` cache-once pattern hides seed errors.**
+   `seedDatabase()` runs only when a new Mongoose connection is established. Once the connection is cached in `global.mongoose`, every subsequent request returns early and the seed never re-runs. If the first cold-start seed silently fails, no later request can recover. Hard to debug because errors are caught and only logged — and Vercel logs sometimes do not surface every `console.log`.
+   **Mitigation:** Added an explicit `GET /api/seed-demo?secret=seed-now-2026` endpoint that runs the same upsert on demand and returns the `bulkWrite` result JSON (`upsertedCount`, `matchedCount`, `totalProductsInDB`) or the error/stack. Made debugging instant instead of guessing from missing logs.
+
+7. **Path alias `@/` is not configured in this project.**
+   The new seed-demo route initially used `@/lib/db` imports. Build failed with "Module not found: Can't resolve '@/lib/db'" because there is no `jsconfig.json` / `tsconfig.json` mapping `@/` to `src/`. Other API routes use relative paths.
+   **Fix:** Use relative imports (`../../../lib/db`, `../../../models/Product`) to match the project's existing convention.
+
+### Resolution
+Final commit chain: `75f1dc4` (static import) → `12bbdd8` (one-shot endpoint) → `c173654` (path-alias fix). After the last deployment went READY, hitting `/api/seed-demo?secret=seed-now-2026` returned `{success:true, jsonCount:20, upsertedCount:20, totalProductsInDB:21}`. Shop now shows all 4 products per category across 5 categories.
+
+### Important Operational Reminders (additional)
+* **Static imports for any runtime data on Vercel.** If a serverless function needs to read a file at runtime, `import` it. Do not use `fs.readFileSync` on project files — they will not be in the function bundle.
+* **Build a debug endpoint before chasing silent caches.** When a one-time bootstrap (seed, migration, cache warm) is supposed to run but produces no logs, do not keep redeploying and waiting. Add an explicit endpoint that runs the operation on demand and returns the result. Five extra minutes of code saves an hour of guesswork.
+* **No `@/` path alias here.** Use relative imports in new files.
 
 ### Important Operational Reminders
 * **`vercel deploy --prod` vs git push** — CLI deploys upload local working-tree files. Git pushes only deploy committed files. If something works after a CLI deploy but breaks after a git-triggered redeploy, untracked files are the prime suspect.

@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAdmin } from './AdminProvider';
+import { calculateOrderStats } from '../../utils/accounting';
 import { StatCard, Btn } from '../ui/index';
 import { Icon } from '../ui/Icons';
 import '../../styles/admin/_reports.scss';
@@ -42,38 +43,18 @@ export default function ReportsPage() {
 
   // ── Aggregation ───────────────────────────────────────────────────────────
   const {
-    totalSales,
-    totalOrders,
-    pendingOrders,
-    codSales,
-    eftSales,
-    codCount,
-    eftCount,
+    accountingStats,
     productSales,
     salesByDay
   } = useMemo(() => {
-    let ts = 0, to = 0, po = 0, cs = 0, es = 0, cc = 0, ec = 0;
     const pSales = {}; // { productId: { units: 0, revenue: 0, name: '' } }
     const sDay = {};   // { 'YYYY-MM-DD': revenue }
 
+    const acc = calculateOrderStats(filteredOrders);
+
     filteredOrders.forEach(o => {
-      const isCancelled = o.status === 'cancelled';
-      
-      if (o.status === 'pending') po++;
-
+      const isCancelled = o.status === 'cancelled' || o.orderStatus === 'Cancelled';
       if (!isCancelled) {
-        to++;
-        ts += o.total;
-
-        const method = (o.paymentMethod || o.payment?.method || '').toUpperCase();
-        if (method === 'COD') {
-          cs += o.total;
-          cc++;
-        } else {
-          es += o.total;
-          ec++;
-        }
-
         const dateKey = new Date(o.createdAt).toISOString().split('T')[0];
         sDay[dateKey] = (sDay[dateKey] || 0) + o.total;
 
@@ -86,12 +67,23 @@ export default function ReportsPage() {
     });
 
     const bestSelling = Object.values(pSales).sort((a,b) => b.units - a.units).slice(0, 10);
-    
-    // Sort sales by day for the chart
     const salesByDayArr = Object.entries(sDay).map(([date, revenue]) => ({ date, revenue })).sort((a,b) => a.date.localeCompare(b.date));
 
-    return { totalSales: ts, totalOrders: to, pendingOrders: po, codSales: cs, eftSales: es, codCount: cc, eftCount: ec, productSales: bestSelling, salesByDay: salesByDayArr };
+    return { accountingStats: acc, productSales: bestSelling, salesByDay: salesByDayArr };
   }, [filteredOrders]);
+
+  const {
+    grossSales,
+    collectedRevenue,
+    outstandingCOD,
+    pendingPayments,
+    totalValidOrders,
+    codSales,
+    eftSales,
+    codCount,
+    eftCount,
+    pendingOrdersCount
+  } = accountingStats;
 
   // ── Exports ───────────────────────────────────────────────────────────────
   const downloadCSV = (csvContent, fileName) => {
@@ -162,10 +154,10 @@ export default function ReportsPage() {
 
       {/* Summary Cards */}
       <div className="reports-page__stats">
-        <StatCard icon="💰" label="Total Sales" value={fmtMoney(totalSales)} color="cobalt" sub="Excludes cancelled" />
-        <StatCard icon="📦" label="Valid Orders" value={totalOrders} color="green" sub="Excludes cancelled" />
-        <StatCard icon="⏳" label="Pending Orders" value={pendingOrders} color="amber" sub="Awaiting processing" />
-        <StatCard icon="💳" label="COD vs EFT" value={codCount > eftCount ? 'COD Preferred' : (eftCount > codCount ? 'EFT Preferred' : 'Balanced')} color="purple" sub={`${codCount} COD, ${eftCount} EFT`} />
+        <StatCard icon="📊" label="Gross Sales" value={fmtMoney(grossSales)} color="cobalt" sub="All valid orders" />
+        <StatCard icon="💰" label="Collected Revenue" value={fmtMoney(collectedRevenue)} color="green" sub="Paid orders only" />
+        <StatCard icon="📦" label="Valid Orders" value={totalValidOrders} color="purple" sub="Excludes cancelled" />
+        <StatCard icon="⏳" label="Outstanding COD" value={fmtMoney(outstandingCOD)} color="amber" sub="Delivered, unpaid" />
       </div>
 
       {/* Charts & Split Views */}
@@ -190,12 +182,12 @@ export default function ReportsPage() {
           </div>
           {/* Simple progress bar representation */}
           <div className="reports-page__payment-bar">
-            <div style={{ width: `${totalSales > 0 ? (codSales/totalSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--cod"/>
-            <div style={{ width: `${totalSales > 0 ? (eftSales/totalSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--eft"/>
+            <div style={{ width: `${grossSales > 0 ? (codSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--cod"/>
+            <div style={{ width: `${grossSales > 0 ? (eftSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--eft"/>
           </div>
           <div className="reports-page__payment-legend">
-            <span>{totalSales > 0 ? Math.round((codSales/totalSales)*100) : 0}% COD</span>
-            <span>{totalSales > 0 ? Math.round((eftSales/totalSales)*100) : 0}% EFT</span>
+            <span>{grossSales > 0 ? Math.round((codSales/grossSales)*100) : 0}% COD</span>
+            <span>{grossSales > 0 ? Math.round((eftSales/grossSales)*100) : 0}% EFT</span>
           </div>
         </div>
 

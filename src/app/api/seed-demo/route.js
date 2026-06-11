@@ -1,51 +1,133 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '../../../lib/db';
-import Product from '../../../models/Product';
+import { timingSafeEqual } from 'crypto';
+import { connectToDatabase } from '../../../lib/mongoose';
+import { Product } from '../../../lib/models';
 import demoProducts from '../../../../data/maxwell-products.json';
+
+function safeCompare(a = '', b = '') {
+  const left = Buffer.from(String(a));
+  const right = Buffer.from(String(b));
+
+  return left.length === right.length && timingSafeEqual(left, right);
+}
+
+function normalizeProduct(product) {
+  return {
+    ...product,
+    variants: Array.isArray(product.variants) ? product.variants : [],
+    media: Array.isArray(product.media) ? product.media : [],
+    updatedAt: Date.now(),
+  };
+}
+
+function stableStringify(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(',')}]`;
+  }
+
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stableStringify(value[key])}`).join(',')}}`;
+  }
+
+  return JSON.stringify(value);
+}
+
+function hasProductChanged(existing, next) {
+  const keys = Object.keys(next).filter(key => key !== 'updatedAt');
+
+  return keys.some(key => stableStringify(existing?.[key]) !== stableStringify(next[key]));
+}
 
 export async function GET(req) {
   const url = new URL(req.url);
   const secret = url.searchParams.get('secret');
-  if (secret !== 'seed-now-2026') {
+
+  if (!process.env.SEED_SECRET) {
+    console.error('[/api/seed-demo] SEED_SECRET is not configured.');
+    return NextResponse.json({ error: 'Seed endpoint is not configured.' }, { status: 500 });
+  }
+
+  if (!secret || !safeCompare(secret, process.env.SEED_SECRET)) {
+    console.warn('[/api/seed-demo] Forbidden seed attempt.');
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   try {
-    await dbConnect();
+    await connectToDatabase();
 
     if (!Array.isArray(demoProducts) || demoProducts.length === 0) {
       return NextResponse.json({ error: 'No demo products loaded from JSON', count: 0 });
     }
 
-    const ops = demoProducts.map(p => ({
-      updateOne: {
-        filter: { id: p.id },
-        update: {
-          $setOnInsert: {
-            ...p,
-            variants: Array.isArray(p.variants) ? p.variants : [],
-            media: Array.isArray(p.media) ? p.media : [],
-          },
-        },
-        upsert: true,
-      },
-    }));
+    const seedProducts = demoProducts.map(normalizeProduct);
+    const ids = seedProducts.map(product => product.id).filter(Boolean);
+    const existingProducts = await Product.find({ id: { $in: ids } }).lean();
+    const existingById = new Map(existingProducts.map(product => [product.id, product]));
+    let insertedProducts = 0;
+    let updatedProducts = 0;
+    let skippedProducts = 0;
 
-    const result = await Product.bulkWrite(ops, { ordered: false });
+    const ops = seedProducts.reduce((acc, product) => {
+      if (!product.id) {
+        skippedProducts++;
+        return acc;
+      }
+
+      const existing = existingById.get(product.id);
+      if (!existing) {
+        insertedProducts++;
+      } else if (hasProductChanged(existing, product)) {
+        updatedProducts++;
+      } else {
+        skippedProducts++;
+        return acc;
+      }
+
+      acc.push({
+        updateOne: {
+          filter: { id: product.id },
+          update: {
+            $set: product,
+            $setOnInsert: { createdAt: Date.now() },
+          },
+          upsert: true,
+        },
+      });
+
+      return acc;
+    }, []);
+
+    const result = ops.length > 0
+      ? await Product.bulkWrite(ops, { ordered: false })
+      : { upsertedCount: 0, matchedCount: 0, modifiedCount: 0 };
     const total = await Product.countDocuments();
+
+    console.log('[/api/seed-demo] Seed complete.', {
+      processed: seedProducts.length,
+      insertedProducts,
+      updatedProducts,
+      skippedProducts,
+      totalProductsInDB: total,
+    });
 
     return NextResponse.json({
       success: true,
-      jsonCount: demoProducts.length,
-      upsertedCount: result.upsertedCount,
-      matchedCount: result.matchedCount,
-      modifiedCount: result.modifiedCount,
+      totalProductsProcessed: seedProducts.length,
+      insertedProducts,
+      updatedProducts,
+      skippedProducts,
       totalProductsInDB: total,
+      bulkWrite: {
+        upsertedCount: result.upsertedCount,
+        matchedCount: result.matchedCount,
+        modifiedCount: result.modifiedCount,
+      },
     });
   } catch (err) {
+    console.error('[/api/seed-demo] Seed failed:', err);
     return NextResponse.json({
-      error: err.message,
-      stack: err.stack,
+      error: 'Seed failed',
+      message: err.message,
     }, { status: 500 });
   }
 }

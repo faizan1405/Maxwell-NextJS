@@ -235,26 +235,41 @@ function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequire
   useEffect(() => { if (open) setVal(''); }, [open]);
   if (!open) return null;
   return (
-    <div className="admin-confirm">
-      <div className="admin-confirm__card">
-        <p className="admin-confirm__title">{title}</p>
-        {message && <p className="admin-confirm__msg">{message}</p>}
-        {note && (
-          <div>
-            <label className="admin-confirm__note-label">{noteLabel || 'Note'}{noteRequired ? ' *' : ' (optional)'}</label>
-            <textarea value={val} onChange={e=>setVal(e.target.value)} rows={3} className="admin-confirm__textarea"/>
-          </div>
-        )}
-        <div className="admin-confirm__actions">
+    <Modal
+      open={open}
+      onClose={onCancel}
+      title={title}
+      size="sm"
+      footer={
+        <>
           <Btn variant="ghost" size="sm" onClick={onCancel}>Cancel</Btn>
           <Btn variant={confirmVariant} size="sm"
             disabled={note && noteRequired && !val.trim()}
             onClick={() => onConfirm(val.trim())}>
             {confirmLabel || 'Confirm'}
           </Btn>
-        </div>
+        </>
+      }
+    >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {message && <p style={{ fontSize: '0.875rem', color: '#64748b', margin: 0, lineHeight: 1.6 }}>{message}</p>}
+        {note && (
+          <div>
+            <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#475569', marginBottom: '0.25rem' }}>
+              {noteLabel || 'Note'}{noteRequired ? ' *' : ' (optional)'}
+            </label>
+            <textarea
+              value={val}
+              onChange={e=>setVal(e.target.value)}
+              rows={3}
+              style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.875rem', outline: 'none', resize: 'none' }}
+              onFocus={(e) => { e.target.style.borderColor = '#1E50E0'; e.target.style.boxShadow = '0 0 0 2px rgba(30,80,224,0.2)'; }}
+              onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+            />
+          </div>
+        )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

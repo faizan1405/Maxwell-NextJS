@@ -89,7 +89,7 @@ export default function DashboardPage({ setPage }) {
     <div className="dashboard-page">
       {/* Stats grid */}
       <div className="dashboard-page__stats">
-        <StatCard icon="💰" label="Total Revenue" value={`R${(stats.revenue/1000).toFixed(1)}k`}  color="cobalt"  sub="All paid orders" />
+        <StatCard icon="💰" label="Collected Revenue" value={`R${(stats.revenue/1000).toFixed(1)}k`}  color="cobalt"  sub="Confirmed & paid" />
         <StatCard icon="📦" label="Total Orders"  value={stats.totalOrders}  color="purple" sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`} onClick={() => setPage('orders')} />
         <StatCard icon="🛒" label="Products"      value={stats.activeProducts} color="green"  sub={stats.lowStockCount>0?`${stats.lowStockCount} low stock`:null} onClick={() => setPage('products')} />
         <StatCard icon="👥" label="Customers"     value={stats.totalCustomers} color="amber"  sub="Unique buyers"  onClick={() => setPage('customers')} />

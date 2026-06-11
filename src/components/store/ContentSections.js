@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight } from '../ui/Icons';
 import { Star } from '../ui/Icons';
-import { FadeReveal, Reveal } from '../ui/index';
+import { FadeReveal, Reveal, Stars } from '../ui/index';
 
 const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
@@ -12,17 +12,7 @@ const WHY = [
   { icon: Leaf, title: "Eco-conscious", body: "Responsible raw materials and biodegradable options — strong on dirt, kinder to the planet.", color: "#0B2E6B" },
 ];
 
-function Stars({ value, size = 16 }) {
-  const stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= value ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-      </svg>
-    );
-  }
-  return <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>{stars}</div>;
-}
+
 
 export const WhyUs = () => (
   <section id="about" className="content-section why-us">

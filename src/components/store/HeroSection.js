@@ -5,18 +5,10 @@ import { useCart, useProducts, DEFAULT_CATEGORIES, getPrimaryImg } from '../../l
 import { 
   Sparkles, ArrowRight, Car, Shield, Plus, Leaf, Truck, Award, Tag 
 } from '../ui/Icons';
-import { Reveal } from '../ui/index';
+import { Reveal, Stars } from '../ui/index';
 import * as Icons from '../ui/Icons';
 
-function Stars({ value, size = 16 }) {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1,2,3,4,5].map(i => (
-        <Icons.Star key={i} size={size} className={i <= value ? "text-amber-500" : "text-slate-200"} fill={i <= value ? "currentColor" : "none"} />
-      ))}
-    </div>
-  );
-}
+
 
 function CatIcon({ name, size }) {
   const Icon = Icons[name] || Icons.Tag;

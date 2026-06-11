@@ -136,12 +136,13 @@ export function CustomerProvider({ children }) {
   const setPage = useCallback((p) => {
     const valid = ['home', 'shop', 'cart', 'checkout', 'account', 'order-confirmed', 'faq'];
     if (!valid.includes(p)) p = 'home';
-    setPageState(old => {
-      if (old !== p && typeof window !== 'undefined') {
-        window.history.pushState({ page: p }, '', p === 'home' ? '/' : `/${p}`);
+    setPageState(p);
+    if (typeof window !== 'undefined') {
+      const path = p === 'home' ? '/' : `/${p}`;
+      if (window.location.pathname !== path) {
+        window.history.pushState({ page: p }, '', path);
       }
-      return p;
-    });
+    }
   }, []);
 
   // Init page from URL

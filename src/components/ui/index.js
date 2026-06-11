@@ -194,6 +194,36 @@ export function Badge({ label, variant }) {
   return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-[600] capitalize ${cls}`}>{label}</span>;
 }
 
+/* ── Badge Chip ─────────────────────────────────────────────────────────── */
+export function BadgeChip({ badge, className = "" }) {
+  if (!badge) return null;
+  const map = {
+    "Bestseller": "bg-amber-400 text-amber-950",
+    "New": "bg-grass text-white",
+    "High Purity": "bg-cobalt text-white",
+  };
+  const defaultClass = "bg-ink text-white";
+  const colors = map[badge] || defaultClass;
+  return (
+    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-[800] uppercase tracking-wider ${colors} ${className}`}>
+      {badge}
+    </span>
+  );
+}
+
+/* ── Stars ───────────────────────────────────────────────────────────────────── */
+export function Stars({ value, size = 16, className = "" }) {
+  return (
+    <div className={`flex items-center gap-[2px] ${className}`}>
+      {[1, 2, 3, 4, 5].map(i => (
+        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= value ? "#f59e0b" : "none"} stroke={i <= value ? "#f59e0b" : "#cbd5e1"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+      ))}
+    </div>
+  );
+}
+
 /* ── Avatar ──────────────────────────────────────────────────────────────────── */
 const AVATAR_COLORS = ['#1E50E0', '#0B2545', '#159A4C', '#7C3AED', '#0E7490', '#B45309'];
 export function Avatar({ name, size = 32 }) {

@@ -5,7 +5,7 @@ import { useCart, useProducts, BRAND, DEFAULT_CATEGORIES, money, getPrimaryImg, 
 import { 
   Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, Cart, Minus, Tag
 } from '../ui/Icons';
-import { Reveal } from '../ui/index';
+import { Reveal, Stars, BadgeChip } from '../ui/index';
 
 /* ── Global QuickView Event Emitter ── */
 export const openQuickView = (product) => {
@@ -14,27 +14,7 @@ export const openQuickView = (product) => {
   }
 };
 
-const BadgeChip = ({ badge }) => {
-  if (!badge) return null;
-  const map = {
-    "Bestseller": "badge-chip--bestseller",
-    "New": "badge-chip--new",
-    "High Purity": "badge-chip--high-purity",
-  };
-  return <span className={`badge-chip ${map[badge] || "badge-chip--default"}`}>{badge}</span>;
-};
 
-function Stars({ value, size = 16 }) {
-  return (
-    <div className="product-card__rating-stars" style={{ display: 'flex', gap: '2px' }}>
-      {[1,2,3,4,5].map(i => (
-        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= value ? "#f59e0b" : "none"} stroke={i <= value ? "#f59e0b" : "#cbd5e1"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-        </svg>
-      ))}
-    </div>
-  );
-}
 
 export const ProductCard = ({ p }) => {
   const { add } = useCart();

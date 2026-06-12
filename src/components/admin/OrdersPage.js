@@ -700,7 +700,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
 }
 
 export default function OrdersPage() {
-  const { orders = [], updateOrderStatus, updateOrderNote, updatePaymentStatus, updateTracking, fmtMoney, fmtDate } = useAdmin();
+  const { orders = [], updateOrderNote, updatePaymentStatus, updateTracking, replaceOrder, fmtMoney, fmtDate } = useAdmin();
   const { isAdmin, session } = useAuth();
 
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
@@ -798,10 +798,11 @@ export default function OrdersPage() {
         const data = await res.json();
         const updated = (data && data.id) ? data : { orderStatus: newStatus, status: simpleStatus };
         setViewing(v => v ? { ...v, ...updated } : null);
-        updateOrderStatus(id, simpleStatus);
+        if (data?.id) replaceOrder(data);
         showToast(`Order status → ${newStatus}`);
       } else {
-        showToast('Failed to update order status', 'error');
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to update order status', 'error');
       }
     } catch {
       showToast('Network error', 'error');
@@ -823,11 +824,16 @@ export default function OrdersPage() {
         const data = await res.json();
         const updated = (data && data.id) ? data : { paymentStatus: newPayStatus };
         setViewing(v => v ? { ...v, ...updated } : null);
-        const simpleStatus = ['Paid', 'paid'].includes(newPayStatus) ? 'paid' : ['Failed', 'failed'].includes(newPayStatus) ? 'failed' : ['Refunded', 'refunded'].includes(newPayStatus) ? 'refunded' : 'pending';
-        updatePaymentStatus(id, simpleStatus, newPayStatus);
+        if (data?.id) {
+          replaceOrder(data);
+        } else {
+          const simpleStatus = ['Paid', 'paid'].includes(newPayStatus) ? 'paid' : ['Failed', 'failed'].includes(newPayStatus) ? 'failed' : ['Refunded', 'refunded'].includes(newPayStatus) ? 'refunded' : 'pending';
+          updatePaymentStatus(id, simpleStatus, newPayStatus);
+        }
         showToast(`Payment status → ${newPayStatus}`);
       } else {
-        showToast('Failed to update payment status', 'error');
+        const data = await res.json().catch(() => ({}));
+        showToast(data.error || 'Failed to update payment status', 'error');
       }
     } catch {
       showToast('Network error', 'error');

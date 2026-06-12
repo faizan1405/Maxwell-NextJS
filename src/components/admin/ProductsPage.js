@@ -30,6 +30,14 @@ function blankProduct() {
   return { name:'', cat:'household', sub:'', price:'', was:'', size:'', sku:'', scent:'', badge:null, img:'', media:[], desc:'', stock:0, lowStockThreshold:10, status:'active', outOfStock:false, benefits:['','','',''], variants:[], rating:4.8, reviews:0 };
 }
 
+function titleFromSlug(value) {
+  return String(value || '')
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, ch => ch.toUpperCase()) || 'Uncategorised';
+}
+
 function VariantRow({ v, idx, onChange, onRemove }) {
   return (
     <div className="admin-variant-row">
@@ -194,6 +202,15 @@ function ProductForm({ open, onClose, initial, onSave }) {
   const [errors,     setErrors]        = useState({});
   const [formError,  setFormError]     = useState('');
   const [mediaItems, setMediaItems]    = useState([]);
+
+  const categoryOptions = useMemo(() => {
+    const list = Array.isArray(categories) ? [...categories] : [];
+    const hasCurrent = list.some(c => c.id === form.cat);
+    if (form.cat && !hasCurrent) {
+      list.push({ id: form.cat, name: `${titleFromSlug(form.cat)} (legacy)` });
+    }
+    return list.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, [categories, form.cat]);
 
   useEffect(() => {
     if (open) {
@@ -371,8 +388,8 @@ function ProductForm({ open, onClose, initial, onSave }) {
           <Input label="Product Name *" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="e.g. All Purpose Cleaner" error={errors.name} className="admin-product-form__grid-2-full"/>
           <Input label="Subtitle" value={form.sub} onChange={e=>set('sub',e.target.value)} placeholder="e.g. 5L Concentrated Formula"/>
           <Select label="Category" value={form.cat} onChange={e=>set('cat',e.target.value)}>
-            {categories && categories.length > 0 ? (
-              categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)
+            {categoryOptions.length > 0 ? (
+              categoryOptions.map(c=><option key={c.id} value={c.id}>{c.name}</option>)
             ) : (
               <option value="" disabled>No categories available. Please create a category first.</option>
             )}
@@ -854,7 +871,7 @@ export default function ProductsPage() {
                           </div>
                         </td>
                         <td className="admin-products__td-sku">{p.sku}</td>
-                        <td className="admin-products__td-cat"><Badge label={catLabel[p.cat]||p.cat} variant={p.cat}/></td>
+                        <td className="admin-products__td-cat"><Badge label={catLabel[p.cat]||titleFromSlug(p.cat)} variant={p.cat}/></td>
                         <td>
                           <div className="admin-products__table-price-current">{fmtMoney(p.price)}</div>
                           {p.was && <div className="admin-products__table-price-was">{fmtMoney(p.was)}</div>}

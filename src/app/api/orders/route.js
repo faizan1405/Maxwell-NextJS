@@ -861,6 +861,9 @@ export async function PATCH(req) {
           return paymentStatus;
         })();
 
+        const prevPayStatus = prev.paymentStatus || prev.payment?.status || 'pending';
+        const paymentStatusChanged = descriptiveStatus !== prevPayStatus;
+
         patch.payment       = { ...(prev.payment || {}), status: simpleStatus };
         patch.paymentStatus = descriptiveStatus;
 
@@ -871,18 +874,19 @@ export async function PATCH(req) {
           }
         }
 
-        const prevHistory   = Array.isArray(prev.paymentStatusHistory) ? prev.paymentStatusHistory : [];
-        const prevPayStatus = prev.paymentStatus || prev.payment?.status || 'pending';
-        patch.paymentStatusHistory = [
-          ...prevHistory,
-          {
-            previousStatus: prevPayStatus,
-            newStatus:      descriptiveStatus,
-            changedBy:      adminSession?.user?.username || adminSession?.username || 'admin',
-            note:           statusNote || '',
-            createdAt:      Date.now(),
-          },
-        ];
+        if (paymentStatusChanged) {
+          const prevHistory = Array.isArray(prev.paymentStatusHistory) ? prev.paymentStatusHistory : [];
+          patch.paymentStatusHistory = [
+            ...prevHistory,
+            {
+              previousStatus: prevPayStatus,
+              newStatus:      descriptiveStatus,
+              changedBy:      adminSession?.user?.username || adminSession?.username || 'admin',
+              note:           statusNote || '',
+              createdAt:      Date.now(),
+            },
+          ];
+        }
       }
     }
 
@@ -907,12 +911,13 @@ export async function PATCH(req) {
      */
     const effectiveNewStatus = patch.status ?? prev.status;
     const DEDUCTED_STATES = ['confirmed', 'processing', 'shipped', 'delivered'];
-    const statusActuallyChanged = patch.status !== undefined;
-    const shouldBeDeducted = statusActuallyChanged && DEDUCTED_STATES.includes(effectiveNewStatus);
+    const statusActuallyChanged = patch.status !== undefined && patch.status !== prev.status;
+    const shouldBeDeducted = DEDUCTED_STATES.includes(effectiveNewStatus);
     const isCurrentlyDeducted = !!prev.stockDeducted;
     
-    if (shouldBeDeducted && !isCurrentlyDeducted) {
-      const allProducts = await Product.find({}).lean();
+    if (statusActuallyChanged && shouldBeDeducted && !isCurrentlyDeducted) {
+      const itemProductIds = (prev.items || []).map(item => item.productId).filter(Boolean);
+      const allProducts = await Product.find({ id: { $in: itemProductIds } }).lean();
       
       // Step 1: Verify all items have sufficient stock before committing any changes
       for (const item of (prev.items || [])) {
@@ -989,8 +994,9 @@ export async function PATCH(req) {
         await Coupon.updateOne({ id: prev.couponId }, { $inc: { usedCount: 1 }, $set: { updatedAt: Date.now() } });
       }
 
-    } else if (!shouldBeDeducted && isCurrentlyDeducted) {
-      const allProducts = await Product.find({}).lean();
+    } else if (statusActuallyChanged && !shouldBeDeducted && isCurrentlyDeducted) {
+      const itemProductIds = (prev.items || []).map(item => item.productId).filter(Boolean);
+      const allProducts = await Product.find({ id: { $in: itemProductIds } }).lean();
       
       for (const item of (prev.items || [])) {
         const product = allProducts.find(p => p.id === item.productId);

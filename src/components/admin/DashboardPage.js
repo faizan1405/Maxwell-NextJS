@@ -13,7 +13,7 @@ function RevenueChart({ orders }) {
     const d = new Date(); d.setDate(d.getDate()-6+i);
     return { label: d.toLocaleDateString('en-ZA',{weekday:'short'}), date: d.toDateString(), revenue:0 };
   });
-  orders.filter(o => o.payment?.status==='paid').forEach(o => {
+  orders.filter(o => o.payment?.status === 'paid' || o.paymentStatus === 'Paid').forEach(o => {
     const d = new Date(o.createdAt).toDateString();
     const found = days.find(day => day.date===d);
     if (found) found.revenue += o.total;
@@ -29,7 +29,7 @@ function RevenueChart({ orders }) {
     <div className="revenue-chart">
       <div className="revenue-chart__header">
         <h3 className="revenue-chart__title">Revenue — Last 7 Days</h3>
-        <span className="revenue-chart__total">{formatZar(orders.filter(o=>o.payment?.status==='paid').reduce((s,o)=>s+o.total,0))} total</span>
+        <span className="revenue-chart__total">{formatZar(orders.filter(o=>o.payment?.status === 'paid' || o.paymentStatus === 'Paid').reduce((s,o)=>s+o.total,0))} total</span>
       </div>
       <svg viewBox={`0 0 100 ${H+16}`} preserveAspectRatio="none" className="revenue-chart__svg">
         <defs>
@@ -89,17 +89,50 @@ export default function DashboardPage({ setPage }) {
   const isOrdersLoading = loadingStates?.orders;
   const isProductsLoading = loadingStates?.products;
   const isCustomersLoading = loadingStates?.customers;
+  const accounting = stats.accounting || {};
 
   return (
     <div className="dashboard-page">
       {/* Stats grid */}
       <div className="dashboard-page__stats">
         <StatCard
+          icon="R"
+          label="Gross Sales"
+          value={fmtMoney(accounting.grossSales || 0)}
+          color="cobalt"
+          sub="Valid orders"
+          loading={isOrdersLoading}
+        />
+        <StatCard
           icon="💰"
           label="Collected Revenue"
-          value={formatZarCompact(stats.revenue)}
+          value={formatZarCompact(accounting.collectedRevenue || 0)}
           color="cobalt"
           sub="Confirmed & paid"
+          loading={isOrdersLoading}
+        />
+        <StatCard
+          icon="?"
+          label="Pending Payments"
+          value={fmtMoney(accounting.pendingPayments || 0)}
+          color="amber"
+          sub="COD pending + EFT unapproved"
+          loading={isOrdersLoading}
+        />
+        <StatCard
+          icon="COD"
+          label="Outstanding COD"
+          value={fmtMoney(accounting.outstandingCOD || 0)}
+          color="amber"
+          sub="Delivered, cash not collected"
+          loading={isOrdersLoading}
+        />
+        <StatCard
+          icon="EFT"
+          label="EFT Awaiting Approval"
+          value={fmtMoney(accounting.eftAwaitingApproval || 0)}
+          color="purple"
+          sub="Proof uploaded"
           loading={isOrdersLoading}
         />
         <StatCard

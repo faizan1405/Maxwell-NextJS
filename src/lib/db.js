@@ -90,7 +90,7 @@ const DEFAULT_SETTINGS = {
   orderCounter: 10000,
 };
 
-async function seedDatabase() {
+export async function seedDatabase() {
   try {
     // 1. Seed Settings
     const settingsCount = await Setting.countDocuments();

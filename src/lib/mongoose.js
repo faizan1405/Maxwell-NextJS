@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { seedDatabase } from './db';
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -34,6 +35,7 @@ export async function connectToDatabase() {
   
   try {
     cached.conn = await cached.promise;
+    await seedDatabase();
   } catch (e) {
     cached.promise = null;
     throw e;

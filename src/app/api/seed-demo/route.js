@@ -1,8 +1,21 @@
 import { NextResponse } from 'next/server';
 import { timingSafeEqual } from 'crypto';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Product } from '../../../lib/models';
+import { Product, Category } from '../../../lib/models';
 import demoProducts from '../../../../data/maxwell-products.json';
+
+const demoCategories = [
+  {
+    id: 'car-polish',
+    name: 'Car Polish',
+    short: 'Polish',
+    icon: 'Sparkles',
+    blurb: 'Professional-grade car polish, compounds and detailing products.',
+    accent: '#7C2D12',
+    status: 'active',
+    displayOrder: 5,
+  },
+];
 
 function safeCompare(a = '', b = '') {
   const left = Buffer.from(String(a));
@@ -102,12 +115,22 @@ export async function GET(req) {
       : { upsertedCount: 0, matchedCount: 0, modifiedCount: 0 };
     const total = await Product.countDocuments();
 
+    const categoryOps = demoCategories.map(cat => ({
+      updateOne: {
+        filter: { id: cat.id },
+        update: { $setOnInsert: { ...cat, createdAt: Date.now(), updatedAt: Date.now() } },
+        upsert: true,
+      },
+    }));
+    const categoryResult = await Category.bulkWrite(categoryOps, { ordered: false });
+
     console.log('[/api/seed-demo] Seed complete.', {
       processed: seedProducts.length,
       insertedProducts,
       updatedProducts,
       skippedProducts,
       totalProductsInDB: total,
+      categoriesUpserted: categoryResult.upsertedCount,
     });
 
     return NextResponse.json({
@@ -122,6 +145,7 @@ export async function GET(req) {
         matchedCount: result.matchedCount,
         modifiedCount: result.modifiedCount,
       },
+      categoriesUpserted: categoryResult.upsertedCount,
     });
   } catch (err) {
     console.error('[/api/seed-demo] Seed failed:', err);

@@ -4,15 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCart, useCustomer, useProducts, money, getPrimaryImg, catOf } from '../../lib/storeContext';
 import { formatZar } from '../../utils/currency';
 import { printInvoice } from '../../utils/invoice';
-import { 
-  ArrowLeft, Cart as CartIcon, CheckCircle, Trash, Minus, Plus, Bag, Lock, Shield, 
+import {
+  ArrowLeft, Cart as CartIcon, CheckCircle, Trash, Minus, Plus, Bag, Lock, Shield,
   User, MapPin, CreditCard, Tag, X, AlertCircle, FileText as Copy, Download, Home
 } from '../ui/Icons';
 import { Spinner } from '../ui/index';
 
 const PROVINCES = [
-  'Gauteng','Western Cape','KwaZulu-Natal','Eastern Cape',
-  'Mpumalanga','Limpopo','North West','Free State','Northern Cape',
+  'Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape',
+  'Mpumalanga', 'Limpopo', 'North West', 'Free State', 'Northern Cape',
 ];
 
 /* ── Shared helpers ──────────────────────────────────────────────────────────── */
@@ -47,10 +47,10 @@ export function CartPage({ onGoHome, onCheckout }) {
   const defaultRate = shippingRates.find(r => r.isDefault);
   const FREE_SHIP_DYN = defaultRate?.freeThreshold > 0 ? defaultRate.freeThreshold : 750;
 
-  const delivery  = count > 0 ? (subtotal >= FREE_SHIP_DYN ? 0 : (defaultRate?.charge ?? 85)) : 0;
-  const total     = subtotal + delivery;
+  const delivery = count > 0 ? (subtotal >= FREE_SHIP_DYN ? 0 : (defaultRate?.charge ?? 85)) : 0;
+  const total = subtotal + delivery;
   const remaining = Math.max(0, FREE_SHIP_DYN - subtotal);
-  const pct       = Math.min(100, (subtotal / FREE_SHIP_DYN) * 100);
+  const pct = Math.min(100, (subtotal / FREE_SHIP_DYN) * 100);
 
   if (count === 0) {
     return (
@@ -112,7 +112,7 @@ export function CartPage({ onGoHome, onCheckout }) {
                 return (
                   <div key={`${product.id}-${variation || ''}`} className="cart-item">
                     <div className="cart-item__img-wrap">
-                      <img src={getPrimaryImg(product)} alt={product.name} className="cart-item__img" onError={e=>{e.target.onerror=null;e.target.src='/assets/products/placeholder.svg'}} />
+                      <img src={getPrimaryImg(product)} alt={product.name} className="cart-item__img" onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg' }} />
                     </div>
                     <div className="cart-item__details">
                       <div className="cart-item__header">
@@ -210,13 +210,13 @@ export function CheckoutPage({ onBack, onSuccess }) {
     payment: '', notes: '',
   });
   const [selectedAddr, setSelectedAddr] = useState('');
-  const [placing,      setPlacing]      = useState(false);
-  const [error,        setError]        = useState('');
+  const [placing, setPlacing] = useState(false);
+  const [error, setError] = useState('');
 
   /* Coupon state */
-  const [couponInput,   setCouponInput]   = useState(coupon?.code || '');
+  const [couponInput, setCouponInput] = useState(coupon?.code || '');
   const [couponLoading, setCouponLoading] = useState(false);
-  const [couponError,   setCouponError]   = useState('');
+  const [couponError, setCouponError] = useState('');
 
   /* Dynamic Shipping Rates */
   const [delivery, setDelivery] = useState(0);
@@ -234,9 +234,9 @@ export function CheckoutPage({ onBack, onSuccess }) {
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch(`${apiBase}/api/settings`);
+        const res = await fetch(`${apiBase}/api/settings`);
         if (res.ok) setSettings(await res.json());
-      } catch {}
+      } catch { }
     })();
   }, [apiBase]);
 
@@ -269,10 +269,10 @@ export function CheckoutPage({ onBack, onSuccess }) {
   }, [form.addrCountry, form.addrProvince, subtotal, shippingRates]);
 
   const couponDiscount = coupon?.discount || 0;
-  const codFee         = form.payment === 'COD' ? (settings?.cod?.codFee || 0) : 0;
-  const total          = Math.max(0, subtotal + delivery - couponDiscount + codFee);
-  const mobileNumber   = form.phone.trim();
-  const mobileMissing  = !mobileNumber;
+  const codFee = form.payment === 'COD' ? (settings?.cod?.codFee || 0) : 0;
+  const total = Math.max(0, subtotal + delivery - couponDiscount + codFee);
+  const mobileNumber = form.phone.trim();
+  const mobileMissing = !mobileNumber;
 
   const idemKey = useRef(`idem_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`);
 
@@ -296,10 +296,10 @@ export function CheckoutPage({ onBack, onSuccess }) {
     if (!code) return;
     setCouponLoading(true); setCouponError('');
     try {
-      const res  = await fetch(`${apiBase}/api/coupons`, {
-        method:  'POST',
+      const res = await fetch(`${apiBase}/api/coupons`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ action: 'validate', code, cartTotal: subtotal }),
+        body: JSON.stringify({ action: 'validate', code, cartTotal: subtotal }),
       });
       const data = await res.json();
       if (!res.ok) { setCouponError(data.error || 'Invalid coupon code.'); setCoupon(null); setCouponLoading(false); return; }
@@ -320,16 +320,14 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
   async function placeOrder(e) {
     e.preventDefault();
-    if (!form.name.trim())     { setError('Please enter your full name.'); return; }
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim()))
-                               { setError('Please enter a valid email address.'); return; }
-    if (!mobileNumber)         { setError('Mobile number is required.'); return; }
-    if (!isValidSaPhone(mobileNumber))
-                               { setError('Please enter a valid South African phone number (e.g. 067 101 4345).'); return; }
+    if (!form.name.trim()) { setError('Please enter your full name.'); return; }
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError('Please enter a valid email address.'); return; }
+    if (!mobileNumber) { setError('Mobile number is required.'); return; }
+    if (!isValidSaPhone(mobileNumber)) { setError('Please enter a valid South African phone number (e.g. 067 101 4345).'); return; }
     if (!form.addrLine.trim()) { setError('Please enter your street address.'); return; }
     if (!form.addrCity.trim()) { setError('Please enter your city or town.'); return; }
-    if (!form.addrProvince)    { setError('Please select a province so we can calculate delivery.'); return; }
-    if (!form.payment)         { setError('Please select a payment method to continue.'); return; }
+    if (!form.addrProvince) { setError('Please select a province so we can calculate delivery.'); return; }
+    if (!form.payment) { setError('Please select a payment method to continue.'); return; }
 
     setPlacing(true); setError('');
 
@@ -337,13 +335,13 @@ export function CheckoutPage({ onBack, onSuccess }) {
       .filter(Boolean).join(', ');
 
     const payload = {
-      customer:       { name: form.name.trim(), email: form.email.trim(), phone: mobileNumber },
-      address:        addrString,
+      customer: { name: form.name.trim(), email: form.email.trim(), phone: mobileNumber },
+      address: addrString,
       addressDetails: { line: form.addrLine.trim(), city: form.addrCity.trim(), province: form.addrProvince, postalCode: form.addrPostal.trim(), country: form.addrCountry },
-      items:          detailed.map(({ product, qty, variation, price, size }) => ({ productId: product.id, variation, name: `${product.name} (${size})`, qty, price })),
+      items: detailed.map(({ product, qty, variation, price, size }) => ({ productId: product.id, variation, name: `${product.name} (${size})`, qty, price })),
       subtotal, delivery, couponCode: coupon?.code || null, total,
-      payment:        { method: form.payment, status: 'pending' },
-      notes:          form.notes.trim(),
+      payment: { method: form.payment, status: 'pending' },
+      notes: form.notes.trim(),
       idempotencyKey: idemKey.current,
     };
 
@@ -352,7 +350,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
     try {
       const headers = { 'Content-Type': 'application/json' };
       if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
-      const res  = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload), signal: controller.signal });
+      const res = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload), signal: controller.signal });
       clearTimeout(tid);
 
       const text = await res.text();
@@ -364,7 +362,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
       if (!data || !data.id) { setError('Order response was incomplete. Please refresh and check My Orders before retrying.'); return; }
 
       clear();
-      try { localStorage.removeItem('ab_products'); } catch {}
+      try { localStorage.removeItem('ab_products'); } catch { }
       onSuccess(data);
     } catch (err) {
       clearTimeout(tid);
@@ -478,7 +476,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
                 <div className="ck-field">
                   <label className="ck-field__label">Country</label>
                   <select value={form.addrCountry} onChange={f('addrCountry')} className="ck-field__input">
-                    {['South Africa','Zimbabwe','Mozambique','Botswana','Namibia','Lesotho','Eswatini','Zambia','Other'].map(c => <option key={c}>{c}</option>)}
+                    {['South Africa', 'Zimbabwe', 'Mozambique', 'Botswana', 'Namibia', 'Lesotho', 'Eswatini', 'Zambia', 'Other'].map(c => <option key={c}>{c}</option>)}
                   </select>
                 </div>
               </div>
@@ -528,7 +526,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
               {form.payment === 'EFT' && (
                 <div className="checkout-note checkout-note--info" style={{ marginTop: '1rem' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
                   <p>Bank details and your payment reference will be shown after placing your order and emailed to you.</p>
                 </div>
               )}
@@ -598,7 +596,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
               {detailed.map(({ product, qty, variation, price, size }) => (
                 <div key={`${product.id}-${variation || ''}`} className="order-summary__item">
                   <div className="order-summary__item-img">
-                    <img src={getPrimaryImg(product)} alt={product.name} onError={e=>{e.target.onerror=null;e.target.src='/assets/products/placeholder.svg'}} />
+                    <img src={getPrimaryImg(product)} alt={product.name} onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg' }} />
                   </div>
                   <div className="order-summary__item-details">
                     <p className="title">{product.name}</p>
@@ -654,10 +652,10 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
 /* ── OrderConfirmedPage ──────────────────────────────────────────────────────── */
 export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
-  const [proof,    setProof]    = useState(null);
+  const [proof, setProof] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [upError,  setUpError]  = useState('');
-  const [upOk,     setUpOk]     = useState(false);
+  const [upError, setUpError] = useState('');
+  const [upOk, setUpOk] = useState(false);
   const [settings, setSettings] = useState(null);
   const { apiBase, sessionToken, isLoggedIn } = useCustomer();
   const { products } = useProducts();
@@ -668,7 +666,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
       try {
         const res = await fetch(`${apiBase}/api/settings`);
         if (res.ok) setSettings(await res.json());
-      } catch {}
+      } catch { }
     })();
   }, [apiBase]);
 
@@ -751,7 +749,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
           </div>
 
           <div className="order-confirmed__body">
-            
+
             {/* Useful Order Info Card */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
@@ -774,13 +772,13 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
               </div>
               <div style={{ borderTop: '1px dashed #e2e8f0', marginTop: '0.5rem', paddingTop: '0.5rem', fontSize: '13px', color: '#1E50E0', fontWeight: 600 }}>
                 {isCOD ? (
-                  <span>Next Steps: Payment will be collected in cash during delivery.</span>
+                  <span>Next Steps: Payment will be collected during delivery.</span>
                 ) : (
                   <span>
                     {upOk || order.proofOfPaymentUrl ? (
-                      <span style={{ color: '#159A4C' }}>Next Steps: Payment proof has been uploaded. Awaiting administrative approval.</span>
+                      <span style={{ color: '#159A4C' }}>Next Steps: Payment proof has been uploaded. Administrative approval is pending.</span>
                     ) : (
-                      <span>Next Steps: Please transfer the funds using the details below and upload proof to activate processing.</span>
+                      <span>Next Steps: Payment proof is pending upload. Please transfer the funds using the details below and upload proof to activate processing.</span>
                     )}
                   </span>
                 )}
@@ -874,11 +872,11 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                 {(order.items || []).map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <div style={{ width: '4rem', height: '4rem', overflow: 'hidden', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', flexShrink: 0 }}>
-                      <img 
-                        src={getProductImg(item.productId)} 
-                        alt={item.name} 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
-                        onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }} 
+                      <img
+                        src={getProductImg(item.productId)}
+                        alt={item.name}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }}
                       />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -924,7 +922,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                 <span>Subtotal</span>
                 <span style={{ fontWeight: 600, color: '#0B2545' }}>{money(order.subtotal)}</span>
               </div>
-              
+
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
                 <span>Delivery</span>
                 <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#159A4C' : '#0B2545' }}>
@@ -945,6 +943,20 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                   <span style={{ fontWeight: 600 }}>{money(order.codFee)}</span>
                 </div>
               )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
+                <span>Payment Method</span>
+                <span style={{ fontWeight: 600, color: '#0B2545' }}>
+                  {order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod === 'EFT' ? 'EFT / Bank Transfer' : (order.paymentMethod || '')}
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', alignItems: 'center', color: '#64748b' }}>
+                <span>Payment Status</span>
+                <span className={`acc-badge ${getPaymentBadgeClass()}`} style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
+                  {getPaymentStatusLabel()}
+                </span>
+              </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#64748b', borderTop: '1px dashed #e2e8f0', marginTop: '0.25rem', paddingTop: '0.5rem' }}>
                 <span>VAT Included (15%)</span>

@@ -8,7 +8,7 @@ export function formatZar(value) {
   const sign = amount < 0 ? '-' : '';
   const [int, dec] = Math.abs(amount).toFixed(2).split('.');
   const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return `${sign}R${grouped}.${dec}`;
+  return `${sign}R ${grouped}.${dec}`;
 }
 
 export function formatZarCompact(value, options = {}) {

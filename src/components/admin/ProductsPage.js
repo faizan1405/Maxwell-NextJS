@@ -199,7 +199,7 @@ function ProductForm({ open, onClose, initial, onSave }) {
     if (open) {
       setForm(initial
         ? { ...initial, benefits: (initial.benefits||['','','','']).slice(0,4).concat(['','','','']).slice(0,4) }
-        : blankProduct()
+        : { ...blankProduct(), cat: categories && categories.length > 0 ? categories[0].id : '' }
       );
       setErrors({});
       setFormError('');
@@ -218,7 +218,7 @@ function ProductForm({ open, onClose, initial, onSave }) {
         setMediaItems([]);
       }
     }
-  }, [open, initial]);
+  }, [open, initial, categories]);
 
   const set         = (field, val) => setForm(f => ({...f, [field]: val}));
   const setBenefit  = (i, val)     => setForm(f => { const b=[...f.benefits]; b[i]=val; return {...f,benefits:b}; });
@@ -371,7 +371,11 @@ function ProductForm({ open, onClose, initial, onSave }) {
           <Input label="Product Name *" value={form.name} onChange={e=>set('name',e.target.value)} placeholder="e.g. All Purpose Cleaner" error={errors.name} className="admin-product-form__grid-2-full"/>
           <Input label="Subtitle" value={form.sub} onChange={e=>set('sub',e.target.value)} placeholder="e.g. 5L Concentrated Formula"/>
           <Select label="Category" value={form.cat} onChange={e=>set('cat',e.target.value)}>
-            {categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
+            {categories && categories.length > 0 ? (
+              categories.map(c=><option key={c.id} value={c.id}>{c.name}</option>)
+            ) : (
+              <option value="" disabled>No categories available. Please create a category first.</option>
+            )}
           </Select>
         </div>
 

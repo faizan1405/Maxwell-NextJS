@@ -34,13 +34,31 @@ export function formatZar(value) {
  *
  * @param {Object} order - The full order document from the database.
  */
-export function printInvoice(order) {
+export function printInvoice(order, customSettings) {
   const payMethod   = order.paymentMethod || order.payment?.method || '';
   const payStatus   = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : order.payment?.status) || 'Pending';
   const orderStatus = order.orderStatus   || order.status || '';
   const isPaid      = payStatus === 'Paid' || order.payment?.status === 'paid';
   const codFee      = order.codFee || 0;
   const eftRef      = order.eftReference || order.orderNumber;
+
+  const payMethodLabel = payMethod === 'COD' ? 'Cash on Delivery' : (payMethod === 'EFT' ? 'EFT / Bank Transfer' : payMethod);
+  const getPaymentStatusLabel = () => {
+    if (isPaid) return 'Paid';
+    if (payMethod === 'EFT') {
+      if (order.proofOfPaymentUrl) return 'Awaiting EFT Approval';
+      return 'Awaiting EFT Payment';
+    }
+    if (payMethod === 'COD') return 'Cash Payment Pending';
+    return payStatus || 'Pending';
+  };
+  const payStatusLabel = getPaymentStatusLabel();
+  const getPaymentBadgeClass = () => {
+    if (isPaid) return 'paid';
+    if (payMethod === 'EFT' && order.proofOfPaymentUrl) return 'slate';
+    return 'pending';
+  };
+  const payBadgeClass = getPaymentBadgeClass();
 
   // South African VAT is 15% (inclusive in all prices). We back-calculate VAT from
   // the total so that displayed prices remain unchanged and VAT is shown as informational.
@@ -51,12 +69,12 @@ export function printInvoice(order) {
   // which is injected by AdminApp on page load. This allows invoices to reflect
   // the admin's current business name, address, and contact details without an
   // additional API call. Falls back to hardcoded Amahle Blue defaults.
-  let settings = {};
-  if (typeof window !== 'undefined' && window.__settings) {
+  let settings = customSettings || {};
+  if (!customSettings && typeof window !== 'undefined' && window.__settings) {
     settings = window.__settings;
   }
   
-  const vatNumber   = "4930324332";
+  const vatNumber   = (settings.business && settings.business.vatNumber) || "4930324332";
   // Bank details: prefer the order's snapshot (stored at creation time for EFT orders)
   // then fall back to current settings to handle edge cases (e.g. non-EFT invoices).
   const bankDetails = order.eftBankDetails || settings.eft || {};
@@ -72,7 +90,6 @@ export function printInvoice(order) {
 
   const itemRows = (order.items || []).map(item => {
     const itemTotal = (item.qty || 1) * (item.price || 0);
-    const itemVat = itemTotal - (itemTotal / (1 + vatRate));
     return `
     <tr>
       <td>
@@ -81,7 +98,6 @@ export function printInvoice(order) {
       </td>
       <td style="text-align:center">${item.qty}</td>
       <td style="text-align:right">${formatZar(item.price)}</td>
-      <td style="text-align:right;color:#64748b">${formatZar(itemVat)}</td>
       <td>${formatZar(itemTotal)}</td>
     </tr>`;
   }).join('');
@@ -112,6 +128,10 @@ export function printInvoice(order) {
 <title>Invoice ${order.invoiceNumber || order.orderNumber}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
   * { box-sizing: border-box; }
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -155,6 +175,9 @@ export function printInvoice(order) {
     body { background: #fff; }
     .no-print-bar { display: none !important; }
     .invoice-wrapper { margin: 0; padding: 0; box-shadow: none; max-width: 100%; border-radius: 0; }
+    tr { page-break-inside: avoid !important; }
+    .totals-wrapper { page-break-inside: avoid !important; }
+    .footer { page-break-inside: avoid !important; }
   }
   .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; }
   .header-left { display: flex; flex-direction: column; gap: 4px; }
@@ -225,8 +248,13 @@ export function printInvoice(order) {
 <div class="invoice-wrapper">
   <div class="header">
     <div class="header-left">
-      <h1 class="logo-text">${bName}</h1>
-      <div class="logo-sub">Cleaning Solutions</div>
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+        <img src="/assets/amahle-blue-logo.jpg" alt="${bName}" style="height: 48px; width: auto; object-fit: contain;" onerror="this.style.display='none'" />
+        <div style="display: flex; flex-direction: column;">
+          <h1 class="logo-text" style="margin: 0; line-height: 1.1;">${bName}</h1>
+          <div class="logo-sub" style="margin: 0; margin-top: 2px;">Cleaning Solutions</div>
+        </div>
+      </div>
       <div class="business-details">
         <p>${bAddress}</p>
         <p>${bPhone} · ${bEmail}</p>
@@ -258,14 +286,14 @@ export function printInvoice(order) {
     <div class="info-block">
       <h3 class="info-title">Deliver To</h3>
       <div class="info-content">
-        <p>${order.address || '-'}</p>
+        <p>${(order.address || '-').split(',').map(s => s.trim()).join(',<br>')}</p>
       </div>
     </div>
     <div class="info-block">
       <h3 class="info-title">Invoice Details</h3>
       <div class="info-content">
-        <p><strong>Payment Method:</strong> ${payMethod}</p>
-        <p><strong>Payment Status:</strong> <span class="badge ${isPaid ? 'paid' : (payStatus ? 'pending' : 'slate')}">${payStatus || (isPaid ? 'Paid' : 'Pending')}</span></p>
+        <p><strong>Payment Method:</strong> ${payMethodLabel}</p>
+        <p><strong>Payment Status:</strong> <span class="badge ${payBadgeClass}">${payStatusLabel}</span></p>
         <p><strong>Order Status:</strong> ${orderStatus}</p>
       </div>
     </div>
@@ -275,10 +303,9 @@ export function printInvoice(order) {
     <thead>
       <tr>
         <th>Product</th>
-        <th style="text-align:center">Qty</th>
-        <th style="text-align:right">Price</th>
-        <th style="text-align:right">VAT (15%)</th>
-        <th style="text-align:right">Total</th>
+        <th style="text-align:center; width: 80px;">Qty</th>
+        <th style="text-align:right; width: 120px;">Unit Price</th>
+        <th style="text-align:right; width: 140px;">Total</th>
       </tr>
     </thead>
     <tbody>
@@ -345,7 +372,7 @@ export function printInvoice(order) {
 </script>
 </body>
 </html>`;
- 
+
   // Open a new blank tab and write the full HTML invoice into it.
   // If popup is blocked, alert the user to allow popups for this page.
   const w = window.open('', '_blank');

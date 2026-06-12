@@ -107,14 +107,11 @@ export async function GET(req) {
         return acc;
       }
 
-      // eslint-disable-next-line no-unused-vars
-      const { updatedAt: _u, createdAt: _c, ...productData } = product;
       acc.push({
         updateOne: {
           filter: { id: product.id },
           update: {
-            $set: productData,
-            $setOnInsert: { createdAt: Date.now() },
+            $set: product,
           },
           upsert: true,
         },

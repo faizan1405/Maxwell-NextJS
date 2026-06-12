@@ -37,16 +37,16 @@ export const WhyUs = () => (
     <Reveal delay={120} className="why-images">
       <div className="why-images__grid">
         <div className="why-images__item">
-          <img src={typeof window !== 'undefined' && window.__resources?.allPurposeCleaner ? window.__resources.allPurposeCleaner : "assets/products/all-purpose-cleaner.jpg"} alt="All Purpose Cleaner" />
+          <img src={typeof window !== 'undefined' && window.__resources?.allPurposeCleaner ? window.__resources.allPurposeCleaner : "/assets/products/all-purpose-cleaner.jpg"} alt="All Purpose Cleaner" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src={typeof window !== 'undefined' && window.__resources?.tyreShine ? window.__resources.tyreShine : "assets/products/tyre-shine.jpg"} alt="Tyre Shine" />
+          <img src={typeof window !== 'undefined' && window.__resources?.tyreShine ? window.__resources.tyreShine : "/assets/products/tyre-shine.jpg"} alt="Tyre Shine" />
         </div>
         <div className="why-images__item why-images__item--up">
-          <img src={typeof window !== 'undefined' && window.__resources?.carpetShampoo ? window.__resources.carpetShampoo : "assets/products/carpet-upholstery-shampoo.png"} alt="Carpet Shampoo" />
+          <img src={typeof window !== 'undefined' && window.__resources?.carpetShampoo ? window.__resources.carpetShampoo : "/assets/products/carpet-upholstery-shampoo.png"} alt="Carpet Shampoo" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src={typeof window !== 'undefined' && window.__resources?.handSanitiser ? window.__resources.handSanitiser : "assets/products/hand-surface-sanitiser.jpg"} alt="Sanitiser" />
+          <img src={typeof window !== 'undefined' && window.__resources?.handSanitiser ? window.__resources.handSanitiser : "/assets/products/hand-surface-sanitiser.jpg"} alt="Sanitiser" />
         </div>
       </div>
       <div className="why-images__badge">

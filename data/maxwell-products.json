@@ -1788,5 +1788,209 @@
         "fileSize": 0
       }
     ]
+  },
+  {
+    "id": "demo-blue-shampoo",
+    "name": "Blue Shampoo",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/1D7DB5/ffffff?text=Blue+Shampoo",
+    "desc": "Professional-grade blue car wash shampoo with a rich lather that safely lifts dirt and road grime from all vehicle surfaces without stripping wax or sealants.",
+    "benefits": ["Rich foaming lather", "Wax & sealant safe", "Concentrated formula", "Streak-free rinse"],
+    "sku": "DEMO-CS-001",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-001",
+        "type": "image",
+        "url": "https://placehold.co/600x600/1D7DB5/ffffff?text=Blue+Shampoo",
+        "storageKey": null,
+        "altText": "Blue Shampoo 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-hi-foam-shampoo-pink",
+    "name": "Hi Foam Shampoo (Pink)",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/C0392B/ffffff?text=Hi+Foam+Shampoo",
+    "desc": "High-foam car shampoo that produces a thick, clinging foam to encapsulate and safely remove dirt, dust and road contamination from paintwork and glass.",
+    "benefits": ["Ultra-thick foam formula", "Encapsulates dirt & grime", "Safe on all paint types", "Highly concentrated"],
+    "sku": "DEMO-CS-002",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-002",
+        "type": "image",
+        "url": "https://placehold.co/600x600/C0392B/ffffff?text=Hi+Foam+Shampoo",
+        "storageKey": null,
+        "altText": "Hi Foam Shampoo Pink 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-rinseless-wash",
+    "name": "Rinseless Wash",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/17A2B8/ffffff?text=Rinseless+Wash",
+    "desc": "Concentrated rinseless car wash that cleans the entire vehicle using only a small amount of water and a microfibre cloth. No hosing or rinsing required.",
+    "benefits": ["No rinsing required", "Saves up to 95% water", "Lubricating formula protects paint", "One bucket wash method"],
+    "sku": "DEMO-CS-003",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-003",
+        "type": "image",
+        "url": "https://placehold.co/600x600/17A2B8/ffffff?text=Rinseless+Wash",
+        "storageKey": null,
+        "altText": "Rinseless Wash 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-waterless-car-wash-cs",
+    "name": "Waterless Car Wash",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/5D6D7E/ffffff?text=Waterless+Car+Wash",
+    "desc": "Complete waterless car wash solution that cleans, polishes and protects in a single step. Simply spray on and wipe off for a spotless, scratch-free finish anywhere.",
+    "benefits": ["No water needed at all", "Cleans, polishes & protects", "Ideal for water restrictions", "Fast full-car clean"],
+    "sku": "DEMO-CS-004",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-004",
+        "type": "image",
+        "url": "https://placehold.co/600x600/5D6D7E/ffffff?text=Waterless+Car+Wash",
+        "storageKey": null,
+        "altText": "Waterless Car Wash 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-wash-n-wax-pearly-blue",
+    "name": "Wash 'N Wax (Pearly Blue)",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/4A90D9/ffffff?text=Wash+N+Wax",
+    "desc": "Two-in-one wash and wax shampoo with a pearly blue formula that cleans and deposits a protective wax coating in a single wash. Leaves paintwork shiny and water-beading.",
+    "benefits": ["Washes & waxes in one step", "Water-beading wax protection", "Pearly gloss finish", "Highly concentrated formula"],
+    "sku": "DEMO-CS-005",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-005",
+        "type": "image",
+        "url": "https://placehold.co/600x600/4A90D9/ffffff?text=Wash+N+Wax",
+        "storageKey": null,
+        "altText": "Wash N Wax Pearly Blue 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-foam-3-concentrate",
+    "name": "Foam 3 Concentrate",
+    "cat": "car-shampoo",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/1B4F72/ffffff?text=Foam+3+Concentrate",
+    "desc": "Triple-action foam concentrate that cleans, decontaminates and conditions paintwork in one application. Exceptionally concentrated — a small amount produces massive foam coverage.",
+    "benefits": ["Triple-action clean & condition", "Exceptionally concentrated", "Massive foam production", "Safe on wax, ceramic & PPF"],
+    "sku": "DEMO-CS-006",
+    "stock": 0,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-cs-006",
+        "type": "image",
+        "url": "https://placehold.co/600x600/1B4F72/ffffff?text=Foam+3+Concentrate",
+        "storageKey": null,
+        "altText": "Foam 3 Concentrate 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   }
 ]

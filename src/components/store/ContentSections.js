@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight } from '../ui/Icons';
 import { Star } from '../ui/Icons';
 import { FadeReveal, Reveal, Stars } from '../ui/index';
+import { SwipeCarousel } from './SwipeCarousel';
 
 const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
@@ -80,7 +81,13 @@ export const Reviews = () => (
           </div>
         </Reveal>
       </div>
-      <div className="content-reviews__grid">
+      <SwipeCarousel
+        className="content-reviews__carousel swipe-carousel--reviews"
+        label="Customer reviews"
+        previousLabel="Previous reviews"
+        nextLabel="Next reviews"
+        hint="Swipe to read more"
+      >
         {REVIEWS.map((r, i) => (
           <Reveal key={r.name} delay={i * 70}>
             <figure className="review-card">
@@ -96,7 +103,7 @@ export const Reviews = () => (
             </figure>
           </Reveal>
         ))}
-      </div>
+      </SwipeCarousel>
       <Reveal delay={120}>
         <p className="content-reviews__note">Sample reviews shown for demonstration — ready to connect to your live review platform.</p>
       </Reveal>

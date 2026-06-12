@@ -259,7 +259,7 @@ function printInvoice(order) {
       <div class="business-details">
         <p>${bAddress}</p>
         <p>${bPhone} · ${bEmail}</p>
-        ${vatNumber ? \`<p><strong>VAT Number:</strong> \${vatNumber}</p>\` : ''}
+        ${vatNumber ? `<p><strong>VAT Number:</strong> ${vatNumber}</p>` : ''}
       </div>
     </div>
     <div class="header-right">
@@ -330,16 +330,16 @@ function printInvoice(order) {
         <span>Delivery</span>
         <span>${order.delivery === 0 ? 'Free' : formatZar(order.delivery)}</span>
       </div>
-      ${order.couponDiscount > 0 ? \`
+      ${order.couponDiscount > 0 ? `
       <div class="total-row" style="color: #16a34a">
-        <span>Coupon \${order.couponCode ? \`(\${order.couponCode})\` : ''}</span>
-        <span>−\${formatZar(order.couponDiscount)}</span>
-      </div>\` : ''}
-      ${codFee > 0 ? \`
+        <span>Coupon ${order.couponCode ? `(${order.couponCode})` : ''}</span>
+        <span>−${formatZar(order.couponDiscount)}</span>
+      </div>` : ''}
+      ${codFee > 0 ? `
       <div class="total-row" style="color: #d97706">
         <span>COD Fee</span>
-        <span>\${formatZar(codFee)}</span>
-      </div>\` : ''}
+        <span>${formatZar(codFee)}</span>
+      </div>` : ''}
       <div class="total-row" style="color: #64748b; border-top: 1px solid #e2e8f0; margin-top: 8px; padding-top: 8px;">
         <span>VAT Included</span>
         <span>${formatZar(vatAmount)}</span>
@@ -364,7 +364,7 @@ function printInvoice(order) {
   };
 </script>
 </body>
-</html>\`;
+</html>`;
 
   const w = window.open('', '_blank');
   if (!w) { alert('Allow popups to print the invoice.'); return; }

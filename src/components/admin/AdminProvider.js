@@ -196,7 +196,9 @@ export function AdminProvider({ children }) {
       const res = await fetch(`${API_BASE}/api/categories?all=1`, { headers: apiHeaders(token) });
       if (!res.ok) return;
       const data = await res.json();
-      if (Array.isArray(data)) setCategories(data);
+      if (Array.isArray(data)) {
+        setCategories(data.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)));
+      }
     } catch (e) {
     } finally {
       setLoadingStates(prev => ({ ...prev, categories: false }));
@@ -430,6 +432,11 @@ export function AdminProvider({ children }) {
     }));
   }, []);
 
+  const replaceOrder = useCallback((updatedOrder) => {
+    if (!updatedOrder?.id) return;
+    setOrders(prev => prev.map(o => o.id === updatedOrder.id ? { ...o, ...updatedOrder } : o));
+  }, []);
+
   const updateTracking = useCallback(async (id, trackingNumber, carrier, trackingLink, dispatchDate) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, trackingNumber, carrier, trackingLink, dispatchDate, updatedAt: Date.now() } : o));
     try {
@@ -597,10 +604,12 @@ export function AdminProvider({ children }) {
     }
   }, [session, fetchCategories]);
 
-  const deleteCategory = useCallback(async (id) => {
+  const deleteCategory = useCallback(async (id, reassignTo = '') => {
     setCategories(prev => prev.filter(c => c.id !== id));
     try {
-      const res = await fetch(`${API_BASE}/api/categories?id=${encodeURIComponent(id)}`, {
+      const qs = new URLSearchParams({ id });
+      if (reassignTo) qs.set('reassignTo', reassignTo);
+      const res = await fetch(`${API_BASE}/api/categories?${qs.toString()}`, {
         method: 'DELETE',
         headers: apiHeaders(session?.token)
       });
@@ -741,6 +750,7 @@ export function AdminProvider({ children }) {
     updateOrderStatus,
     updateOrderNote,
     updatePaymentStatus,
+    replaceOrder,
     updateTracking,
     coupons,
     setCoupons,
@@ -794,6 +804,7 @@ export function AdminProvider({ children }) {
     updateOrderStatus,
     updateOrderNote,
     updatePaymentStatus,
+    replaceOrder,
     updateTracking,
     coupons,
     fetchCoupons,

@@ -20,6 +20,7 @@ export function calculateOrderStats(ordersArray) {
   let collectedRevenue = 0;
   let outstandingCOD = 0;
   let pendingPayments = 0;
+  let eftAwaitingApproval = 0;
   let totalValidOrders = 0;
 
   let codSales = 0;
@@ -39,6 +40,10 @@ export function calculateOrderStats(ordersArray) {
     const method = (order.paymentMethod || order.payment?.method || '').toUpperCase();
     const isPaid = order.payment?.status === 'paid' || order.paymentStatus === 'Paid';
     const isDelivered = order.status === 'delivered' || order.orderStatus === 'Delivered';
+    const needsEftApproval = method === 'EFT' && [
+      'Proof of Payment Submitted',
+      'Payment Verification Required',
+    ].includes(order.paymentStatus);
 
     if (method === 'COD') {
       codCount++;
@@ -65,6 +70,9 @@ export function calculateOrderStats(ordersArray) {
       } else {
         // Bank transfer hasn't been verified or received yet
         pendingPayments += (order.total || 0);
+        if (needsEftApproval) {
+          eftAwaitingApproval += (order.total || 0);
+        }
       }
     }
 
@@ -80,6 +88,7 @@ export function calculateOrderStats(ordersArray) {
     collectedRevenue,
     outstandingCOD,
     pendingPayments,
+    eftAwaitingApproval,
     totalValidOrders,
     codSales,
     eftSales,

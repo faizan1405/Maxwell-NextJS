@@ -128,7 +128,7 @@ export async function GET(req) {
     const categoryOps = demoCategories.map(cat => ({
       updateOne: {
         filter: { id: cat.id },
-        update: { $setOnInsert: { ...cat, createdAt: Date.now(), updatedAt: Date.now() } },
+        update: { $setOnInsert: { ...cat, createdAt: Date.now() } },
         upsert: true,
       },
     }));

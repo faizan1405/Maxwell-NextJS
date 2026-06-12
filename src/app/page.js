@@ -205,7 +205,7 @@ function StoreRouter() {
         <Featured />
         <BulkPromo />
         <WhyUs />
-        <Shop activeCat={activeCat} setActiveCat={setActiveCat} query={query} setQuery={setQuery} />
+        <Shop activeCat={activeCat} setActiveCat={setActiveCat} query={query} setQuery={setQuery} carousel />
         <Reviews />
         <Newsletter />
         <HomepageFaqSection />

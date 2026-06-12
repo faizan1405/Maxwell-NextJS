@@ -32,9 +32,7 @@ export function initials(name) {
   return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
-const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
-  ? 'https://maxwell-chi.vercel.app'
-  : '';
+const API_BASE = '';
 
 function apiHeaders(token, extra) {
   return {

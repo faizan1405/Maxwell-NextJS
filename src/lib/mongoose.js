@@ -35,7 +35,19 @@ export async function connectToDatabase() {
   
   try {
     cached.conn = await cached.promise;
-    await seedDatabase();
+    if (!cached.seeded) {
+      if (!cached.seedPromise) {
+        cached.seedPromise = seedDatabase()
+          .then(() => {
+            cached.seeded = true;
+          })
+          .catch((err) => {
+            cached.seedPromise = null;
+            throw err;
+          });
+      }
+      await cached.seedPromise;
+    }
   } catch (e) {
     cached.promise = null;
     throw e;

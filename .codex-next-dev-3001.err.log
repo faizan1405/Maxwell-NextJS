@@ -1,0 +1,8 @@
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          45808
+- Dir:          C:\Users\Faiza\Downloads\Maxwell-NextJS
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 45808 /F to stop it.

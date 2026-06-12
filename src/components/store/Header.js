@@ -78,7 +78,7 @@ export const AnnouncementBar = () => {
         <div className="announcement-bar__right">
           <button onClick={goOrders} className="announcement-bar__link">My Orders</button>
           <span className="announcement-bar__divider">|</span>
-          <a href="#contact" className="announcement-bar__link">Help</a>
+          <a href="/#contact" className="announcement-bar__link">Help</a>
         </div>
       </div>
     </div>
@@ -129,21 +129,22 @@ export function AccountMenu({ customer, onAccount, onOrders, onLogout }) {
 }
 
 const NAV = [
-  { label: "Home", href: "#home", page: "home" },
-  { label: "Shop", href: "#shop", page: "shop" },
-  { label: "Household", href: "#shop", cat: "household", page: "shop" },
-  { label: "Car Care", href: "#shop", cat: "car", page: "shop" },
-  { label: "Sanitisers", href: "#shop", cat: "sanitiser", page: "shop" },
-  { label: "About", href: "#about", page: "home" },
-  { label: "Contact", href: "#contact", page: "home" },
+  { label: "Home", href: "/", page: "home" },
+  { label: "Shop", href: "/shop", page: "shop" },
+  { label: "Household", href: "/shop?category=household", cat: "household", page: "shop" },
+  { label: "Car Care", href: "/shop?category=car", cat: "car", page: "shop" },
+  { label: "Sanitisers", href: "/shop?category=sanitiser", cat: "sanitiser", page: "shop" },
+  { label: "About", href: "/#about", page: "home", section: "about" },
+  { label: "Contact", href: "/#contact", page: "home", section: "contact" },
 ];
 
-export const Header = ({ onNavCat }) => {
+export const Header = ({ onNavCat, activeCat = "all" }) => {
   const { count, setOpen } = useCart();
-  const { customer, isLoggedIn, openAuth, logout, page, setPage } = useCustomer();
+  const { customer, isLoggedIn, openAuth, authOpen, logout, page, setPage } = useCustomer();
   const [scrolled, setScrolled] = useState(false);
   const [menu, setMenu] = useState(false);
   const [q, setQ] = useState("");
+  const [activeSection, setActiveSection] = useState("");
 
   useEffect(() => {
     const f = () => setScrolled(window.scrollY > 8);
@@ -157,36 +158,79 @@ export const Header = ({ onNavCat }) => {
     return () => { document.body.style.overflow = ""; };
   }, [menu]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const update = () => setActiveSection(window.location.hash.replace('#', ''));
+    update();
+    window.addEventListener('hashchange', update);
+    window.addEventListener('popstate', update);
+    window.addEventListener('ab:url-change', update);
+    return () => {
+      window.removeEventListener('hashchange', update);
+      window.removeEventListener('popstate', update);
+      window.removeEventListener('ab:url-change', update);
+    };
+  }, []);
+
+  const scrollToSection = (section) => {
+    setTimeout(() => {
+      const el = document.getElementById(section);
+      if (el) {
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
+      } else {
+        window.scrollTo(0, 0);
+      }
+    }, 50);
+  };
+
   const go = (e, item) => {
     e.preventDefault();
     setMenu(false);
-    
-    if (item.page && item.page !== page) {
-      setPage(item.page);
-    }
-    
+
     if (item.cat && onNavCat) {
       onNavCat(item.cat);
-    } else if (item.href.startsWith("#") && item.href.length > 1) {
-      setTimeout(() => {
-        const el = document.getElementById(item.href.substring(1));
-        if (el) {
-          window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
-        } else {
-          window.scrollTo(0, 0);
-        }
-      }, 50);
+    } else if (item.section) {
+      setActiveSection(item.section);
+      setPage('home', { url: `/#${item.section}` });
+      scrollToSection(item.section);
+    } else if (item.page === 'shop' && onNavCat) {
+      onNavCat("all");
     } else {
+      setActiveSection("");
+      setPage(item.page || 'home', { url: item.href || '/' });
       window.scrollTo(0, 0);
     }
   };
 
-  const goAccount = () => { setPage('account'); setMenu(false); window.scrollTo(0, 0); };
+  const goAccount = () => { setPage('account'); setMenu(false); setActiveSection(""); window.scrollTo(0, 0); };
   const goOrders = () => {
     window.dispatchEvent(new CustomEvent('ab:account-tab', { detail: 'orders' }));
     setPage('account');
     setMenu(false);
+    setActiveSection("");
     window.scrollTo(0, 0);
+  };
+
+  const goHome = (e) => {
+    e.preventDefault();
+    setMenu(false);
+    setActiveSection("");
+    setPage('home', { url: '/' });
+    window.scrollTo(0, 0);
+  };
+
+  const goContact = (e) => {
+    e.preventDefault();
+    setActiveSection("contact");
+    setPage('home', { url: '/#contact' });
+    scrollToSection("contact");
+  };
+
+  const isNavActive = (n) => {
+    if (n.cat) return page === 'shop' && activeCat === n.cat;
+    if (n.section) return page === 'home' && activeSection === n.section;
+    if (n.page === 'shop') return page === 'shop' && (activeCat === 'all' || !activeCat);
+    return n.page === page && !activeSection;
   };
 
   return (
@@ -198,7 +242,7 @@ export const Header = ({ onNavCat }) => {
             <Menu size={22} />
           </button>
           
-          <Wordmark onClick={(e) => { e.preventDefault(); setPage('home'); window.scrollTo(0, 0); }} className="header__logo" />
+          <Wordmark onClick={goHome} className="header__logo" />
 
           {/* search */}
           <form onSubmit={(e) => { e.preventDefault(); if (onNavCat) onNavCat(null, q); }} className="header__search-form">
@@ -215,12 +259,12 @@ export const Header = ({ onNavCat }) => {
             {isLoggedIn ? (
               <AccountMenu customer={customer} onAccount={goAccount} onOrders={goOrders} onLogout={logout} />
             ) : (
-              <button onClick={openAuth} className="header__signin-btn">
+              <button onClick={openAuth} className={`header__signin-btn ${authOpen ? 'header__signin-btn--active' : ''}`}>
                 <User size={16} className="header__signin-icon" /> Sign in
               </button>
             )}
             
-            <button onClick={() => setPage('cart')} className="header__cart-btn" aria-label="Open cart">
+            <button onClick={() => { setActiveSection(""); setPage('cart'); }} className={`header__cart-btn ${page === 'cart' ? 'header__cart-btn--active' : ''}`} aria-label="Open cart" aria-current={page === 'cart' ? 'page' : undefined}>
               <Cart size={20} />
               {count > 0 && (
                 <span key={count} className="header__cart-count">
@@ -234,9 +278,9 @@ export const Header = ({ onNavCat }) => {
         {/* category nav */}
         <nav className="header__nav">
           {NAV.map((n) => {
-            const isActive = n.page === page && !n.cat;
+            const isActive = isNavActive(n);
             return (
-              <a key={n.label} href={n.href} onClick={(e) => go(e, n)} className={`header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
+              <a key={n.label} href={n.href} onClick={(e) => go(e, n)} aria-current={isActive ? 'page' : undefined} className={`header__nav-link ${isActive ? 'header__nav-link--active' : ''}`}>
                 {n.label}
                 <span className={`header__nav-underline ${isActive ? 'header__nav-underline--active' : ''}`} />
               </a>
@@ -253,7 +297,7 @@ export const Header = ({ onNavCat }) => {
         <div onClick={() => setMenu(false)} className="mobile-menu-backdrop" />
         <div className="mobile-menu-panel">
           <div className="mobile-menu-header">
-            <Wordmark onClick={(e) => { e.preventDefault(); setPage('home'); window.scrollTo(0, 0); }} />
+            <Wordmark onClick={goHome} />
             <button onClick={() => setMenu(false)} className="mobile-menu-close">
               <X size={22} />
             </button>
@@ -270,9 +314,9 @@ export const Header = ({ onNavCat }) => {
             </form>
             <nav className="mobile-menu-nav">
               {NAV.map((n) => {
-                const isActive = n.page === page && !n.cat;
+                const isActive = isNavActive(n);
                 return (
-                  <a key={n.label} href={n.href} onClick={(e) => go(e, n)} className={`mobile-menu-nav-link ${isActive ? 'mobile-menu-nav-link--active' : ''}`}>
+                  <a key={n.label} href={n.href} onClick={(e) => go(e, n)} aria-current={isActive ? 'page' : undefined} className={`mobile-menu-nav-link ${isActive ? 'mobile-menu-nav-link--active' : ''}`}>
                     {n.label} 
                     <ChevronRight size={18} className="mobile-menu-nav-arrow" />
                   </a>
@@ -292,7 +336,7 @@ export const Header = ({ onNavCat }) => {
                     </button>
                   </div>
                 ) : (
-                  <button onClick={() => { setMenu(false); openAuth(); }} className="mobile-menu-auth-btn">
+                  <button onClick={() => { setMenu(false); openAuth(); }} className={`mobile-menu-auth-btn ${authOpen ? 'mobile-menu-auth-btn--active' : ''}`}>
                     <User size={16} /> Sign in / Create account
                   </button>
                 )}

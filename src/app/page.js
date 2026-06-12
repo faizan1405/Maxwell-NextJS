@@ -36,6 +36,24 @@ function StoreRouter() {
   const [query, setQuery] = useState("");
   const [confirmedOrder, setConfirmedOrder] = useState(null);
   const [, forceUpdate] = useReducer(n => n + 1, 0);
+  const [urlTick, bumpUrlTick] = useReducer(n => n + 1, 0);
+
+  const getShopUrl = (cat = "all", q = "") => {
+    const params = new URLSearchParams();
+    if (cat && cat !== "all") params.set("category", cat);
+    if (q && q.trim()) params.set("q", q.trim());
+    const search = params.toString();
+    return search ? `/shop?${search}` : "/shop";
+  };
+
+  const syncShopFiltersFromUrl = () => {
+    if (typeof window === 'undefined') return;
+    const isShopPath = window.location.pathname.replace(/^\/+/, '').split('/')[0] === 'shop';
+    if (!isShopPath) return;
+    const params = new URLSearchParams(window.location.search);
+    setActiveCat(params.get("category") || "all");
+    setQuery(params.get("q") || "");
+  };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -50,15 +68,47 @@ function StoreRouter() {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const h = (e) => { setPage(e.detail); window.scrollTo(0, 0); };
+    const h = (e) => {
+      const detail = typeof e.detail === 'string' ? { page: e.detail } : (e.detail || {});
+      setPage(detail.page || 'home', detail.url ? { url: detail.url } : undefined);
+      if (detail.category || typeof detail.query === 'string') {
+        const nextCat = detail.category || "all";
+        const nextQuery = typeof detail.query === 'string' ? detail.query : "";
+        setActiveCat(nextCat);
+        setQuery(nextQuery);
+      }
+      window.scrollTo(0, 0);
+    };
     window.addEventListener("ab:go-page", h);
     return () => window.removeEventListener("ab:go-page", h);
   }, [setPage]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const h = () => {
+      syncShopFiltersFromUrl();
+      bumpUrlTick();
+      setTimeout(syncShopFiltersFromUrl, 0);
+    };
+    h();
+    window.addEventListener("ab:url-change", h);
+    window.addEventListener("popstate", h);
+    return () => {
+      window.removeEventListener("ab:url-change", h);
+      window.removeEventListener("popstate", h);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (page === "shop") syncShopFiltersFromUrl();
+  }, [page, urlTick]);
+
   const onNavCat = (cat, q) => {
-    setPage("shop");
-    if (cat) setActiveCat(cat);
-    if (typeof q === "string") { setQuery(q); setActiveCat("all"); }
+    const nextCat = typeof q === "string" ? "all" : (cat || "all");
+    const nextQuery = typeof q === "string" ? q : "";
+    setActiveCat(nextCat);
+    setQuery(nextQuery);
+    setPage("shop", { url: getShopUrl(nextCat, nextQuery) });
     if (typeof window !== 'undefined') window.scrollTo(0, 0);
   };
   const onShopCat = (cat, q) => { onNavCat(cat || "all", q); };
@@ -76,7 +126,7 @@ function StoreRouter() {
   if (page === "cart") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <main className="ab-page-enter">
           <CartPage onGoHome={goHome} onCheckout={() => setPage('checkout')} />
         </main>
@@ -88,7 +138,7 @@ function StoreRouter() {
   if (page === "checkout") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <main className="ab-page-enter">
           <CheckoutPage onBack={() => setPage('cart')} onSuccess={(o) => { setConfirmedOrder(o); setPage('order-confirmed'); }} />
         </main>
@@ -100,7 +150,7 @@ function StoreRouter() {
   if (page === "order-confirmed") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <main className="ab-page-enter">
           <OrderConfirmedPage order={confirmedOrder} onGoHome={goHome} onGoOrders={goOrders} />
         </main>
@@ -112,7 +162,7 @@ function StoreRouter() {
   if (page === "account") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <AccountPage onGoHome={goHome} />
         <Toast />
       </>
@@ -122,7 +172,7 @@ function StoreRouter() {
   if (page === "faq") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <FaqPage onGoHome={goHome} />
         <Toast />
       </>
@@ -132,7 +182,7 @@ function StoreRouter() {
   if (page === "shop") {
     return (
       <>
-        <Header onNavCat={onNavCat} />
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
         <main className="ab-page-enter bg-white" style={{ paddingBottom: '5rem' }}>
           <Shop activeCat={activeCat} setActiveCat={setActiveCat} query={query} setQuery={setQuery} />
         </main>
@@ -147,7 +197,7 @@ function StoreRouter() {
   // Default: Home
   return (
     <>
-      <Header onNavCat={onNavCat} />
+      <Header onNavCat={onNavCat} activeCat={activeCat} />
       <main className="ab-page-enter">
         <Hero onShopCat={onShopCat} />
         <TrustStrip />

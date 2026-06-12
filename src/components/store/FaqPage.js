@@ -196,20 +196,6 @@ export function FaqPage({ onGoHome }) {
     };
   }, [allFaqs]);
 
-  useEffect(() => {
-    if (window.history.pushState) {
-      window.history.pushState({ page: 'faq' }, '', '/faq');
-    }
-    const onPop = () => onGoHome?.();
-    window.addEventListener('popstate', onPop);
-    return () => {
-      window.removeEventListener('popstate', onPop);
-      if (window.history.pushState) {
-        window.history.pushState({ page: 'home' }, '', '/');
-      }
-    };
-  }, [onGoHome]);
-
   const q = search.trim().toLowerCase();
 
   const filtered = useMemo(() => {

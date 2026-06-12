@@ -1,4 +1,26 @@
-// Shared tax invoice generator for Amahle Blue
+/**
+ * Tax Invoice Generator for Amahle Blue
+ *
+ * `printInvoice(order)` generates a fully self-contained HTML tax invoice and
+ * opens it in a new browser window so the user can print or save as PDF.
+ *
+ * Key design decisions:
+ *   - All HTML and CSS is inlined so the invoice renders consistently without
+ *     any external stylesheets, even when saved as a standalone file.
+ *   - VAT (15% standard South African rate) is displayed as inclusive in the totals.
+ *   - Business details are pulled from `window.__settings` (injected by AdminApp)
+ *     so invoices always reflect the latest business info without a network request.
+ *   - Bank details for EFT orders are pulled from the order's own `eftBankDetails`
+ *     snapshot (stored at order creation time) to preserve historical accuracy.
+ */
+
+/**
+ * Formats a numeric value as a South African Rand (ZAR) currency string.
+ * Example: 1250.5 → "R 1,250.50", -99.9 → "-R 99.90"
+ *
+ * @param {number} value - The monetary amount to format.
+ * @returns {string} Formatted ZAR string with comma thousands separator.
+ */
 export function formatZar(value) {
   const amount = Number(value) || 0;
   const sign = amount < 0 ? '-' : '';
@@ -7,6 +29,11 @@ export function formatZar(value) {
   return `${sign}R ${grouped}.${dec}`;
 }
 
+/**
+ * Generates and opens a print-ready tax invoice in a new browser window.
+ *
+ * @param {Object} order - The full order document from the database.
+ */
 export function printInvoice(order) {
   const payMethod   = order.paymentMethod || order.payment?.method || '';
   const payStatus   = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : order.payment?.status) || 'Pending';
@@ -14,16 +41,24 @@ export function printInvoice(order) {
   const isPaid      = payStatus === 'Paid' || order.payment?.status === 'paid';
   const codFee      = order.codFee || 0;
   const eftRef      = order.eftReference || order.orderNumber;
+
+  // South African VAT is 15% (inclusive in all prices). We back-calculate VAT from
+  // the total so that displayed prices remain unchanged and VAT is shown as informational.
   const vatRate     = 0.15;
   const vatAmount   = (order.total || 0) - (order.total || 0) / (1 + vatRate);
   
-  // Try safely accessing window.__settings
+  // Attempt to read business settings from the global `window.__settings` object,
+  // which is injected by AdminApp on page load. This allows invoices to reflect
+  // the admin's current business name, address, and contact details without an
+  // additional API call. Falls back to hardcoded Amahle Blue defaults.
   let settings = {};
   if (typeof window !== 'undefined' && window.__settings) {
     settings = window.__settings;
   }
   
   const vatNumber   = "4930324332";
+  // Bank details: prefer the order's snapshot (stored at creation time for EFT orders)
+  // then fall back to current settings to handle edge cases (e.g. non-EFT invoices).
   const bankDetails = order.eftBankDetails || settings.eft || {};
   const date = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-ZA', { day:'numeric', month:'long', year:'numeric' }) : '';
   const bName = (settings.business && settings.business.name) || 'Amahle Blue';
@@ -31,6 +66,7 @@ export function printInvoice(order) {
   const bPhone = (settings.business && settings.business.phone) || '067 101 4345';
   const bEmail = (settings.business && settings.business.email) || 'info@amahle-blue.co.za';
 
+  // For paid orders, show full amount paid and zero balance; for unpaid, show full balance due.
   const amountPaid = isPaid ? order.total : 0;
   const balanceDue = isPaid ? 0 : order.total;
 
@@ -310,6 +346,8 @@ export function printInvoice(order) {
 </body>
 </html>`;
  
+  // Open a new blank tab and write the full HTML invoice into it.
+  // If popup is blocked, alert the user to allow popups for this page.
   const w = window.open('', '_blank');
   if (!w) { alert('Allow popups to print the invoice.'); return; }
   w.document.open(); 

@@ -16,6 +16,7 @@
     border: 1px solid $slate-200;
     font-size: 14px;
     background: $white;
+    color: $slate-800;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
 
@@ -49,5 +50,12 @@
     font-size: 12px;
     color: $slate-400;
     margin-top: 4px;
+  }
+
+  &__select {
+    option {
+      background-color: $white;
+      color: $slate-800;
+    }
   }
 }

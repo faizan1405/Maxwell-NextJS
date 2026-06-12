@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useAdmin } from './AdminProvider';
-import { StatCard, Btn, Avatar, Badge } from '../ui/index';
+import { StatCard, Btn, Avatar, Badge, Spinner, SkeletonBox } from '../ui/index';
 import { Icon } from '../ui/Icons';
 import { formatZar, formatZarCompact } from '../../utils/currency';
 import '../../styles/admin/_dashboard.scss';
@@ -84,26 +84,80 @@ function OrderStatusChart({ byStatus }) {
 }
 
 export default function DashboardPage({ setPage }) {
-  const { stats, orders, fmtMoney, fmtDate } = useAdmin();
+  const { stats, orders, fmtMoney, fmtDate, loadingStates } = useAdmin();
+
+  const isOrdersLoading = loadingStates?.orders;
+  const isProductsLoading = loadingStates?.products;
+  const isCustomersLoading = loadingStates?.customers;
 
   return (
     <div className="dashboard-page">
       {/* Stats grid */}
       <div className="dashboard-page__stats">
-        <StatCard icon="💰" label="Collected Revenue" value={formatZarCompact(stats.revenue)}  color="cobalt"  sub="Confirmed & paid" />
-        <StatCard icon="📦" label="Total Orders"  value={stats.totalOrders}  color="purple" sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`} onClick={() => setPage('orders')} />
-        <StatCard icon="🛒" label="Products"      value={stats.activeProducts} color="green"  sub={stats.lowStockCount>0?`${stats.lowStockCount} low stock`:null} onClick={() => setPage('products')} />
-        <StatCard icon="👥" label="Customers"     value={stats.totalCustomers} color="amber"  sub="Unique buyers"  onClick={() => setPage('customers')} />
+        <StatCard
+          icon="💰"
+          label="Collected Revenue"
+          value={formatZarCompact(stats.revenue)}
+          color="cobalt"
+          sub="Confirmed & paid"
+          loading={isOrdersLoading}
+        />
+        <StatCard
+          icon="📦"
+          label="Total Orders"
+          value={stats.totalOrders}
+          color="purple"
+          sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`}
+          onClick={() => setPage('orders')}
+          loading={isOrdersLoading}
+        />
+        <StatCard
+          icon="🛒"
+          label="Products"
+          value={stats.activeProducts}
+          color="green"
+          sub={stats.lowStockCount>0?`${stats.lowStockCount} low stock`:null}
+          onClick={() => setPage('products')}
+          loading={isProductsLoading}
+        />
+        <StatCard
+          icon="👥"
+          label="Customers"
+          value={stats.totalCustomers}
+          color="amber"
+          sub="Unique buyers"
+          onClick={() => setPage('customers')}
+          loading={isCustomersLoading || isOrdersLoading}
+        />
       </div>
 
       {/* Charts */}
       <div className="dashboard-page__charts">
-        <RevenueChart orders={orders}/>
-        <OrderStatusChart byStatus={stats.byStatus}/>
+        {isOrdersLoading ? (
+          <div className="revenue-chart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '220px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <Spinner size={24} />
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading revenue data…</span>
+            </div>
+          </div>
+        ) : (
+          <RevenueChart orders={orders}/>
+        )}
+
+        {isOrdersLoading ? (
+          <div className="status-chart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '220px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+              <Spinner size={24} />
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading status data…</span>
+            </div>
+          </div>
+        ) : (
+          <OrderStatusChart byStatus={stats.byStatus}/>
+        )}
       </div>
 
       {/* Low stock alerts */}
-      {stats.lowStockCount > 0 && (
+      {stats.lowStockCount > 0 && !isProductsLoading && (
         <div className="dashboard-page__alerts">
           <div className="dashboard-page__alerts-header">
             <Icon.Warning/>
@@ -131,33 +185,40 @@ export default function DashboardPage({ setPage }) {
           <Btn variant="ghost" size="sm" onClick={() => setPage('orders')}>View all →</Btn>
         </div>
         <div className="dashboard-page__table-wrapper">
-          <table className="dashboard-page__table">
-            <thead className="dashboard-page__table-head">
-              <tr>
-                <th>Order</th>
-                <th>Customer</th>
-                <th className="hidden-sm">Total</th>
-                <th>Status</th>
-                <th className="hidden-md">Date</th>
-              </tr>
-            </thead>
-            <tbody className="dashboard-page__table-body">
-              {stats.recentOrders.map(o => (
-                <tr key={o.id}>
-                  <td className="dashboard-page__cell dashboard-page__cell--order">{o.orderNumber}</td>
-                  <td className="dashboard-page__cell">
-                    <div className="dashboard-page__cell--customer">
-                      <Avatar name={o.customer.name} size={26}/>
-                      <span className="dashboard-page__customer-name">{o.customer.name}</span>
-                    </div>
-                  </td>
-                  <td className="dashboard-page__cell dashboard-page__cell--total">{fmtMoney(o.total)}</td>
-                  <td className="dashboard-page__cell"><Badge label={o.status} variant={o.status}/></td>
-                  <td className="dashboard-page__cell dashboard-page__cell--date">{fmtDate(o.createdAt)}</td>
+          {isOrdersLoading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '32px', alignItems: 'center', justifyContent: 'center' }}>
+              <Spinner size={24} />
+              <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading recent orders…</span>
+            </div>
+          ) : (
+            <table className="dashboard-page__table">
+              <thead className="dashboard-page__table-head">
+                <tr>
+                  <th>Order</th>
+                  <th>Customer</th>
+                  <th className="hidden-sm">Total</th>
+                  <th>Status</th>
+                  <th className="hidden-md">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="dashboard-page__table-body">
+                {stats.recentOrders.map(o => (
+                  <tr key={o.id}>
+                    <td className="dashboard-page__cell dashboard-page__cell--order">{o.orderNumber}</td>
+                    <td className="dashboard-page__cell">
+                      <div className="dashboard-page__cell--customer">
+                        <Avatar name={o.customer.name} size={26}/>
+                        <span className="dashboard-page__customer-name">{o.customer.name}</span>
+                      </div>
+                    </td>
+                    <td className="dashboard-page__cell dashboard-page__cell--total">{fmtMoney(o.total)}</td>
+                    <td className="dashboard-page__cell"><Badge label={o.status} variant={o.status}/></td>
+                    <td className="dashboard-page__cell dashboard-page__cell--date">{fmtDate(o.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

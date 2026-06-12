@@ -393,7 +393,18 @@ export function Empty({ icon, title, description, action }) {
 }
 
 /* ── Stat Card ───────────────────────────────────────────────────────────────── */
-export function StatCard({ icon, label, value, sub, color = 'cobalt', trend, onClick, className = '' }) {
+export function StatCard({ icon, label, value, sub, color = 'cobalt', trend, onClick, className = '', loading }) {
+  if (loading) {
+    return (
+      <div className={`stat-card ${className}`} style={{ minHeight: '136px' }}>
+        <div className="stat-card__header" style={{ marginBottom: '12px' }}>
+          <SkeletonBox className="h-8 w-8 rounded-lg" />
+        </div>
+        <SkeletonBox className="h-8 w-24" style={{ marginBottom: '8px' }} />
+        <SkeletonBox className="h-4 w-16" />
+      </div>
+    );
+  }
   return (
     <div className={`stat-card ${onClick ? 'stat-card--clickable' : ''} ${className}`} onClick={onClick}>
       <div className="stat-card__header">

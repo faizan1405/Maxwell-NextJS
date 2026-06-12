@@ -320,6 +320,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
   async function placeOrder(e) {
     e.preventDefault();
+    if (placing) return;
     if (!form.name.trim()) { setError('Please enter your full name.'); return; }
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) { setError('Please enter a valid email address.'); return; }
     if (!mobileNumber) { setError('Mobile number is required.'); return; }

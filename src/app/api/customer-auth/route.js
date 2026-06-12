@@ -217,7 +217,7 @@ export async function POST(req) {
     if (action === 'verifyOtp') {
       const { otpToken, otp } = body;
       if (!otpToken || !otp) return NextResponse.json({ error: 'OTP token and code are required.' }, { status: 400 });
-      if (!/^\\d{6}$/.test(String(otp).trim())) return NextResponse.json({ error: 'Invalid code. Please enter the 6-digit code from your email.' }, { status: 400 });
+      if (!/^\d{6}$/.test(String(otp).trim())) return NextResponse.json({ error: 'Invalid code. Please enter the 6-digit code from your email.' }, { status: 400 });
 
       const payload = verifyOtpToken(otpToken, String(otp).trim());
       if (!payload) return NextResponse.json({ error: 'Invalid or expired code. Please try again.' }, { status: 400 });

@@ -12,7 +12,12 @@
     "badge": "Bestseller",
     "img": "https://placehold.co/600x600/1D4ED8/ffffff?text=All+Purpose+Cleaner",
     "desc": "Versatile everyday cleaner that cuts through grease, grime and dirt on all hard surfaces. Safe for kitchen counters, bathroom tiles, appliances and more.",
-    "benefits": ["Cuts through grease & grime", "Safe on all hard surfaces", "Fresh lemon fragrance", "Ready to use – no dilution needed"],
+    "benefits": [
+      "Cuts through grease & grime",
+      "Safe on all hard surfaces",
+      "Fresh lemon fragrance",
+      "Ready to use \u00e2\u20ac\u201c no dilution needed"
+    ],
     "sku": "DEMO-HH-001",
     "stock": 50,
     "lowStockThreshold": 10,
@@ -46,7 +51,12 @@
     "badge": "New",
     "img": "https://placehold.co/600x600/1D4ED8/ffffff?text=Floor+Cleaner",
     "desc": "High-concentration floor cleaner that leaves floors sparkling clean and streak-free. Suitable for tiles, vinyl, laminate and sealed hardwood floors.",
-    "benefits": ["Streak-free finish", "Concentrated formula – dilute up to 1:20", "Pleasant lavender scent", "Works on all sealed floor types"],
+    "benefits": [
+      "Streak-free finish",
+      "Concentrated formula \u00e2\u20ac\u201c dilute up to 1:20",
+      "Pleasant lavender scent",
+      "Works on all sealed floor types"
+    ],
     "sku": "DEMO-HH-002",
     "stock": 35,
     "lowStockThreshold": 8,
@@ -80,7 +90,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1D4ED8/ffffff?text=Tile+%26+Grout+Cleaner",
     "desc": "Powerful acid-based cleaner that dissolves soap scum, limescale and mould stains from tiles and grout lines. Restores grout to its original white colour.",
-    "benefits": ["Removes limescale & soap scum", "Whitens grout lines", "Anti-mould formula", "Trigger spray for easy application"],
+    "benefits": [
+      "Removes limescale & soap scum",
+      "Whitens grout lines",
+      "Anti-mould formula",
+      "Trigger spray for easy application"
+    ],
     "sku": "DEMO-HH-003",
     "stock": 28,
     "lowStockThreshold": 8,
@@ -114,7 +129,12 @@
     "badge": "Sale",
     "img": "https://placehold.co/600x600/1D4ED8/ffffff?text=Fabric+Freshener",
     "desc": "Eliminates odours from fabrics, upholstery and soft furnishings on contact. Leaves a long-lasting fresh fragrance without washing.",
-    "benefits": ["Eliminates odours instantly", "Safe on all fabrics", "Long-lasting fresh scent", "No washing required"],
+    "benefits": [
+      "Eliminates odours instantly",
+      "Safe on all fabrics",
+      "Long-lasting fresh scent",
+      "No washing required"
+    ],
     "sku": "DEMO-HH-004",
     "stock": 42,
     "lowStockThreshold": 10,
@@ -148,7 +168,12 @@
     "badge": "Bestseller",
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Heavy+Duty+Degreaser",
     "desc": "Industrial-strength degreaser for removing heavy oil, grease and carbon deposits from machinery, workshop floors and equipment. Fast-acting solvent formula.",
-    "benefits": ["Removes heavy oil & grease", "Fast-acting solvent formula", "Safe on most metals", "Bulk 5L value pack"],
+    "benefits": [
+      "Removes heavy oil & grease",
+      "Fast-acting solvent formula",
+      "Safe on most metals",
+      "Bulk 5L value pack"
+    ],
     "sku": "DEMO-IND-001",
     "stock": 20,
     "lowStockThreshold": 5,
@@ -182,7 +207,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Floor+Stripper",
     "desc": "Professional-grade floor stripper for removing old wax, sealers and coatings from concrete, vinyl and tiled floors. Used by cleaning contractors nationwide.",
-    "benefits": ["Strips old wax & sealers", "Works on concrete & vinyl", "No scrubbing required", "Ready to use formula"],
+    "benefits": [
+      "Strips old wax & sealers",
+      "Works on concrete & vinyl",
+      "No scrubbing required",
+      "Ready to use formula"
+    ],
     "sku": "DEMO-IND-002",
     "stock": 15,
     "lowStockThreshold": 5,
@@ -216,7 +246,12 @@
     "badge": "New",
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Engine+Bay+Cleaner",
     "desc": "Penetrating degreaser formulated specifically for engine bays and mechanical components. Safely dissolves grime, oil and road tar without damaging plastic or rubber parts.",
-    "benefits": ["Safe on plastic & rubber", "Penetrating foam formula", "Rinse-off action", "Professional-grade strength"],
+    "benefits": [
+      "Safe on plastic & rubber",
+      "Penetrating foam formula",
+      "Rinse-off action",
+      "Professional-grade strength"
+    ],
     "sku": "DEMO-IND-003",
     "stock": 18,
     "lowStockThreshold": 5,
@@ -250,7 +285,12 @@
     "badge": "Sale",
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Solvent+Cleaner",
     "desc": "Multi-purpose industrial solvent for cleaning adhesives, resins, paint overspray and stubborn industrial contamination. Suitable for metal, glass and most hard surfaces.",
-    "benefits": ["Removes adhesives & resins", "Fast evaporation rate", "Non-streaking", "Bulk 5L industrial pack"],
+    "benefits": [
+      "Removes adhesives & resins",
+      "Fast evaporation rate",
+      "Non-streaking",
+      "Bulk 5L industrial pack"
+    ],
     "sku": "DEMO-IND-004",
     "stock": 12,
     "lowStockThreshold": 4,
@@ -284,7 +324,12 @@
     "badge": "Bestseller",
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Tyre+%26+Dash+Shine",
     "desc": "Premium shine spray that gives tyres and dashboards a deep, long-lasting gloss. Water-repellent formula protects against UV fading and cracking.",
-    "benefits": ["Deep gloss finish", "UV protection", "Water-repellent coating", "Works on tyres & plastic trim"],
+    "benefits": [
+      "Deep gloss finish",
+      "UV protection",
+      "Water-repellent coating",
+      "Works on tyres & plastic trim"
+    ],
     "sku": "DEMO-CAR-001",
     "stock": 30,
     "lowStockThreshold": 8,
@@ -318,7 +363,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Interior+Cleaner",
     "desc": "Gentle yet effective spray cleaner for all car interior surfaces including seats, door panels, carpet and plastic trim. Leaves a clean, non-greasy finish.",
-    "benefits": ["Cleans seats & carpet", "Non-greasy finish", "Safe on all interior surfaces", "Anti-static formula"],
+    "benefits": [
+      "Cleans seats & carpet",
+      "Non-greasy finish",
+      "Safe on all interior surfaces",
+      "Anti-static formula"
+    ],
     "sku": "DEMO-CAR-002",
     "stock": 25,
     "lowStockThreshold": 8,
@@ -352,7 +402,12 @@
     "badge": "New",
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Leather+Conditioner",
     "desc": "Nourishing conditioner that cleans, softens and protects leather car seats. Restores natural suppleness and prevents cracking and fading.",
-    "benefits": ["Softens & nourishes leather", "Prevents cracking", "UV protection", "Pleasant leather scent"],
+    "benefits": [
+      "Softens & nourishes leather",
+      "Prevents cracking",
+      "UV protection",
+      "Pleasant leather scent"
+    ],
     "sku": "DEMO-CAR-003",
     "stock": 22,
     "lowStockThreshold": 6,
@@ -386,7 +441,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Air+Freshener",
     "desc": "Long-lasting car air freshener that neutralises odours and fills your car with a fresh, clean fragrance. Available in Ocean Breeze scent.",
-    "benefits": ["Neutralises bad odours", "Long-lasting fragrance", "Non-staining formula", "Quick-drying spray"],
+    "benefits": [
+      "Neutralises bad odours",
+      "Long-lasting fragrance",
+      "Non-staining formula",
+      "Quick-drying spray"
+    ],
     "scent": "Ocean Breeze",
     "sku": "DEMO-CAR-004",
     "stock": 45,
@@ -420,8 +480,13 @@
     "reviews": 61,
     "badge": "Bestseller",
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Car+Wash+Shampoo",
-    "desc": "High-suds car wash shampoo that safely lifts dirt and road grime without stripping wax. Highly concentrated – one cap per bucket.",
-    "benefits": ["High-suds formula", "Wax-safe formula", "Highly concentrated", "Streak-free rinse"],
+    "desc": "High-suds car wash shampoo that safely lifts dirt and road grime without stripping wax. Highly concentrated \u00e2\u20ac\u201c one cap per bucket.",
+    "benefits": [
+      "High-suds formula",
+      "Wax-safe formula",
+      "Highly concentrated",
+      "Streak-free rinse"
+    ],
     "sku": "DEMO-CE-001",
     "stock": 38,
     "lowStockThreshold": 10,
@@ -455,7 +520,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Tar+Remover",
     "desc": "Effortlessly dissolves tar spots, road tar, tree sap and adhesive residue from paintwork, glass and chrome without scratching.",
-    "benefits": ["Dissolves tar & tree sap", "Safe on paintwork", "No scratching", "Works on glass & chrome"],
+    "benefits": [
+      "Dissolves tar & tree sap",
+      "Safe on paintwork",
+      "No scratching",
+      "Works on glass & chrome"
+    ],
     "sku": "DEMO-CE-002",
     "stock": 20,
     "lowStockThreshold": 6,
@@ -489,7 +559,12 @@
     "badge": "Sale",
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Bumper+Black",
     "desc": "Restores faded, grey plastic bumpers and trim to a deep, rich black finish that lasts months. Water-based formula with UV inhibitors.",
-    "benefits": ["Restores faded plastic", "Lasts up to 6 months", "UV inhibitors included", "Water-based & safe to use"],
+    "benefits": [
+      "Restores faded plastic",
+      "Lasts up to 6 months",
+      "UV inhibitors included",
+      "Water-based & safe to use"
+    ],
     "sku": "DEMO-CE-003",
     "stock": 17,
     "lowStockThreshold": 5,
@@ -523,7 +598,12 @@
     "badge": "New",
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Waterless+Wash",
     "desc": "Clean and polish your car without water. Encapsulates dirt particles and wipes away cleanly, leaving a streak-free shine in minutes.",
-    "benefits": ["No water needed", "Cleans & polishes in one step", "Eco-friendly formula", "Ideal for light dust & fingerprints"],
+    "benefits": [
+      "No water needed",
+      "Cleans & polishes in one step",
+      "Eco-friendly formula",
+      "Ideal for light dust & fingerprints"
+    ],
     "sku": "DEMO-CE-004",
     "stock": 14,
     "lowStockThreshold": 5,
@@ -557,7 +637,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Auto+Spot+Cleaner",
     "desc": "Targeted spot cleaner for removing stubborn stains, bird droppings and insect residue from vehicle paintwork without damaging the surface.",
-    "benefits": ["Removes bird droppings & insects", "Safe on paintwork", "Fast-acting formula", "No scratch application"],
+    "benefits": [
+      "Removes bird droppings & insects",
+      "Safe on paintwork",
+      "Fast-acting formula",
+      "No scratch application"
+    ],
     "sku": "DEMO-CE-005",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -591,7 +676,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Bumper+Black",
     "desc": "Professional-grade liquid formula that instantly restores faded plastic bumpers and exterior trim to a deep, rich black finish.",
-    "benefits": ["Deep black finish", "Restores faded trim", "Long-lasting protection", "Easy wipe-on application"],
+    "benefits": [
+      "Deep black finish",
+      "Restores faded trim",
+      "Long-lasting protection",
+      "Easy wipe-on application"
+    ],
     "sku": "DEMO-CE-006",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -625,7 +715,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Chassis+Black",
     "desc": "Water-based black chassis coating that protects the underbody from rust, corrosion and road debris. Easy to apply and environmentally friendly.",
-    "benefits": ["Rust & corrosion protection", "Water-based – low VOC", "Protects from road debris", "Durable underbody coating"],
+    "benefits": [
+      "Rust & corrosion protection",
+      "Water-based \u00e2\u20ac\u201c low VOC",
+      "Protects from road debris",
+      "Durable underbody coating"
+    ],
     "sku": "DEMO-CE-007",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -659,7 +754,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Cleaner+%26+Degreaser",
     "desc": "Heavy-duty concentrated cleaner and degreaser for removing oil, grease and road grime from vehicle exteriors, engines and wheels.",
-    "benefits": ["Highly concentrated formula", "Removes oil & road grime", "Safe on most surfaces", "Dilute to required strength"],
+    "benefits": [
+      "Highly concentrated formula",
+      "Removes oil & road grime",
+      "Safe on most surfaces",
+      "Dilute to required strength"
+    ],
     "sku": "DEMO-CE-008",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -693,7 +793,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=De-Wax",
     "desc": "Powerful de-waxing solution that strips old wax, polish and silicone residue from paintwork, preparing the surface for fresh wax or paint correction.",
-    "benefits": ["Strips old wax & silicone", "Prepares surface for polishing", "Non-abrasive formula", "Essential pre-treatment step"],
+    "benefits": [
+      "Strips old wax & silicone",
+      "Prepares surface for polishing",
+      "Non-abrasive formula",
+      "Essential pre-treatment step"
+    ],
     "sku": "DEMO-CE-009",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -727,7 +832,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Engine+Cleaner+Solvent",
     "desc": "Solvent-based engine cleaner that rapidly dissolves heavy grease, oil build-up and carbon deposits from engine components and bay surfaces.",
-    "benefits": ["Rapid grease & oil removal", "Powerful solvent formula", "Penetrates carbon deposits", "Professional-grade strength"],
+    "benefits": [
+      "Rapid grease & oil removal",
+      "Powerful solvent formula",
+      "Penetrates carbon deposits",
+      "Professional-grade strength"
+    ],
     "sku": "DEMO-CE-010",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -761,7 +871,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Engine+Cleaner+Water",
     "desc": "Water-based engine cleaner for safely removing grease and grime from engine bays. Biodegradable formula safe for use near drains and environmentally sensitive areas.",
-    "benefits": ["Biodegradable formula", "Safe on plastic & rubber", "Drain-safe rinse-off", "Eco-friendly engine degreasing"],
+    "benefits": [
+      "Biodegradable formula",
+      "Safe on plastic & rubber",
+      "Drain-safe rinse-off",
+      "Eco-friendly engine degreasing"
+    ],
     "sku": "DEMO-CE-011",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -795,7 +910,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E3A5F/ffffff?text=Tar+Remover",
     "desc": "Fast-acting tar remover that dissolves road tar, bitumen, and adhesive contamination from painted surfaces, glass and alloy wheels without scratching.",
-    "benefits": ["Dissolves road tar & bitumen", "Safe on paint & alloys", "No scratching", "Ready-to-use spray"],
+    "benefits": [
+      "Dissolves road tar & bitumen",
+      "Safe on paint & alloys",
+      "No scratching",
+      "Ready-to-use spray"
+    ],
     "sku": "DEMO-CE-012",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -829,13 +949,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Overall+Washing+Powders",
     "desc": "Heavy-duty industrial washing powder for laundering overalls, workwear and uniforms. Powerful formulation removes oil, grease and industrial soiling from heavy-duty fabrics.",
-    "benefits": ["Removes industrial oil & grease", "Suitable for heavy-duty fabrics", "Effective in all water temperatures", "Bulk 25kg industrial pack"],
+    "benefits": [
+      "Removes industrial oil & grease",
+      "Suitable for heavy-duty fabrics",
+      "Effective in all water temperatures",
+      "Bulk 25kg industrial pack"
+    ],
     "sku": "DEMO-IND-005",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-005","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Overall+Washing+Powders","storageKey": null,"altText": "Overall Washing Powders 25kg","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-005",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Overall+Washing+Powders",
+        "storageKey": null,
+        "altText": "Overall Washing Powders 25kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-alubrite",
@@ -850,13 +988,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Alubrite",
     "desc": "Specialist aluminium brightener and cleaner that removes oxidation, tarnish and corrosion from aluminium surfaces. Restores a bright, polished finish without abrasives.",
-    "benefits": ["Removes aluminium oxidation", "Brightens & restores shine", "Non-abrasive acid formula", "Safe on aluminium & alloys"],
+    "benefits": [
+      "Removes aluminium oxidation",
+      "Brightens & restores shine",
+      "Non-abrasive acid formula",
+      "Safe on aluminium & alloys"
+    ],
     "sku": "DEMO-IND-006",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-006","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Alubrite","storageKey": null,"altText": "Alubrite 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-006",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Alubrite",
+        "storageKey": null,
+        "altText": "Alubrite 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-hf-alubrite",
@@ -871,13 +1027,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=HF+Alubrite",
     "desc": "High-foam aluminium brightener for truck and transport cleaning applications. Produces rich foam for improved contact time and superior brightening on aluminium tankers and trailers.",
-    "benefits": ["High-foam formula for better contact", "Superior aluminium brightening", "Ideal for tankers & trailers", "Concentrated for cost efficiency"],
+    "benefits": [
+      "High-foam formula for better contact",
+      "Superior aluminium brightening",
+      "Ideal for tankers & trailers",
+      "Concentrated for cost efficiency"
+    ],
     "sku": "DEMO-IND-007",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-007","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=HF+Alubrite","storageKey": null,"altText": "HF Alubrite 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-007",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=HF+Alubrite",
+        "storageKey": null,
+        "altText": "HF Alubrite 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-anti-freeze-concentrate-96",
@@ -892,13 +1066,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Anti-Freeze+96%25",
     "desc": "High-concentration 96% anti-freeze and coolant for industrial and automotive cooling systems. Prevents freezing, boilover and corrosion in all engine types. Dilute to required protection level.",
-    "benefits": ["96% concentration – long life", "Prevents freezing & boilover", "Corrosion inhibitors included", "Compatible with all engine types"],
+    "benefits": [
+      "96% concentration \u00e2\u20ac\u201c long life",
+      "Prevents freezing & boilover",
+      "Corrosion inhibitors included",
+      "Compatible with all engine types"
+    ],
     "sku": "DEMO-IND-008",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-008","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Anti-Freeze+96%25","storageKey": null,"altText": "Anti-Freeze Concentrate 96% 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-008",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Anti-Freeze+96%25",
+        "storageKey": null,
+        "altText": "Anti-Freeze Concentrate 96% 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-hand-cleaner-paste-grit",
@@ -913,13 +1105,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Hand+Cleaner+Grit",
     "desc": "Waterless grit hand cleaner paste that removes stubborn grease, oil, tar and industrial soiling from hands without water. Natural grit particles provide gentle exfoliation while cleaning.",
-    "benefits": ["Removes grease & oil without water", "Natural grit exfoliant", "Moisturising formula", "Ideal for workshops & garages"],
+    "benefits": [
+      "Removes grease & oil without water",
+      "Natural grit exfoliant",
+      "Moisturising formula",
+      "Ideal for workshops & garages"
+    ],
     "sku": "DEMO-IND-009",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-009","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Hand+Cleaner+Grit","storageKey": null,"altText": "Hand Cleaner Paste Grit 5kg","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-009",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Hand+Cleaner+Grit",
+        "storageKey": null,
+        "altText": "Hand Cleaner Paste Grit 5kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-bio-degreaser-specialised",
@@ -934,13 +1144,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Bio+Degreaser",
     "desc": "Biodegradable industrial degreaser formulated with specialist surfactants for breaking down heavy oil and grease contamination. Environmentally responsible and drain-safe.",
-    "benefits": ["Biodegradable – eco-friendly", "Breaks down heavy oils & grease", "Drain-safe disposal", "Concentrated for bulk use"],
+    "benefits": [
+      "Biodegradable \u00e2\u20ac\u201c eco-friendly",
+      "Breaks down heavy oils & grease",
+      "Drain-safe disposal",
+      "Concentrated for bulk use"
+    ],
     "sku": "DEMO-IND-010",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-010","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Bio+Degreaser","storageKey": null,"altText": "Bio Degreaser Specialised 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-010",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Bio+Degreaser",
+        "storageKey": null,
+        "altText": "Bio Degreaser Specialised 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-eco-degreaser-hd-red",
@@ -955,13 +1183,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Eco+Degreaser+HD+Red",
     "desc": "Heavy-duty eco-friendly degreaser in distinctive red formulation for high-visibility identification. Tackles industrial grease and oil with powerful surfactant action while minimising environmental impact.",
-    "benefits": ["Heavy-duty degreasing power", "Eco-friendly low-VOC formula", "Red formulation for easy ID", "Concentrated bulk 25L"],
+    "benefits": [
+      "Heavy-duty degreasing power",
+      "Eco-friendly low-VOC formula",
+      "Red formulation for easy ID",
+      "Concentrated bulk 25L"
+    ],
     "sku": "DEMO-IND-011",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-011","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Eco+Degreaser+HD+Red","storageKey": null,"altText": "Eco Degreaser HD Red 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-011",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Eco+Degreaser+HD+Red",
+        "storageKey": null,
+        "altText": "Eco Degreaser HD Red 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-hd-degreaser",
@@ -976,13 +1222,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=HD+Degreaser",
     "desc": "Professional heavy-duty degreaser concentrate for removing extreme oil, grease and contamination from industrial machinery, floors and equipment. Dilute for varied cleaning strengths.",
-    "benefits": ["Extreme oil & grease removal", "Adjustable dilution ratios", "Industrial machinery safe", "Bulk 25L concentrate"],
+    "benefits": [
+      "Extreme oil & grease removal",
+      "Adjustable dilution ratios",
+      "Industrial machinery safe",
+      "Bulk 25L concentrate"
+    ],
     "sku": "DEMO-IND-012",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-012","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=HD+Degreaser","storageKey": null,"altText": "HD Degreaser 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-012",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=HD+Degreaser",
+        "storageKey": null,
+        "altText": "HD Degreaser 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-nr-solvent-degreaser",
@@ -997,13 +1261,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=NR+Solvent+Degreaser",
     "desc": "Non-residue solvent degreaser that evaporates cleanly without leaving any film or residue. Ideal for electrical components, precision parts and surfaces where contamination-free cleaning is critical.",
-    "benefits": ["Zero residue after evaporation", "Safe on electrical components", "Fast-drying solvent formula", "Precision parts cleaning"],
+    "benefits": [
+      "Zero residue after evaporation",
+      "Safe on electrical components",
+      "Fast-drying solvent formula",
+      "Precision parts cleaning"
+    ],
     "sku": "DEMO-IND-013",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-013","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=NR+Solvent+Degreaser","storageKey": null,"altText": "NR Solvent Degreaser 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-013",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=NR+Solvent+Degreaser",
+        "storageKey": null,
+        "altText": "NR Solvent Degreaser 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-truck-shampoo",
@@ -1018,13 +1300,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Truck+Shampoo",
     "desc": "Heavy-duty truck and fleet washing shampoo that rapidly removes road grime, diesel soot and traffic film from large vehicles. High-foam concentrate safe on all vehicle finishes.",
-    "benefits": ["Removes diesel soot & road grime", "High-foam concentrate", "Safe on all vehicle finishes", "Economical bulk 25L"],
+    "benefits": [
+      "Removes diesel soot & road grime",
+      "High-foam concentrate",
+      "Safe on all vehicle finishes",
+      "Economical bulk 25L"
+    ],
     "sku": "DEMO-IND-014",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-014","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Truck+Shampoo","storageKey": null,"altText": "Truck Shampoo 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-014",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Truck+Shampoo",
+        "storageKey": null,
+        "altText": "Truck Shampoo 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-window-dae-scaler",
@@ -1039,13 +1339,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Window+DAE-Scaler",
     "desc": "Industrial descaler and acid-based glass cleaner that dissolves mineral deposits, hard water scale and silica staining from windows, glass panels and glazing. Leaves streak-free clarity.",
-    "benefits": ["Dissolves hard water & mineral scale", "Removes silica staining", "Streak-free glass finish", "Industrial-strength formula"],
+    "benefits": [
+      "Dissolves hard water & mineral scale",
+      "Removes silica staining",
+      "Streak-free glass finish",
+      "Industrial-strength formula"
+    ],
     "sku": "DEMO-IND-015",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-015","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Window+DAE-Scaler","storageKey": null,"altText": "Window DAE-Scaler 25L","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-015",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Window+DAE-Scaler",
+        "storageKey": null,
+        "altText": "Window DAE-Scaler 25L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-alkaline-washing-powders",
@@ -1060,13 +1378,31 @@
     "badge": null,
     "img": "https://placehold.co/600x600/B45309/ffffff?text=Alkaline+Washing+Powders",
     "desc": "High-alkaline industrial washing powder for laundry and parts washing applications. Powerful cleaning action removes heavy soiling, carbonised deposits and industrial contamination.",
-    "benefits": ["High-alkaline heavy-duty cleaning", "Removes carbonised deposits", "Suitable for parts washing", "Bulk 25kg industrial supply"],
+    "benefits": [
+      "High-alkaline heavy-duty cleaning",
+      "Removes carbonised deposits",
+      "Suitable for parts washing",
+      "Bulk 25kg industrial supply"
+    ],
     "sku": "DEMO-IND-016",
     "stock": 0,
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [{"id": "media-demo-ind-016","type": "image","url": "https://placehold.co/600x600/B45309/ffffff?text=Alkaline+Washing+Powders","storageKey": null,"altText": "Alkaline Washing Powders 25kg","sortOrder": 0,"isPrimary": true,"fileName": "","mimeType": "image/png","fileSize": 0}]
+    "media": [
+      {
+        "id": "media-demo-ind-016",
+        "type": "image",
+        "url": "https://placehold.co/600x600/B45309/ffffff?text=Alkaline+Washing+Powders",
+        "storageKey": null,
+        "altText": "Alkaline Washing Powders 25kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   },
   {
     "id": "demo-hand-sanitiser-gel",
@@ -1081,7 +1417,12 @@
     "badge": "Bestseller",
     "img": "https://placehold.co/600x600/159A4C/ffffff?text=Hand+Sanitiser",
     "desc": "WHO-formulated hand sanitiser with 70% ethanol that kills 99.9% of bacteria and viruses. Quick-drying, non-sticky gel with added moisturiser.",
-    "benefits": ["Kills 99.9% of germs", "70% ethanol – WHO formula", "Non-sticky quick-dry gel", "Added aloe vera moisturiser"],
+    "benefits": [
+      "Kills 99.9% of germs",
+      "70% ethanol \u00e2\u20ac\u201c WHO formula",
+      "Non-sticky quick-dry gel",
+      "Added aloe vera moisturiser"
+    ],
     "sku": "DEMO-SAN-001",
     "stock": 60,
     "lowStockThreshold": 15,
@@ -1115,7 +1456,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/159A4C/ffffff?text=Surface+Disinfectant",
     "desc": "Hospital-grade disinfectant spray that kills 99.9% of bacteria, fungi and enveloped viruses on contact. Ideal for homes, offices and healthcare facilities.",
-    "benefits": ["Hospital-grade disinfection", "Kills bacteria, fungi & viruses", "Safe on food-contact surfaces", "No rinsing required"],
+    "benefits": [
+      "Hospital-grade disinfection",
+      "Kills bacteria, fungi & viruses",
+      "Safe on food-contact surfaces",
+      "No rinsing required"
+    ],
     "sku": "DEMO-SAN-002",
     "stock": 45,
     "lowStockThreshold": 12,
@@ -1148,8 +1494,13 @@
     "reviews": 46,
     "badge": "High Purity",
     "img": "https://placehold.co/600x600/159A4C/ffffff?text=IPA+99%25",
-    "desc": "Ultra-pure 99% isopropyl alcohol for electronics cleaning, laboratory use and surface sterilisation. Leaves no residue – safe for PCBs and sensitive equipment.",
-    "benefits": ["99% purity – no residue", "Safe for electronics & PCBs", "Fast evaporation", "Laboratory & medical grade"],
+    "desc": "Ultra-pure 99% isopropyl alcohol for electronics cleaning, laboratory use and surface sterilisation. Leaves no residue \u00e2\u20ac\u201c safe for PCBs and sensitive equipment.",
+    "benefits": [
+      "99% purity \u00e2\u20ac\u201c no residue",
+      "Safe for electronics & PCBs",
+      "Fast evaporation",
+      "Laboratory & medical grade"
+    ],
     "sku": "DEMO-SAN-003",
     "stock": 30,
     "lowStockThreshold": 8,
@@ -1183,7 +1534,12 @@
     "badge": "New",
     "img": "https://placehold.co/600x600/159A4C/ffffff?text=Foam+Hand+Wash",
     "desc": "Rich foaming hand wash with anti-bacterial agents that kill 99.9% of germs while keeping hands soft and moisturised. Dermatologically tested.",
-    "benefits": ["Rich foaming lather", "Kills 99.9% of bacteria", "Added moisturisers", "Dermatologically tested"],
+    "benefits": [
+      "Rich foaming lather",
+      "Kills 99.9% of bacteria",
+      "Added moisturisers",
+      "Dermatologically tested"
+    ],
     "sku": "DEMO-SAN-004",
     "stock": 55,
     "lowStockThreshold": 12,
@@ -1217,7 +1573,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Auto+Gloss",
     "desc": "High-shine auto gloss that buffs to a brilliant finish on dashboards, door panels and all interior plastic surfaces. Long-lasting protective coating.",
-    "benefits": ["Deep gloss finish", "Protects interior surfaces", "Anti-dust formula", "Easy spray & wipe application"],
+    "benefits": [
+      "Deep gloss finish",
+      "Protects interior surfaces",
+      "Anti-dust formula",
+      "Easy spray & wipe application"
+    ],
     "sku": "DEMO-CAR-INT-001",
     "stock": 0,
     "lowStockThreshold": 8,
@@ -1251,7 +1612,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Dashboard+Polish",
     "desc": "Premium dashboard polish that cleans, shines and protects all interior plastic and vinyl surfaces. Leaves a non-greasy satin finish that resists dust.",
-    "benefits": ["Cleans & shines dashboards", "Non-greasy satin finish", "Dust-resistant coating", "Safe on all plastics & vinyl"],
+    "benefits": [
+      "Cleans & shines dashboards",
+      "Non-greasy satin finish",
+      "Dust-resistant coating",
+      "Safe on all plastics & vinyl"
+    ],
     "sku": "DEMO-CAR-INT-002",
     "stock": 0,
     "lowStockThreshold": 8,
@@ -1285,7 +1651,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1E40AF/ffffff?text=Dashboard+Polish+Bulk",
     "desc": "Bulk-size dashboard polish for professional detailers and workshops. Cleans, shines and protects all interior plastic and vinyl surfaces with a dust-resistant finish.",
-    "benefits": ["Bulk 25L professional size", "Cleans & shines dashboards", "Non-greasy satin finish", "Dust-resistant coating"],
+    "benefits": [
+      "Bulk 25L professional size",
+      "Cleans & shines dashboards",
+      "Non-greasy satin finish",
+      "Dust-resistant coating"
+    ],
     "sku": "DEMO-CAR-INT-003",
     "stock": 0,
     "lowStockThreshold": 4,
@@ -1319,7 +1690,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Leather+Conditioner+Cream",
     "desc": "Rich cream formula that deeply nourishes and restores leather car seats, steering wheels and door panels. Prevents cracking, fading and stiffness.",
-    "benefits": ["Deep nourishing cream formula", "Prevents cracking & fading", "Restores suppleness", "Suitable for all leather types"],
+    "benefits": [
+      "Deep nourishing cream formula",
+      "Prevents cracking & fading",
+      "Restores suppleness",
+      "Suitable for all leather types"
+    ],
     "sku": "DEMO-CAR-INT-004",
     "stock": 0,
     "lowStockThreshold": 6,
@@ -1353,7 +1729,12 @@
     "badge": "Premium",
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=4in1+Leather+Treatment",
     "desc": "Premium all-in-one leather treatment that cleans, conditions, protects and restores in a single application. Professional-grade formula for showroom-quality results.",
-    "benefits": ["Cleans, conditions, protects & restores", "Single-step application", "Professional-grade formula", "Showroom-quality finish"],
+    "benefits": [
+      "Cleans, conditions, protects & restores",
+      "Single-step application",
+      "Professional-grade formula",
+      "Showroom-quality finish"
+    ],
     "sku": "DEMO-CAR-INT-005",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1387,7 +1768,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/0B2E6B/ffffff?text=Leather+Cleaner",
     "desc": "Specially formulated leather cleaner that removes dirt, grime, sweat and body oils from car leather seats and interior trim without drying or damaging the surface.",
-    "benefits": ["Removes dirt & body oils", "pH-balanced formula", "Won't dry out leather", "Safe on stitching & trim"],
+    "benefits": [
+      "Removes dirt & body oils",
+      "pH-balanced formula",
+      "Won't dry out leather",
+      "Safe on stitching & trim"
+    ],
     "sku": "DEMO-CAR-INT-006",
     "stock": 0,
     "lowStockThreshold": 6,
@@ -1421,18 +1807,43 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C3AED/ffffff?text=Car+Perfumes",
     "desc": "Premium car interior perfumes in 5 luxurious scents: Cherry, Lavender, Floral, Nucar and Apple. Long-lasting fragrance that neutralises odours and keeps your car smelling fresh.",
-    "benefits": ["5 luxurious scent options", "Long-lasting fragrance", "Neutralises bad odours", "Premium bottle design"],
+    "benefits": [
+      "5 luxurious scent options",
+      "Long-lasting fragrance",
+      "Neutralises bad odours",
+      "Premium bottle design"
+    ],
     "scent": "Cherry, Lavender, Floral, Nucar, Apple",
     "sku": "DEMO-CAR-INT-007",
     "stock": 0,
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [
-      { "name": "Cherry", "price": 0, "stock": 0 },
-      { "name": "Lavender", "price": 0, "stock": 0 },
-      { "name": "Floral", "price": 0, "stock": 0 },
-      { "name": "Nucar", "price": 0, "stock": 0 },
-      { "name": "Apple", "price": 0, "stock": 0 }
+      {
+        "name": "Cherry",
+        "price": 0,
+        "stock": 0
+      },
+      {
+        "name": "Lavender",
+        "price": 0,
+        "stock": 0
+      },
+      {
+        "name": "Floral",
+        "price": 0,
+        "stock": 0
+      },
+      {
+        "name": "Nucar",
+        "price": 0,
+        "stock": 0
+      },
+      {
+        "name": "Apple",
+        "price": 0,
+        "stock": 0
+      }
     ],
     "media": [
       {
@@ -1462,7 +1873,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1D4ED8/ffffff?text=Upholstery+Carpet+Shampoo",
     "desc": "Fast-drying shampoo for car seats, carpets and upholstery. Lifts stubborn stains, eliminates odours and dries quickly to prevent mould and dampness.",
-    "benefits": ["Quick-dry formula", "Lifts stubborn stains", "Eliminates odours", "Prevents mould & dampness"],
+    "benefits": [
+      "Quick-dry formula",
+      "Lifts stubborn stains",
+      "Eliminates odours",
+      "Prevents mould & dampness"
+    ],
     "sku": "DEMO-CAR-INT-008",
     "stock": 0,
     "lowStockThreshold": 6,
@@ -1496,7 +1912,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/3B82F6/ffffff?text=Window+Cleaner",
     "desc": "Streak-free window cleaner for car windscreens, windows and mirrors. Cuts through road film, smears and fingerprints for crystal-clear visibility.",
-    "benefits": ["Streak-free crystal-clear finish", "Cuts through road film & smears", "Safe on tinted windows", "Fast-drying formula"],
+    "benefits": [
+      "Streak-free crystal-clear finish",
+      "Cuts through road film & smears",
+      "Safe on tinted windows",
+      "Fast-drying formula"
+    ],
     "sku": "DEMO-CAR-INT-009",
     "stock": 0,
     "lowStockThreshold": 8,
@@ -1530,7 +1951,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Claybar",
     "desc": "Professional clay bar kit for removing bonded contaminants from paintwork. Includes clay bar, lubricant spray and microfibre cloths for a smooth, glass-like finish.",
-    "benefits": ["Removes bonded contamination", "Leaves paint glass-smooth", "Safe on all paint types", "Includes lubricant & cloths"],
+    "benefits": [
+      "Removes bonded contamination",
+      "Leaves paint glass-smooth",
+      "Safe on all paint types",
+      "Includes lubricant & cloths"
+    ],
     "sku": "DEMO-CP-001",
     "stock": 30,
     "lowStockThreshold": 8,
@@ -1564,7 +1990,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Quick+Detailer",
     "desc": "Fast-acting quick detailer spray for removing light dust, fingerprints and water spots between washes. Leaves a streak-free, high-gloss finish in seconds.",
-    "benefits": ["Removes light dust & fingerprints", "Streak-free gloss finish", "Safe on all paint colours", "Quick spray-and-wipe action"],
+    "benefits": [
+      "Removes light dust & fingerprints",
+      "Streak-free gloss finish",
+      "Safe on all paint colours",
+      "Quick spray-and-wipe action"
+    ],
     "sku": "DEMO-CP-002",
     "stock": 40,
     "lowStockThreshold": 10,
@@ -1598,7 +2029,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Dura+Glaze",
     "desc": "Durable paint glaze that fills minor swirls and hairlines while adding a deep, wet-look shine. Suitable for use before wax or sealant application.",
-    "benefits": ["Fills swirls & hairlines", "Deep wet-look shine", "Use before wax or sealant", "Suitable for all paint types"],
+    "benefits": [
+      "Fills swirls & hairlines",
+      "Deep wet-look shine",
+      "Use before wax or sealant",
+      "Suitable for all paint types"
+    ],
     "sku": "DEMO-CP-003",
     "stock": 25,
     "lowStockThreshold": 6,
@@ -1632,7 +2068,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Medium-Cut",
     "desc": "Medium-cut polishing compound for removing moderate swirls, light scratches and oxidation. Leaves a clean, bright finish ready for glazing or waxing.",
-    "benefits": ["Removes moderate swirls & scratches", "Eliminates light oxidation", "Clean finish for wax or sealant", "Suitable for machine or hand use"],
+    "benefits": [
+      "Removes moderate swirls & scratches",
+      "Eliminates light oxidation",
+      "Clean finish for wax or sealant",
+      "Suitable for machine or hand use"
+    ],
     "sku": "DEMO-CP-004",
     "stock": 20,
     "lowStockThreshold": 5,
@@ -1666,7 +2107,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=High-Cut",
     "desc": "Heavy-cut polishing compound for removing deep scratches, heavy oxidation and severe swirl marks. Designed for machine polisher use on neglected or damaged paintwork.",
-    "benefits": ["Removes deep scratches & heavy oxidation", "Severe swirl mark removal", "For machine polisher use", "Restores neglected paintwork"],
+    "benefits": [
+      "Removes deep scratches & heavy oxidation",
+      "Severe swirl mark removal",
+      "For machine polisher use",
+      "Restores neglected paintwork"
+    ],
     "sku": "DEMO-CP-005",
     "stock": 18,
     "lowStockThreshold": 5,
@@ -1700,7 +2146,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Burnishing+Compound",
     "desc": "Ultra-fine burnishing compound for final-stage paint finishing. Removes fine buffer trails and micro-marring left by cutting compounds, delivering a mirror-like clarity.",
-    "benefits": ["Removes buffer trails & micro-marring", "Mirror-like final finish", "Ultra-fine abrasive formula", "Ideal final stage before wax"],
+    "benefits": [
+      "Removes buffer trails & micro-marring",
+      "Mirror-like final finish",
+      "Ultra-fine abrasive formula",
+      "Ideal final stage before wax"
+    ],
     "sku": "DEMO-CP-006",
     "stock": 22,
     "lowStockThreshold": 6,
@@ -1734,7 +2185,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Correction+Compound",
     "desc": "Professional paint correction compound formulated for multi-stage correction. Effectively removes swirls, holograms and light scratches, restoring paint depth and clarity.",
-    "benefits": ["Multi-stage correction formula", "Removes swirls & holograms", "Restores paint depth & clarity", "Machine or hand application"],
+    "benefits": [
+      "Multi-stage correction formula",
+      "Removes swirls & holograms",
+      "Restores paint depth & clarity",
+      "Machine or hand application"
+    ],
     "sku": "DEMO-CP-007",
     "stock": 16,
     "lowStockThreshold": 5,
@@ -1768,7 +2224,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/7C2D12/ffffff?text=Easy+Gloss+Polish",
     "desc": "All-in-one car polish for everyday shine maintenance. Cleans, polishes and protects in a single step, leaving a brilliant gloss that repels water and dust.",
-    "benefits": ["All-in-one clean, polish & protect", "Brilliant gloss finish", "Water & dust repellent", "Quick and easy application"],
+    "benefits": [
+      "All-in-one clean, polish & protect",
+      "Brilliant gloss finish",
+      "Water & dust repellent",
+      "Quick and easy application"
+    ],
     "sku": "DEMO-CP-008",
     "stock": 35,
     "lowStockThreshold": 8,
@@ -1802,7 +2263,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/1D7DB5/ffffff?text=Blue+Shampoo",
     "desc": "Professional-grade blue car wash shampoo with a rich lather that safely lifts dirt and road grime from all vehicle surfaces without stripping wax or sealants.",
-    "benefits": ["Rich foaming lather", "Wax & sealant safe", "Concentrated formula", "Streak-free rinse"],
+    "benefits": [
+      "Rich foaming lather",
+      "Wax & sealant safe",
+      "Concentrated formula",
+      "Streak-free rinse"
+    ],
     "sku": "DEMO-CS-001",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1836,7 +2302,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/C0392B/ffffff?text=Hi+Foam+Shampoo",
     "desc": "High-foam car shampoo that produces a thick, clinging foam to encapsulate and safely remove dirt, dust and road contamination from paintwork and glass.",
-    "benefits": ["Ultra-thick foam formula", "Encapsulates dirt & grime", "Safe on all paint types", "Highly concentrated"],
+    "benefits": [
+      "Ultra-thick foam formula",
+      "Encapsulates dirt & grime",
+      "Safe on all paint types",
+      "Highly concentrated"
+    ],
     "sku": "DEMO-CS-002",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1870,7 +2341,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/17A2B8/ffffff?text=Rinseless+Wash",
     "desc": "Concentrated rinseless car wash that cleans the entire vehicle using only a small amount of water and a microfibre cloth. No hosing or rinsing required.",
-    "benefits": ["No rinsing required", "Saves up to 95% water", "Lubricating formula protects paint", "One bucket wash method"],
+    "benefits": [
+      "No rinsing required",
+      "Saves up to 95% water",
+      "Lubricating formula protects paint",
+      "One bucket wash method"
+    ],
     "sku": "DEMO-CS-003",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1904,7 +2380,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/5D6D7E/ffffff?text=Waterless+Car+Wash",
     "desc": "Complete waterless car wash solution that cleans, polishes and protects in a single step. Simply spray on and wipe off for a spotless, scratch-free finish anywhere.",
-    "benefits": ["No water needed at all", "Cleans, polishes & protects", "Ideal for water restrictions", "Fast full-car clean"],
+    "benefits": [
+      "No water needed at all",
+      "Cleans, polishes & protects",
+      "Ideal for water restrictions",
+      "Fast full-car clean"
+    ],
     "sku": "DEMO-CS-004",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1938,7 +2419,12 @@
     "badge": null,
     "img": "https://placehold.co/600x600/4A90D9/ffffff?text=Wash+N+Wax",
     "desc": "Two-in-one wash and wax shampoo with a pearly blue formula that cleans and deposits a protective wax coating in a single wash. Leaves paintwork shiny and water-beading.",
-    "benefits": ["Washes & waxes in one step", "Water-beading wax protection", "Pearly gloss finish", "Highly concentrated formula"],
+    "benefits": [
+      "Washes & waxes in one step",
+      "Water-beading wax protection",
+      "Pearly gloss finish",
+      "Highly concentrated formula"
+    ],
     "sku": "DEMO-CS-005",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1971,8 +2457,13 @@
     "reviews": 0,
     "badge": null,
     "img": "https://placehold.co/600x600/1B4F72/ffffff?text=Foam+3+Concentrate",
-    "desc": "Triple-action foam concentrate that cleans, decontaminates and conditions paintwork in one application. Exceptionally concentrated — a small amount produces massive foam coverage.",
-    "benefits": ["Triple-action clean & condition", "Exceptionally concentrated", "Massive foam production", "Safe on wax, ceramic & PPF"],
+    "desc": "Triple-action foam concentrate that cleans, decontaminates and conditions paintwork in one application. Exceptionally concentrated \u00e2\u20ac\u201d a small amount produces massive foam coverage.",
+    "benefits": [
+      "Triple-action clean & condition",
+      "Exceptionally concentrated",
+      "Massive foam production",
+      "Safe on wax, ceramic & PPF"
+    ],
     "sku": "DEMO-CS-006",
     "stock": 0,
     "lowStockThreshold": 5,
@@ -1985,6 +2476,1032 @@
         "url": "https://placehold.co/600x600/1B4F72/ffffff?text=Foam+3+Concentrate",
         "storageKey": null,
         "altText": "Foam 3 Concentrate 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-sanitizers",
+    "name": "Sanitizers",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Sanitizers",
+    "desc": "Effective hand and surface sanitizer. Kills 99.9% of germs and bacteria on contact.",
+    "benefits": [
+      "Kills 99.9% of germs",
+      "Fast-acting formula",
+      "Suitable for hands and surfaces"
+    ],
+    "sku": "DEMO-HH-010",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-sanitizers",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Sanitizers",
+        "storageKey": null,
+        "altText": "Sanitizers 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-sani-pine",
+    "name": "Sani-Pine",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Sani-Pine",
+    "desc": "Pine-scented disinfectant cleaner for floors, bathrooms and general surfaces.",
+    "benefits": [
+      "Disinfects and cleans",
+      "Fresh pine scent",
+      "Suitable for all hard surfaces"
+    ],
+    "sku": "DEMO-HH-011",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-sani-pine",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Sani-Pine",
+        "storageKey": null,
+        "altText": "Sani-Pine 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-floor-shine-high-traffic",
+    "name": "Floor Shine High Traffic",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Floor+Shine+High+Traffic",
+    "desc": "Heavy-duty floor polish for high-traffic areas. Durable high-gloss finish that resists scuffs.",
+    "benefits": [
+      "High-gloss finish",
+      "Durable for high-traffic areas",
+      "Resists scuffs and marks"
+    ],
+    "sku": "DEMO-HH-012",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-floor-shine-high-traffic",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Floor+Shine+High+Traffic",
+        "storageKey": null,
+        "altText": "Floor Shine High Traffic 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-shower-gel",
+    "name": "Shower Gel",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Shower+Gel",
+    "desc": "Gentle, moisturising shower gel for daily use. Leaves skin clean, soft and refreshed.",
+    "benefits": [
+      "Gentle on skin",
+      "Moisturising formula",
+      "Refreshing fragrance"
+    ],
+    "sku": "DEMO-HH-013",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-shower-gel",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Shower+Gel",
+        "storageKey": null,
+        "altText": "Shower Gel 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-sulphuric-acid",
+    "name": "Sulphuric Acid",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Sulphuric+Acid",
+    "desc": "Industrial-grade sulphuric acid for drain unblocking and heavy-duty cleaning. Handle with care.",
+    "benefits": [
+      "Powerful drain unblocker",
+      "Dissolves organic blockages",
+      "Industrial strength"
+    ],
+    "sku": "DEMO-HH-014",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-sulphuric-acid",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Sulphuric+Acid",
+        "storageKey": null,
+        "altText": "Sulphuric Acid 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-toilet-bowl-cleaner",
+    "name": "Toilet Bowl Cleaner",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Toilet+Bowl+Cleaner",
+    "desc": "Removes limescale, stains and kills bacteria. Leaves the bowl fresh and hygienically clean.",
+    "benefits": [
+      "Removes limescale and stains",
+      "Kills bacteria",
+      "Fresh scent"
+    ],
+    "sku": "DEMO-HH-015",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-toilet-bowl-cleaner",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Toilet+Bowl+Cleaner",
+        "storageKey": null,
+        "altText": "Toilet Bowl Cleaner 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-thick-bleach-domestos-type",
+    "name": "Thick Bleach (Domestos Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Thick+Bleach+Domestos+Type",
+    "desc": "Thick bleach that clings to surfaces for maximum disinfecting power. Kills germs, whitens and deodorises.",
+    "benefits": [
+      "Thick cling formula",
+      "Kills 99.9% of germs",
+      "Whitens and deodorises"
+    ],
+    "sku": "DEMO-HH-016",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-thick-bleach-domestos-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Thick+Bleach+Domestos+Type",
+        "storageKey": null,
+        "altText": "Thick Bleach (Domestos Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-oxy-o2-vanish-type",
+    "name": "Oxy O2 (Vanish Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Oxy+O2+Vanish+Type",
+    "desc": "Oxygen-powered stain remover for fabrics. Lifts tough stains without damaging colours.",
+    "benefits": [
+      "Oxygen-powered stain removal",
+      "Colour-safe formula",
+      "Works on tough stains"
+    ],
+    "sku": "DEMO-HH-017",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-oxy-o2-vanish-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Oxy+O2+Vanish+Type",
+        "storageKey": null,
+        "altText": "Oxy O2 (Vanish Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-wash-up-liquid-green",
+    "name": "Wash-Up Liquid (Green)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Wash-Up+Liquid+Green",
+    "desc": "Green dish washing liquid that cuts through grease and food residue. Gentle on hands, tough on grease.",
+    "benefits": [
+      "Cuts through grease",
+      "Gentle on hands",
+      "Long-lasting suds"
+    ],
+    "sku": "DEMO-HH-018",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-wash-up-liquid-green",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Wash-Up+Liquid+Green",
+        "storageKey": null,
+        "altText": "Wash-Up Liquid (Green) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-fabric-softner-comfort-type",
+    "name": "Fabric Softner (Comfort Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Fabric+Softner+Comfort+Type",
+    "desc": "Fabric softener that leaves laundry irresistibly soft and fresh. Reduces static.",
+    "benefits": [
+      "Softens fabrics",
+      "Reduces static",
+      "Long-lasting freshness"
+    ],
+    "sku": "DEMO-HH-019",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-fabric-softner-comfort-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Fabric+Softner+Comfort+Type",
+        "storageKey": null,
+        "altText": "Fabric Softner (Comfort Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-floor-stripper-household",
+    "name": "Floor Stripper",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Floor+Stripper",
+    "desc": "Removes old polish, wax build-up and sealers from hard floors before re-coating.",
+    "benefits": [
+      "Removes old polish and wax",
+      "Prepares floor for re-coating",
+      "Suitable for all hard floors"
+    ],
+    "sku": "DEMO-HH-020",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-floor-stripper-household",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Floor+Stripper",
+        "storageKey": null,
+        "altText": "Floor Stripper 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-furniture-polish",
+    "name": "Furniture Polish",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "500ml",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Furniture+Polish",
+    "desc": "Nourishing furniture polish that cleans, shines and protects wood surfaces. Streak-free finish.",
+    "benefits": [
+      "Cleans and shines wood",
+      "Streak-free finish",
+      "Protects against dust"
+    ],
+    "sku": "DEMO-HH-021",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-furniture-polish",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Furniture+Polish",
+        "storageKey": null,
+        "altText": "Furniture Polish 500ml",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-hard-surface-cleaner-handy-andy-type",
+    "name": "Hard Surface Cleaner (Handy Andy Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Hard+Surface+Cleaner+Handy+Andy+Type",
+    "desc": "Cream-based cleaner that removes tough stains, grease and grime from kitchen and bathroom surfaces.",
+    "benefits": [
+      "Removes tough stains",
+      "Cream formula for gentle scrubbing",
+      "Safe on enamel and chrome"
+    ],
+    "sku": "DEMO-HH-022",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-hard-surface-cleaner-handy-andy-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Hard+Surface+Cleaner+Handy+Andy+Type",
+        "storageKey": null,
+        "altText": "Hard Surface Cleaner (Handy Andy Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-laundry-liquid-omo-auto-type",
+    "name": "Laundry Liquid (Omo Auto Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Laundry+Liquid+Omo+Auto+Type",
+    "desc": "Concentrated laundry liquid for automatic washing machines. Outstanding results even in cold water.",
+    "benefits": [
+      "Concentrated formula",
+      "Works in cold water",
+      "Suitable for all washing machines"
+    ],
+    "sku": "DEMO-HH-023",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-laundry-liquid-omo-auto-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Laundry+Liquid+Omo+Auto+Type",
+        "storageKey": null,
+        "altText": "Laundry Liquid (Omo Auto Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-overall-washing-powder",
+    "name": "Overall Washing Powder",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "10kg",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Overall+Washing+Powder",
+    "desc": "Heavy-duty washing powder for overalls, work wear and heavily soiled laundry.",
+    "benefits": [
+      "Removes heavy grease and dirt",
+      "Ideal for work wear",
+      "Powerful cleaning action"
+    ],
+    "sku": "DEMO-HH-024",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-overall-washing-powder",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Overall+Washing+Powder",
+        "storageKey": null,
+        "altText": "Overall Washing Powder 10kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-industrial-washing-powder",
+    "name": "Industrial Washing Powder",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "10kg",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Industrial+Washing+Powder",
+    "desc": "High-performance industrial washing powder. Delivers superior whitening and stain removal.",
+    "benefits": [
+      "Superior whitening",
+      "High-performance formula",
+      "Ideal for commercial use"
+    ],
+    "sku": "DEMO-HH-025",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-industrial-washing-powder",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Industrial+Washing+Powder",
+        "storageKey": null,
+        "altText": "Industrial Washing Powder 10kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-high-foaming-handing-washing-powder",
+    "name": "High Foaming Handing Washing Powder",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "10kg",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=High+Foaming+Handing+Washing+Powder",
+    "desc": "High-foaming hand washing powder with rich lather for effective hand laundry.",
+    "benefits": [
+      "High-foaming formula",
+      "Rich lather",
+      "Effective stain removal"
+    ],
+    "sku": "DEMO-HH-026",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-high-foaming-handing-washing-powder",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=High+Foaming+Handing+Washing+Powder",
+        "storageKey": null,
+        "altText": "High Foaming Handing Washing Powder 10kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-bio-ultra-bio-classic-type",
+    "name": "Bio Ultra (Bio Classic Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Bio+Ultra+Bio+Classic+Type",
+    "desc": "Biological washing liquid with enzyme action that breaks down protein, fat and starch stains.",
+    "benefits": [
+      "Enzyme-powered cleaning",
+      "Removes protein and fat stains",
+      "Effective at low temperatures"
+    ],
+    "sku": "DEMO-HH-027",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-bio-ultra-bio-classic-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Bio+Ultra+Bio+Classic+Type",
+        "storageKey": null,
+        "altText": "Bio Ultra (Bio Classic Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-metal-polish",
+    "name": "Metal Polish",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "500ml",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Metal+Polish",
+    "desc": "Restores shine and removes tarnish, rust and oxidation from all metal surfaces.",
+    "benefits": [
+      "Removes tarnish and oxidation",
+      "Restores brilliant shine",
+      "Suitable for all metals"
+    ],
+    "sku": "DEMO-HH-028",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-metal-polish",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Metal+Polish",
+        "storageKey": null,
+        "altText": "Metal Polish 500ml",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-mop-and-shine",
+    "name": "Mop & Shine",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Mop+%26+Shine",
+    "desc": "Floor cleaner and shine in one. Cleans and polishes hard floors with a brilliant, long-lasting shine.",
+    "benefits": [
+      "Cleans and polishes in one step",
+      "Long-lasting shine",
+      "Suitable for all hard floors"
+    ],
+    "sku": "DEMO-HH-029",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-mop-and-shine",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Mop+%26+Shine",
+        "storageKey": null,
+        "altText": "Mop & Shine 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-pine-gel",
+    "name": "Pine Gel",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Pine+Gel",
+    "desc": "Thick pine gel disinfectant for floors, toilets and drains. Kills germs, fresh pine fragrance.",
+    "benefits": [
+      "Thick gel formula",
+      "Kills germs and bacteria",
+      "Long-lasting pine fragrance"
+    ],
+    "sku": "DEMO-HH-030",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-pine-gel",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Pine+Gel",
+        "storageKey": null,
+        "altText": "Pine Gel 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-bleach-jik-type",
+    "name": "Bleach (Jik Type)",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Bleach+Jik+Type",
+    "desc": "Powerful liquid bleach for whitening laundry, disinfecting surfaces and removing tough stains.",
+    "benefits": [
+      "Whitens laundry",
+      "Disinfects surfaces",
+      "Removes tough stains"
+    ],
+    "sku": "DEMO-HH-031",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-bleach-jik-type",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Bleach+Jik+Type",
+        "storageKey": null,
+        "altText": "Bleach (Jik Type) 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-bubble-bath",
+    "name": "Bubble Bath",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Bubble+Bath",
+    "desc": "Luxurious bubble bath that creates rich foamy lather. Gentle on skin, long-lasting fragrance.",
+    "benefits": [
+      "Rich foamy lather",
+      "Gentle on skin",
+      "Long-lasting fragrance"
+    ],
+    "sku": "DEMO-HH-032",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-bubble-bath",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Bubble+Bath",
+        "storageKey": null,
+        "altText": "Bubble Bath 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-deo-blocks",
+    "name": "Deo Blocks",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "1kg",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Deo+Blocks",
+    "desc": "Deodorant urinal blocks that neutralise odours and keep urinals fresh and hygienic.",
+    "benefits": [
+      "Neutralises odours",
+      "Long-lasting freshness",
+      "Keeps urinals hygienic"
+    ],
+    "sku": "DEMO-HH-033",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-deo-blocks",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Deo+Blocks",
+        "storageKey": null,
+        "altText": "Deo Blocks 1kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-dispenser-hand-soap-pink",
+    "name": "Dispenser Hand Soap Pink",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Dispenser+Hand+Soap+Pink",
+    "desc": "Pink liquid hand soap for soap dispensers. Gentle cleansing formula, leaves hands soft.",
+    "benefits": [
+      "Gentle on hands",
+      "Ideal for soap dispensers",
+      "Leaves hands soft"
+    ],
+    "sku": "DEMO-HH-034",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-dispenser-hand-soap-pink",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Dispenser+Hand+Soap+Pink",
+        "storageKey": null,
+        "altText": "Dispenser Hand Soap Pink 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-drain-cleaner",
+    "name": "Drain Cleaner",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Drain+Cleaner",
+    "desc": "Powerful drain cleaner that dissolves hair, grease, soap scum and other blockages fast.",
+    "benefits": [
+      "Dissolves blockages fast",
+      "Works on hair and grease",
+      "Suitable for all drain types"
+    ],
+    "sku": "DEMO-HH-035",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-drain-cleaner",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Drain+Cleaner",
+        "storageKey": null,
+        "altText": "Drain Cleaner 5L",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-dribrite-floor-shine",
+    "name": "Dribrite Floor Shine",
+    "cat": "household",
+    "sub": "",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 5.0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/2E7D32/ffffff?text=Dribrite+Floor+Shine",
+    "desc": "Premium floor shine that provides a brilliant, long-lasting gloss on all hard floor surfaces.",
+    "benefits": [
+      "Brilliant gloss finish",
+      "Long-lasting shine",
+      "Suitable for all hard floors"
+    ],
+    "sku": "DEMO-HH-036",
+    "stock": 0,
+    "lowStockThreshold": 10,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-dribrite-floor-shine",
+        "type": "image",
+        "url": "https://placehold.co/600x600/2E7D32/ffffff?text=Dribrite+Floor+Shine",
+        "storageKey": null,
+        "altText": "Dribrite Floor Shine 5L",
         "sortOrder": 0,
         "isPrimary": true,
         "fileName": "",

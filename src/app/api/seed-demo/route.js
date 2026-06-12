@@ -15,6 +15,16 @@ const demoCategories = [
     status: 'active',
     displayOrder: 5,
   },
+  {
+    id: 'car-shampoo',
+    name: 'Car Shampoo',
+    short: 'Shampoo',
+    icon: 'Droplets',
+    blurb: 'Premium car shampoos for a showroom-clean finish.',
+    accent: '#1B4F72',
+    status: 'active',
+    displayOrder: 6,
+  },
 ];
 
 function safeCompare(a = '', b = '') {
@@ -25,11 +35,12 @@ function safeCompare(a = '', b = '') {
 }
 
 function normalizeProduct(product) {
+  // eslint-disable-next-line no-unused-vars
+  const { createdAt: _c, updatedAt: _u, ...rest } = product;
   return {
-    ...product,
+    ...rest,
     variants: Array.isArray(product.variants) ? product.variants : [],
     media: Array.isArray(product.media) ? product.media : [],
-    updatedAt: Date.now(),
   };
 }
 
@@ -96,11 +107,13 @@ export async function GET(req) {
         return acc;
       }
 
+      // eslint-disable-next-line no-unused-vars
+      const { updatedAt: _u, createdAt: _c, ...productData } = product;
       acc.push({
         updateOne: {
           filter: { id: product.id },
           update: {
-            $set: product,
+            $set: productData,
             $setOnInsert: { createdAt: Date.now() },
           },
           upsert: true,

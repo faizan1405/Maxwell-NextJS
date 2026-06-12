@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useCart, useProducts, BRAND, DEFAULT_CATEGORIES, money, getPrimaryImg, getSecondImg, catOf } from '../../lib/storeContext';
 import { 
-  Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, Cart, Minus, Tag
+  Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, ChevronRight, Cart, Minus, Tag
 } from '../ui/Icons';
 import { Reveal, Stars, BadgeChip } from '../ui/index';
 import { ProductReviews } from './ProductReviews';
+import { SwipeCarousel } from './SwipeCarousel';
 
 /* ── Global QuickView Event Emitter ── */
 export const openQuickView = (product) => {
@@ -183,9 +184,15 @@ export const Featured = () => {
           <Reveal><span className="featured__label"><Sparkles size={14} /> Customer favourites</span></Reveal>
           <Reveal delay={60}><h2 className="featured__title">Bestsellers</h2></Reveal>
         </div>
-        <div className="featured__grid">
+        <SwipeCarousel
+          className="featured__carousel swipe-carousel--products"
+          label="Best seller products"
+          previousLabel="Previous products"
+          nextLabel="Next products"
+          hint="Swipe to explore more"
+        >
           {best.map((p, i) => <Reveal key={p.id} delay={(i % 4) * 70}><ProductCard p={p} /></Reveal>)}
-        </div>
+        </SwipeCarousel>
         <div className="featured__footer">
           <button onClick={goShop} className="featured__btn-all">View All Products</button>
         </div>
@@ -229,7 +236,7 @@ const SORTS = [
   { id: "rating", label: "Top Rated" },
 ];
 
-export const Shop = ({ activeCat, setActiveCat, query, setQuery }) => {
+export const Shop = ({ activeCat, setActiveCat, query, setQuery, carousel = false }) => {
   const { products, categories = DEFAULT_CATEGORIES } = useProducts();
   const [sort, setSort] = useState("featured");
   const [visibleCount, setVisibleCount] = useState(8);
@@ -289,12 +296,38 @@ export const Shop = ({ activeCat, setActiveCat, query, setQuery }) => {
             <p className="shop-page__empty-sub">Try a different category or clear your search.</p>
             <button onClick={() => { setActiveCat("all"); setQuery(""); }} className="shop-page__empty-reset">Reset filters</button>
           </div>
+        ) : carousel ? (
+          <SwipeCarousel
+            className="shop-page__carousel swipe-carousel--products"
+            label="Shop all products"
+            previousLabel="Previous products"
+            nextLabel="Next products"
+            hint="Swipe to explore more"
+          >
+            {list.map((p, i) => <Reveal key={p.id} delay={(i % 4) * 60}><ProductCard p={p} /></Reveal>)}
+          </SwipeCarousel>
         ) : (
           <div className="shop-page__grid">
             {list.slice(0, visibleCount).map((p, i) => <Reveal key={p.id} delay={(i % 4) * 60}><ProductCard p={p} /></Reveal>)}
           </div>
         )}
-        {list.length > visibleCount && (
+        {carousel ? (
+          list.length > 0 && (
+            <div className="shop-page__load-more-wrap">
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'shop' }));
+                    window.scrollTo(0, 0);
+                  }
+                }}
+                className="shop-page__load-more-btn shop-page__view-all-btn"
+              >
+                View All Products
+              </button>
+            </div>
+          )
+        ) : list.length > visibleCount && (
           <div className="shop-page__load-more-wrap">
             <button onClick={() => setVisibleCount(v => v + 8)} className="shop-page__load-more-btn">
               Load More

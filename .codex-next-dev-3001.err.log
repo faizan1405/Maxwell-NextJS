@@ -6,3 +6,4 @@
 - Log:          .next\dev\logs\next-development.log
 
 Run taskkill /PID 45808 /F to stop it.
+F

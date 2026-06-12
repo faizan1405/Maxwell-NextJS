@@ -1,3 +1,16 @@
+/**
+ * API Route: /api/orders
+ *
+ * Handles order lifecycle management:
+ *   POST   — Create a new customer order (validate cart, compute totals, debit coupon, send emails).
+ *   GET    — Fetch orders. Admins receive all orders; customers receive only their own.
+ *   PATCH  — Update order/payment status (admin). Customers may cancel pending orders only.
+ *
+ * IMPORTANT: Email helper functions (sendCODEmail, sendEFTEmail, sendOrderConfirmedEmail, etc.)
+ * are defined as hoisted async functions within THIS file and are NOT imported from lib/email.js.
+ * They call the internal `sendEmail()` function which uses the Resend API.
+ * Do not add stubs for them in lib/email.js.
+ */
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Order, Product, Settings, Coupon, ShippingRate } from '../../../lib/models';
@@ -5,9 +18,25 @@ import { verifySession, verifyCustomerSession } from '../../../lib/auth';
 import { formatZar } from '../../../utils/currency';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
+/**
+ * Atomically increments the invoice and order number counters stored in
+ * `global_settings`, then returns formatted human-readable identifiers.
+ *
+ * Counter storage: Settings document { key: 'global_settings', value: { invoiceCounter, orderCounter } }
+ * Starting values: invoiceCounter=1000, orderCounter=10000 (seeded in db.js).
+ *
+ * Output formats:
+ *   invoiceNumber → "INV-2025-1001"  (year + zero-padded 4-digit counter)
+ *   orderNumber   → "#10001"         (plain incrementing number with # prefix)
+ *
+ * WARNING: This is NOT atomic in the MongoDB sense (no findAndModify / transactions).
+ * Concurrent order placements could theoretically produce duplicate counters under
+ * extreme load. For this application's scale this is acceptable.
+ */
 async function nextInvoiceAndOrderNumber() {
   let doc = await Settings.findOne({ key: 'global_settings' }).lean();
   let s = doc ? doc.value : {};
+  // Bootstrap counters if they were somehow missing from the settings document
   if (!s.invoiceCounter) s.invoiceCounter = 1000;
   if (!s.orderCounter) s.orderCounter = 10000;
   
@@ -28,16 +57,36 @@ async function nextInvoiceAndOrderNumber() {
 }
 
 /* ── Province-based shipping ─────────────────────────────────────────────────── */
+/**
+ * Resolves the shipping charge for an order using a priority-based lookup.
+ *
+ * Resolution priority (first match wins):
+ *   1. Province-specific rate: country + region match (e.g., "South Africa" + "Gauteng").
+ *   2. Country-wide rate: country match with no specific region and not the default rate.
+ *   3. Default rate: the ShippingRate document flagged with isDefault=true.
+ *   4. Legacy fallback: if no ShippingRate document matches, falls back to per-province
+ *      rates stored in global_settings.shipping.provinceRates, then to the flat fee.
+ *
+ * Free shipping is applied when the subtotal meets or exceeds a rate's freeThreshold.
+ *
+ * @param {number} subtotal - Order subtotal (before delivery and COD fee).
+ * @param {string} province - Customer's province/region (from address details).
+ * @param {string} country  - Customer's country (from address details).
+ * @returns {{ charge: number, name: string }} The shipping charge and display name.
+ */
 async function computeShipping(subtotal, province, country) {
   const rates = await ShippingRate.find({ status: 'active' }).lean();
   let rateObj = null;
 
+  // Priority 1: exact province/region match
   if (country && province) {
     rateObj = rates.find(r => r.country === country && r.region && province.includes(r.region));
   }
+  // Priority 2: country-wide rate with no specific region
   if (!rateObj && country) {
     rateObj = rates.find(r => r.country === country && !r.region && !r.isDefault);
   }
+  // Priority 3: the catch-all default rate
   if (!rateObj) {
     rateObj = rates.find(r => r.isDefault);
   }
@@ -47,6 +96,7 @@ async function computeShipping(subtotal, province, country) {
     return { charge: rateObj.charge, name: rateObj.name };
   }
 
+  // Priority 4: legacy province-rate fallback from global_settings (pre-ShippingRate era)
   const sDoc = await Settings.findOne({ key: 'global_settings' }).lean();
   const settings = sDoc?.value || {};
   const threshold = settings.shipping?.freeThreshold ?? 750;
@@ -60,6 +110,11 @@ function payLabel(method) {
   return method === 'COD' ? 'Cash on Delivery' : method === 'EFT' ? 'EFT / Bank Transfer' : (method || '');
 }
 
+/**
+ * Validates a South African mobile number.
+ * Accepts formats: 067xxxxxxx, 0067xxxxxxx, +27xxxxxxx.
+ * Strips spaces and dashes before testing. SA mobile prefixes: 06x, 07x, 08x.
+ */
 function isValidSaMobile(raw) {
   const digits = String(raw || '').replace(/[^\d+]/g, '');
   return /^(\+?27|0)[6-8]\d{8}$/.test(digits);
@@ -69,6 +124,11 @@ function isValidSaMobile(raw) {
    EMAIL FUNCTIONS
    ════════════════════════════════════════════════════════════════════════════════ */
 
+/**
+ * Returns the Resend API credentials from environment variables.
+ * RESEND_API_KEY — required for emails to be sent (set in .env.local / Vercel env).
+ * FROM_EMAIL     — the "from" address shown to recipients. Defaults to a branded noreply.
+ */
 function emailEnv() {
   return {
     KEY:  process.env.RESEND_API_KEY,
@@ -76,6 +136,15 @@ function emailEnv() {
   };
 }
 
+/**
+ * Core email sender. Calls the Resend API to deliver a transactional email.
+ * Silently no-ops if RESEND_API_KEY is missing (e.g. in local dev without credentials).
+ * Errors are logged but never thrown — email failures must not break order creation.
+ *
+ * @param {string|string[]} to - Recipient email address(es).
+ * @param {string} subject     - Email subject line.
+ * @param {string} html        - Full HTML email body.
+ */
 async function sendEmail(to, subject, html) {
   const { KEY, FROM } = emailEnv();
   if (!KEY || !to) return;
@@ -458,7 +527,11 @@ export async function POST(req) {
 
     await connectToDatabase();
 
-    /* Idempotency */
+    /* Idempotency guard — prevents duplicate orders from network retries or double-clicks.
+     * The client generates a unique key (e.g. a UUID) and sends it with the request.
+     * If an order with this key already exists, return the original order instead of
+     * creating a new one. EFT bank details and internal notes are stripped from the
+     * response for customer-facing safety. */
     if (idemKey) {
       const existing = await Order.findOne({ idempotencyKey: idemKey }).lean();
       if (existing) {
@@ -813,7 +886,25 @@ export async function PATCH(req) {
       }
     }
 
-    /* Stock and Coupon adjustment on status change */
+    /* ── Stock & Coupon adjustment on order status change ───────────────────────────
+     *
+     * Stock is managed via a `stockDeducted` flag on the order to ensure that
+     * inventory is never double-counted regardless of how many times the status
+     * changes between active and inactive states.
+     *
+     * DEDUCTION: When an order transitions INTO an active fulfillment state
+     * (confirmed / processing / shipped / delivered) and stock has NOT yet been
+     * deducted, inventory is decremented for each line item. Variants have their
+     * own stock field; for single-variant products the parent stock is kept in sync.
+     *
+     * RESTORATION: When an order transitions OUT of an active state (e.g. cancelled
+     * from confirmed) and stock WAS previously deducted, inventory is restored.
+     * For products with a single variant, both variant.stock and product.stock are
+     * restored together.
+     *
+     * COUPON: The coupon usedCount is also adjusted symmetrically — decremented on
+     * deduction, incremented on restoration — so usage limits remain accurate.
+     */
     const effectiveNewStatus = patch.status ?? prev.status;
     const DEDUCTED_STATES = ['confirmed', 'processing', 'shipped', 'delivered'];
     const statusActuallyChanged = patch.status !== undefined;
@@ -823,7 +914,7 @@ export async function PATCH(req) {
     if (shouldBeDeducted && !isCurrentlyDeducted) {
       const allProducts = await Product.find({}).lean();
       
-      // 1. Verify stock availability before committing
+      // Step 1: Verify all items have sufficient stock before committing any changes
       for (const item of (prev.items || [])) {
         const product = allProducts.find(p => p.id === item.productId);
         if (!product) continue;
@@ -848,7 +939,7 @@ export async function PATCH(req) {
         }
       }
 
-      // 2. Deduct stock safely
+      // Step 2: All items validated — deduct stock and mark variants out of stock if needed
       for (const item of (prev.items || [])) {
         const product = allProducts.find(p => p.id === item.productId);
         if (!product) continue;
@@ -873,6 +964,7 @@ export async function PATCH(req) {
           pUpdate.stock = newProductStock;
           if (newProductStock <= 0) pUpdate.outOfStock = true;
           changed = true;
+          // For single-variant products, keep the lone variant's stock in sync with the parent
           if (product.variants && product.variants.length === 1) {
             pUpdate.variants = [{ ...product.variants[0], stock: newProductStock }];
             if (newProductStock <= 0) pUpdate.variants[0].outOfStock = true;
@@ -881,6 +973,7 @@ export async function PATCH(req) {
 
         if (changed) {
           pUpdate.updatedAt = Date.now();
+          // Recalculate aggregate product.stock from all variant stocks (if variants exist)
           if (pUpdate.variants && pUpdate.variants.length > 0) {
             pUpdate.stock = pUpdate.variants.reduce((acc, v) => acc + (v.stock || 0), 0);
           }
@@ -890,7 +983,8 @@ export async function PATCH(req) {
 
       patch.stockDeducted = true;
 
-      // Reactivate coupon usage if needed
+      // If this order was previously cancelled and is being re-activated,
+      // increment the coupon usedCount to correctly reflect the usage
       if (prev.status === 'cancelled' && prev.couponId) {
         await Coupon.updateOne({ id: prev.couponId }, { $inc: { usedCount: 1 }, $set: { updatedAt: Date.now() } });
       }
@@ -956,16 +1050,23 @@ export async function PATCH(req) {
       const newPayStatus    = updated.paymentStatus;
       const payMethod       = updated.paymentMethod || updated.payment?.method;
 
+      // Trigger transactional emails on order status transitions.
+      // Emails are fired-and-forgotten (.catch(() => {})) so a failed email
+      // delivery never rolls back or errors the PATCH response.
       if (newOrderStatus !== prevOrderStatus) {
         if (newOrderStatus === 'Confirmed')  sendOrderConfirmedEmail(updated).catch(() => {});
         if (newOrderStatus === 'Dispatched') sendOrderDispatchedEmail(updated).catch(() => {});
         if (newOrderStatus === 'Delivered')  sendOrderDeliveredEmail(updated).catch(() => {});
       }
 
+      // Trigger payment-specific emails when the payment status changes.
+      // The payment method determines which email template is used for 'Paid' transitions.
       if (newPayStatus && newPayStatus !== prevPayStatus) {
         if (newPayStatus === 'Paid' && payMethod === 'COD') {
+          // Cash physically collected by driver — notify customer of receipt
           sendCashCollectedEmail(updated).catch(() => {});
         } else if (newPayStatus === 'Paid' && payMethod === 'EFT') {
+          // Admin verified EFT bank transfer — notify customer of confirmation
           sendPaymentVerifiedEmail(updated).catch(() => {});
         } else if (newPayStatus === 'Payment Rejected') {
           sendPaymentRejectedEmail(updated, statusNote || '').catch(() => {});

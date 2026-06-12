@@ -57,7 +57,7 @@ export const Footer = ({ onShopCat }) => (
               <button onClick={(e) => { 
                 e.preventDefault(); 
                 if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'home' })); 
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#about' } })); 
                   setTimeout(() => { const el = document.getElementById('about'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
                 }
               }} className="footer-links__link">About us</button>
@@ -66,15 +66,15 @@ export const Footer = ({ onShopCat }) => (
               <button onClick={(e) => { 
                 e.preventDefault(); 
                 if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'home' })); 
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#contact' } })); 
                   setTimeout(() => { const el = document.getElementById('contact'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
                 }
               }} className="footer-links__link">Contact</button>
             </li>
             <li><a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to inquire about bulk and trade pricing.")}`} target="_blank" rel="noopener noreferrer" className="footer-links__link text-left block w-full">Bulk &amp; trade</a></li>
-            <li><button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'faq' }))} className="footer-links__link">Delivery &amp; returns</button></li>
+            <li><button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">Delivery &amp; returns</button></li>
             <li>
-              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'faq' }))} className="footer-links__link">FAQs</button>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">FAQs</button>
             </li>
           </ul>
         </div>

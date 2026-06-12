@@ -25,6 +25,17 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 export const FREE_SHIP = 750;
+const STORE_PAGES = ['home', 'shop', 'cart', 'checkout', 'account', 'order-confirmed', 'faq'];
+
+function pageFromPath(pathname) {
+  const path = (pathname || '/').replace(/^\/+/, '').split('/')[0];
+  if (!path) return 'home';
+  return STORE_PAGES.includes(path) ? path : 'home';
+}
+
+function pathForPage(page) {
+  return page === 'home' ? '/' : `/${page}`;
+}
 
 const API_BASE = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
   ? '' : '';
@@ -150,35 +161,37 @@ export function CustomerProvider({ children }) {
   const [customer, setCustomer] = useState(null);
   const [sessionToken, setSessionToken] = useState(null);
   const [authOpen, setAuthOpen] = useState(false);
-  const [page, setPageState] = useState('home');
+  const [page, setPageState] = useState(() => {
+    if (typeof window === 'undefined') return 'home';
+    return pageFromPath(window.location.pathname);
+  });
 
-  const setPage = useCallback((p) => {
-    const valid = ['home', 'shop', 'cart', 'checkout', 'account', 'order-confirmed', 'faq'];
-    if (!valid.includes(p)) p = 'home';
+  const setPage = useCallback((p, options = {}) => {
+    if (!STORE_PAGES.includes(p)) p = 'home';
     setPageState(p);
     if (typeof window !== 'undefined') {
-      const path = p === 'home' ? '/' : `/${p}`;
-      if (window.location.pathname !== path) {
-        window.history.pushState({ page: p }, '', path);
+      const url = options.url || pathForPage(p);
+      const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (current !== url) {
+        const method = options.replace ? 'replaceState' : 'pushState';
+        window.history[method]({ page: p }, '', url);
       }
+      window.dispatchEvent(new CustomEvent('ab:url-change', { detail: { page: p } }));
     }
   }, []);
 
   // Init page from URL
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const path = window.location.pathname.substring(1).split('?')[0];
-    if (path) setPageState(path);
-    window.history.replaceState({ page: path || 'home' }, '', path ? `/${path}` : '/');
+    const pageFromUrl = pageFromPath(window.location.pathname);
+    setPageState(pageFromUrl);
+    window.history.replaceState({ page: pageFromUrl }, '', `${window.location.pathname}${window.location.search}${window.location.hash}`);
 
     const handlePopState = (e) => {
-      let p = 'home';
-      if (e.state && e.state.page) p = e.state.page;
-      else {
-        const pp = window.location.pathname.substring(1).split('?')[0];
-        if (pp) p = pp;
-      }
+      let p = e.state?.page || pageFromPath(window.location.pathname);
+      if (!STORE_PAGES.includes(p)) p = 'home';
       setPageState(p);
+      window.dispatchEvent(new CustomEvent('ab:url-change', { detail: { page: p } }));
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);

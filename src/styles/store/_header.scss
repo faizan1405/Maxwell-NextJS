@@ -132,6 +132,12 @@
       border-color: rgba($cobalt, 0.4);
       background-color: rgba($cobalt, 0.05);
     }
+
+    &--active {
+      border-color: rgba($cobalt, 0.45);
+      background-color: rgba($cobalt, 0.08);
+      color: $cobalt;
+    }
   }
 
   &__trigger-icon {
@@ -380,6 +386,10 @@
     &:active {
       transform: scale(0.95);
     }
+
+    &--active {
+      box-shadow: 0 0 0 4px rgba($cobalt, 0.16);
+    }
   }
 
   &__cart-count {
@@ -577,6 +587,7 @@
 
   &--active {
     color: $cobalt;
+    background-color: rgba($cobalt, 0.05);
   }
 
   &:hover {
@@ -615,6 +626,10 @@
 
   &--danger {
     color: $red-500;
+  }
+
+  &--active {
+    color: $cobalt;
   }
 }
 

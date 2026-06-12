@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useCart, useCustomer, money, getPrimaryImg, catOf } from '../../lib/storeContext';
+import { useCart, useCustomer, useProducts, money, getPrimaryImg, catOf } from '../../lib/storeContext';
 import { formatZar } from '../../utils/currency';
+import { printInvoice } from '../../utils/invoice';
 import { 
   ArrowLeft, Cart as CartIcon, CheckCircle, Trash, Minus, Plus, Bag, Lock, Shield, 
   User, MapPin, CreditCard, Tag, X, AlertCircle, FileText as Copy, Download, Home
@@ -30,103 +31,7 @@ function CkField({ label, className = '', as: As = 'input', error = '', ...props
       {error && <p id={describedBy} className="ck-field__error">{error}</p>}
     </div>
   );
-}
-
-/* ── Invoice generator ───────────────────────────────────────────────────────── */
-export function printInvoice(order) {
-  const s        = typeof window !== 'undefined' ? window.__settings || {} : {};
-  const biz      = s.business || {};
-  const bank     = order.eftBankDetails || s.eft || {};
-  const bizName  = biz.name    || 'Amahle Blue';
-  const bizAddr  = biz.address || 'Unit H, 13 Main Reef Road, Dunswart, Boksburg, Gauteng, South Africa';
-  const bizPhone = biz.phone   || '067 101 4345';
-  const bizEmail = biz.email   || 'info@amahle-blue.co.za';
-  const vatNum   = biz.vatNumber || '';
-
-  const VAT_RATE  = 0.15;
-  const vatAmount = (order.total || 0) - (order.total || 0) / (1 + VAT_RATE);
-
-  const payMethod   = order.paymentMethod || order.payment?.method || '';
-  const payStatus   = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : order.payment?.status) || 'Pending';
-  const orderStatus = order.orderStatus   || order.status || '';
-  const isPaid      = payStatus === 'Paid' || order.payment?.status === 'paid';
-  const isEFT       = payMethod === 'EFT';
-  const isCOD       = payMethod === 'COD';
-  const eftRef      = order.eftReference || order.orderNumber;
-  const codFee      = order.codFee || 0;
-  const payStatusColor = isPaid ? '#159A4C' : payStatus.includes('Reject') ? '#dc2626' : '#d97706';
-
-  const rows = (order.items || []).map(i => `
-    <tr>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:13px;color:#334155;">${i.name}${i.variation ? ` <span style="color:#94a3b8;font-size:11px">(${i.variation})</span>` : ''}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${i.qty}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;color:#64748b;">${formatZar(i.price)}</td>
-      <td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:13px;font-weight:700;color:#0B2545;">${formatZar(i.price * i.qty)}</td>
-    </tr>`).join('');
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width"/>
-  <title>Invoice ${order.invoiceNumber || order.orderNumber}</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Helvetica, Arial, sans-serif; background: #fff; color: #0B2545; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { max-width: 720px; margin: 0 auto; padding: 40px 40px 60px; }
-    @media print { body { background: #fff; } .no-print { display: none !important; } .page { padding: 20px; } }
-    h1 { font-size: 28px; font-weight: 800; color: #0B2545; }
-    table { width:100%; border-collapse:collapse; }
-    th { background:#f8fafc; padding:9px 14px; text-align:left; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:1px; }
-    th:last-child, td:last-child { text-align:right; }
-    td.center, th.center { text-align:center; }
-  </style>
-</head>
-<body>
-<div class="page">
-  <div class="no-print" style="text-align:right;margin-bottom:24px;">
-    <button onclick="window.print()" style="background:#1E50E0;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">
-      🖨️ Print / Save PDF
-    </button>
-  </div>
-  <div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:32px 36px;border-radius:16px;margin-bottom:32px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
-      <div>
-        <div style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;">${bizName}</div>
-        <h1 style="color:#fff;font-size:26px;font-weight:800;margin:0;">TAX INVOICE</h1>
-      </div>
-      <div style="text-align:right;">
-        <div style="color:#bfdbfe;font-size:13px;">${order.invoiceNumber || order.orderNumber}</div>
-        <div style="color:#7FC4FF;font-size:12px;margin-top:2px;">${new Date(order.createdAt).toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'})}</div>
-      </div>
-    </div>
-  </div>
-  <table style="margin-bottom:4px;">
-    <thead>
-      <tr><th>Product</th><th class="center">Qty</th><th>Unit Price</th><th>Amount</th></tr>
-    </thead>
-    <tbody>${rows}</tbody>
-  </table>
-  <table style="margin-bottom:32px;">
-    <tbody>
-      <tr style="border-top:2px solid #e2e8f0;">
-        <td colspan="3" style="padding:14px 14px;text-align:right;font-size:16px;font-weight:800;color:#0B2545;">Total (incl. VAT)</td>
-        <td style="padding:14px 14px;text-align:right;font-size:18px;font-weight:800;color:#1E50E0;">${formatZar(order.total)}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-</body></html>`;
-
-  const win = window.open('', '_blank', 'width=800,height=900,scrollbars=yes');
-  if (!win) { alert('Please allow pop-ups to download the invoice.'); return; }
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => { try { win.print(); } catch {} }, 600);
-}
-
-/* ── CartPage ────────────────────────────────────────────────────────────────── */
+}/* ── CartPage ────────────────────────────────────────────────────────────────── */
 export function CartPage({ onGoHome, onCheckout }) {
   const { detailed, count, subtotal, setQty, remove, clear } = useCart();
 
@@ -755,6 +660,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
   const [upOk,     setUpOk]     = useState(false);
   const [settings, setSettings] = useState(null);
   const { apiBase, sessionToken, isLoggedIn } = useCustomer();
+  const { products } = useProducts();
   const fileRef = useRef(null);
 
   useEffect(() => {
@@ -777,7 +683,12 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
   const { isCOD, isEFT } = { isCOD: order.paymentMethod === 'COD', isEFT: order.paymentMethod === 'EFT' };
   const eftConfig = order.eftBankDetails || settings?.eft || {};
-  const showEFTInfo = isEFT && (!order.paymentStatus || order.paymentStatus.toLowerCase() !== 'paid');
+  const payStatus = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : 'Pending');
+  const isPaid = payStatus === 'Paid' || order.payment?.status === 'paid';
+  const showEFTInfo = isEFT && !isPaid;
+  const vatAmount = (order.total || 0) - (order.total || 0) / 1.15;
+  const amountPaid = isPaid ? order.total : 0;
+  const balanceDue = isPaid ? 0 : order.total;
 
   function copyToClipboard(text) {
     navigator.clipboard.writeText(text);
@@ -806,6 +717,26 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
     setUploading(false);
   }
 
+  const getProductImg = (productId) => {
+    const prod = products?.find(p => p.id === productId);
+    return prod ? getPrimaryImg(prod) : '/assets/products/placeholder.svg';
+  };
+
+  const getPaymentStatusLabel = () => {
+    if (isPaid) return 'Paid';
+    if (isEFT) {
+      if (order.proofOfPaymentUrl || upOk) return 'Awaiting EFT Approval';
+      return 'Awaiting EFT Payment';
+    }
+    return 'Cash Payment Pending';
+  };
+
+  const getPaymentBadgeClass = () => {
+    if (isPaid) return 'acc-badge--green';
+    if (isEFT && (order.proofOfPaymentUrl || upOk)) return 'acc-badge--blue';
+    return 'acc-badge--amber';
+  };
+
   return (
     <div className="order-confirmed ab-page-enter">
       <div className="order-confirmed__container">
@@ -820,10 +751,46 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
           </div>
 
           <div className="order-confirmed__body">
+            
+            {/* Useful Order Info Card */}
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                <span style={{ color: '#64748b' }}>Order Date & Time</span>
+                <span style={{ fontWeight: 600, color: '#0B2545' }}>
+                  {order.createdAt ? new Date(order.createdAt).toLocaleString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', alignItems: 'center' }}>
+                <span style={{ color: '#64748b' }}>Order Status</span>
+                <span className="acc-badge acc-badge--blue" style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
+                  {order.orderStatus || order.status || 'Pending'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', alignItems: 'center' }}>
+                <span style={{ color: '#64748b' }}>Payment Status</span>
+                <span className={`acc-badge ${getPaymentBadgeClass()}`} style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
+                  {getPaymentStatusLabel()}
+                </span>
+              </div>
+              <div style={{ borderTop: '1px dashed #e2e8f0', marginTop: '0.5rem', paddingTop: '0.5rem', fontSize: '13px', color: '#1E50E0', fontWeight: 600 }}>
+                {isCOD ? (
+                  <span>Next Steps: Payment will be collected in cash during delivery.</span>
+                ) : (
+                  <span>
+                    {upOk || order.proofOfPaymentUrl ? (
+                      <span style={{ color: '#159A4C' }}>Next Steps: Payment proof has been uploaded. Awaiting administrative approval.</span>
+                    ) : (
+                      <span>Next Steps: Please transfer the funds using the details below and upload proof to activate processing.</span>
+                    )}
+                  </span>
+                )}
+              </div>
+            </div>
+
             {showEFTInfo && (
               <div className="order-confirmed__eft">
                 <h3 className="order-confirmed__eft-title">
-                  <CreditCard size={16} /> EFT Payment Instructions
+                  <CreditCard size={16} /> EFT Bank Transfer Details
                 </h3>
                 <div className="order-confirmed__eft-grid">
                   <div className="order-confirmed__eft-item">
@@ -855,7 +822,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             )}
 
             {showEFTInfo && (
-              <div style={{ marginTop: '1rem', padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+              <div style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0B2545', marginTop: 0, marginBottom: '0.75rem' }}>
                   Upload Proof of Payment
                 </h3>
@@ -900,7 +867,43 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
               </div>
             )}
 
-            <div className="order-confirmed__details">
+            {/* Detailed Order Summary Section */}
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0B2545', margin: '0 0 1rem 0' }}>Order Summary</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {(order.items || []).map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <div style={{ width: '4rem', height: '4rem', overflow: 'hidden', borderRadius: '8px', background: '#f8fafc', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+                      <img 
+                        src={getProductImg(item.productId)} 
+                        alt={item.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                        onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }} 
+                      />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B2545', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {item.name}
+                      </p>
+                      {item.variation && (
+                        <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                          Variation: {item.variation}
+                        </p>
+                      )}
+                      <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 0' }}>
+                        Qty: {item.qty} × {money(item.price)}
+                      </p>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#0B2545', flexShrink: 0 }}>
+                      {money(item.price * item.qty)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Delivery address & contacts */}
+            <div className="order-confirmed__details" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
               <div className="order-confirmed__section">
                 <p className="title">Delivery Address</p>
                 <p className="content" dangerouslySetInnerHTML={{ __html: (order.address || '').replace(/,\s*/g, ',<br>') }} />
@@ -915,9 +918,53 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
               </div>
             </div>
 
-            <div className="order-confirmed__total">
-              <p className="label">Total Paid/Due</p>
-              <p className="val">{money(order.total)}</p>
+            {/* Payment breakdown */}
+            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
+                <span>Subtotal</span>
+                <span style={{ fontWeight: 600, color: '#0B2545' }}>{money(order.subtotal)}</span>
+              </div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
+                <span>Delivery</span>
+                <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#159A4C' : '#0B2545' }}>
+                  {order.delivery === 0 ? 'FREE' : money(order.delivery)}
+                </span>
+              </div>
+
+              {(order.couponDiscount || 0) > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#159A4C' }}>
+                  <span>Coupon Deduction {order.couponCode ? `(${order.couponCode})` : ''}</span>
+                  <span style={{ fontWeight: 700 }}>−{money(order.couponDiscount)}</span>
+                </div>
+              )}
+
+              {(order.codFee || 0) > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#d97706' }}>
+                  <span>COD Fee</span>
+                  <span style={{ fontWeight: 600 }}>{money(order.codFee)}</span>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#64748b', borderTop: '1px dashed #e2e8f0', marginTop: '0.25rem', paddingTop: '0.5rem' }}>
+                <span>VAT Included (15%)</span>
+                <span>{money(vatAmount)}</span>
+              </div>
+
+              <div className="order-confirmed__total" style={{ borderTop: '1px solid #e2e8f0', marginTop: '0.25rem', paddingTop: '1rem' }}>
+                <p className="label">Final Total</p>
+                <p className="val">{money(order.total)}</p>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginTop: '0.25rem' }}>
+                <span style={{ color: '#64748b' }}>Amount Paid</span>
+                <span style={{ fontWeight: 600, color: '#0B2545' }}>{money(amountPaid)}</span>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, color: balanceDue > 0 ? '#b45309' : '#159A4C' }}>
+                <span>Amount Due / Balance</span>
+                <span>{money(balanceDue)}</span>
+              </div>
             </div>
 
             <div className="order-confirmed__actions">

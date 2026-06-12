@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect, useRef, useMemo, Fragment } from 'react';
 import { useCustomer, useCart, useProducts, money, getPrimaryImg } from '../../lib/storeContext';
+import { printInvoice } from '../../utils/invoice';
 import { 
   CheckCircle, AlertCircle, Check, X, MapPin, Truck, XCircle, FileText, RefreshCw, Package, ChevronRight, Mail, Pencil, Trash, Plus, Star, User, ArrowLeft, LogOut
 } from '../ui/Icons';
@@ -279,10 +280,7 @@ function OrderDetailModal({ order, sessionToken, apiBase, onClose, onReorder, on
     if (result?.error) { setCancelError(result.error); return; }
     onClose();
   }
-  
-  function printInvoice(order) {
-    window.print();
-  }
+
 
   return (
     <div className="acc-modal-overlay">

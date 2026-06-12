@@ -94,10 +94,10 @@ Maxwell-NextJS/
     │   └── ui/                # Shared micro-components (Icons, index re-exports)
     ├── lib/                   # Shared server + client utilities
     │   ├── auth.js            # JWT helpers — sign and verify admin/customer tokens
-    │   ├── db.js              # DB bootstrap: connect + seed demo products on cold start
+    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, and Products)
     │   ├── email.js           # Email utility (transactional emails, future use)
     │   ├── models.js          # Central re-export of all Mongoose models
-    │   ├── mongoose.js        # MongoDB connection with global cache (prevents reconnects)
+    │   ├── mongoose.js        # MongoDB connection with cached pool & lazy seed trigger
     │   └── storeContext.js    # Storefront global state — cart, user, active page
     ├── models/                # Mongoose schemas (11 total)
     │   ├── Product.js / Order.js / Customer.js / Cart.js
@@ -340,6 +340,31 @@ Final commit chain: `75f1dc4` (static import) → `12bbdd8` (one-shot endpoint) 
 * **`vercel deploy --prod` vs git push** — CLI deploys upload local working-tree files. Git pushes only deploy committed files. If something works after a CLI deploy but breaks after a git-triggered redeploy, untracked files are the prime suspect.
 * **MongoDB Atlas IP allowlist** must include `0.0.0.0/0` (or Vercel's IP ranges) for serverless functions to connect.
 * **Demo products** are identified by `id` prefix `demo-`. To remove all demo data, run `db.products.deleteMany({ id: /^demo-/ })` in MongoDB.
+
+---
+
+## Session Notes — 2026-06-12: Fix Category Dropdown & Database Seeding Regression
+
+### Goal
+Fix the Category dropdown inside the Add/Edit Product modals showing empty state / black strip, and resolve the database categories seeding regression.
+
+### Files Changed
+* **`src/components/admin/AdminProvider.js`** (modified) — Resolved local API base URL resolution to use relative paths (`''`) instead of hardcoding Vercel production URL. Initialized categories state with `DEFAULT_CATEGORIES` fallback list so dropdowns/pages are never left empty if local database fails/is inaccessible.
+* **`src/components/admin/ProductsPage.js`** (modified) — Updated Category select component to dynamically render fallback placeholder option if categories state is empty. Configured new product forms to initialize selection to the first loaded category.
+* **`src/styles/admin/components/_form-field.scss`** (modified) — Explicitly set dark text color and white background on select options to resolve theme/browser styling issues (black strip).
+* **`src/lib/db.js`** (modified) — Exported `seedDatabase()` function. Rename category display names to exact match requested values ("Household", "Industrial", "Car Care", "Car Exterior", "Sanitisers").
+* **`src/lib/mongoose.js`** (modified) — Imported `seedDatabase` and hooked it directly inside `connectToDatabase()` to execute on every successful connection boot.
+* **`src/lib/storeContext.js`** (modified) — Updated storefront category display name fallbacks to match requested values.
+
+### Root Cause
+1. **Unused Database Connection Function:** The project had two database connection files: `mongoose.js` and `db.js`. Almost all Next.js API routes used `connectToDatabase()` from `mongoose.js`. However, the lazy database seeding logic (`seedDatabase()`) was only configured inside `dbConnect()` (in `db.js`), which was never imported or used by API routes.
+2. **Missing Seeding & State Overwrite:** Because seeding was never triggered when API routes ran, if the database was blank, the `/api/categories` endpoint returned an empty array (`[]`). The admin panel received this successful response and overwrote its fallback categories state to `[]`, leaving the dropdown empty.
+3. **CORS / API Base Resolution:** On local host/dev environments, the admin context was querying production API routes directly due to hardcoded Vercel domain values in `API_BASE`, failing to resolve categories locally.
+
+### Verification
+- Both storefront and admin dashboards now display identical, clean category names.
+- Adding or editing products lists all seeded categories correctly with high-contrast text styling.
+- Local database automatically seeds default categories on the first connection call of any API endpoint.
 
 ---
 *Documentation End.*

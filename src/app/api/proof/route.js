@@ -34,8 +34,8 @@ const UPLOAD_ALLOWED_STATUSES = new Set([
 
 async function sendProofAdminEmail(order) {
   const KEY = process.env.RESEND_API_KEY;
-  const FROM = process.env.FROM_EMAIL || 'Amahle Blue <noreply@amahle-blue.co.za>';
-  const to = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL;
+  const FROM = process.env.FROM_EMAIL || 'Amahle Blue <sales@amahle-blue.co.za>';
+  const to = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL || 'sales@amahle-blue.co.za';
   if (!KEY || !to) return;
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
@@ -110,6 +110,55 @@ async function sendProofCustomerEmail(order) {
   } catch (e) {
     console.error('[proof] customer email error:', e.message);
   }
+}
+
+function protectedProofUrl(orderId) {
+  return `/api/proof?orderId=${encodeURIComponent(orderId)}`;
+}
+
+function canAccessOrderProof(order, adminSession, customerSession) {
+  if (adminSession) return true;
+  if (!customerSession) return false;
+  return (order.customerId && order.customerId === customerSession.customerId) ||
+    (order.customer?.email && order.customer.email.toLowerCase() === customerSession.email.toLowerCase());
+}
+
+export async function GET(req) {
+  await connectToDatabase();
+
+  const adminSession = verifySession(req);
+  const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+  if (!adminSession && !customerSession) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const orderId = searchParams.get('orderId');
+  if (!orderId) return NextResponse.json({ error: 'Missing orderId query parameter.' }, { status: 400 });
+
+  const order = await Order.findOne({ id: orderId }).lean();
+  if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 });
+  if (!canAccessOrderProof(order, adminSession, customerSession)) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 });
+  }
+
+  const meta = order.proofOfPaymentMetadata || {};
+  const sourceUrl = meta.blobUrl || (isVercelBlob(order.proofOfPaymentUrl) ? order.proofOfPaymentUrl : null);
+  if (!sourceUrl) return NextResponse.json({ error: 'Proof file not found.' }, { status: 404 });
+
+  const blobRes = await fetch(sourceUrl, { cache: 'no-store' });
+  if (!blobRes.ok || !blobRes.body) {
+    return NextResponse.json({ error: 'Proof file unavailable.' }, { status: 502 });
+  }
+
+  return new Response(blobRes.body, {
+    status: 200,
+    headers: {
+      'Content-Type': meta.mimeType || blobRes.headers.get('content-type') || 'application/octet-stream',
+      'Content-Disposition': `inline; filename="${String(meta.filename || 'proof-of-payment').replace(/"/g, '')}"`,
+      'Cache-Control': 'private, no-store',
+    },
+  });
 }
 
 export async function POST(req) {
@@ -200,8 +249,9 @@ export async function POST(req) {
     // Update order
     const oldStorageKey = order.proofOfPaymentStorageKey;
     const oldProofUrl   = order.proofOfPaymentUrl;
+    const oldProofMeta  = order.proofOfPaymentMetadata || {};
 
-    order.proofOfPaymentUrl = blob.url;
+    order.proofOfPaymentUrl = protectedProofUrl(orderId);
     order.proofOfPaymentStorageKey = storageKey;
     order.proofOfPaymentMetadata = {
       filename: rawName,
@@ -209,6 +259,7 @@ export async function POST(req) {
       fileSize: buffer.length,
       uploadedAt: Date.now(),
       orderId,
+      blobUrl: blob.url,
     };
     order.paymentStatus = newPayStatus;
     order.payment = { ...order.payment, status: 'pending' };
@@ -225,7 +276,8 @@ export async function POST(req) {
     // Delete old proof to free space. Only delete if the previous proof URL
     // points at our Vercel Blob storage — never touch external URLs even if
     // a storageKey was somehow set against a non-Vercel-hosted proof.
-    if (oldStorageKey && (oldProofUrl == null || isVercelBlob(oldProofUrl))) {
+    const oldBlobUrl = oldProofMeta.blobUrl || oldProofUrl;
+    if (oldStorageKey && (oldProofUrl == null || isVercelBlob(oldBlobUrl))) {
       try {
         await del(oldStorageKey, { token });
       } catch (delErr) {
@@ -239,7 +291,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       success: true,
-      proofUrl: blob.url,
+      proofUrl: order.proofOfPaymentUrl,
       paymentStatus: newPayStatus,
       order,
     });

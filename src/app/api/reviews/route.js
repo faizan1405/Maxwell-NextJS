@@ -1,7 +1,22 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Review, Order, Customer } from '../../../lib/models';
+import { Review, Order, Customer, Product } from '../../../lib/models';
 import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+
+// Accepts canonical Product.id slug OR legacy ObjectId hex (older storefront callers).
+async function resolveProductSlug(input) {
+  const raw = typeof input === 'string' ? input.trim() : '';
+  if (!raw) return null;
+  const bySlug = await Product.findOne({ id: raw }).select('id').lean();
+  if (bySlug?.id) return bySlug.id;
+  if (/^[a-f0-9]{24}$/i.test(raw)) {
+    try {
+      const byOid = await Product.findById(raw).select('id').lean();
+      if (byOid?.id) return byOid.id;
+    } catch {}
+  }
+  return null;
+}
 
 export async function GET(req) {
   await connectToDatabase();
@@ -17,14 +32,16 @@ export async function GET(req) {
   });
 
   const cust = verifyCustomerSession(req);
-  const productId = req.nextUrl.searchParams.get('productId');
-  
+  const productIdRaw = req.nextUrl.searchParams.get('productId');
+
   let visible = reviews.filter(r =>
     r.status === 'approved' ||
     (cust && (r.customerId === cust.customerId || (r.email && cust.email && r.email.toLowerCase() === cust.email.toLowerCase())))
   );
-  
-  if (productId) {
+
+  if (productIdRaw) {
+    const productId = await resolveProductSlug(productIdRaw);
+    if (!productId) return NextResponse.json([]);
     visible = visible.filter(r => r.productId === productId);
   }
   
@@ -49,8 +66,10 @@ export async function POST(req) {
     body = {};
   }
   
-  const { productId, rating, text } = body;
-  if (!productId) return NextResponse.json({ error: 'Product ID required.' }, { status: 400 });
+  const { productId: productIdRaw, rating, text } = body;
+  if (!productIdRaw) return NextResponse.json({ error: 'Product ID required.' }, { status: 400 });
+  const productId = await resolveProductSlug(productIdRaw);
+  if (!productId) return NextResponse.json({ error: 'Unknown product.' }, { status: 400 });
   const r = Number(rating);
   if (!r || r < 1 || r > 5) return NextResponse.json({ error: 'Rating must be between 1 and 5 stars.' }, { status: 400 });
 

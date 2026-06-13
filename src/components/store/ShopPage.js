@@ -38,8 +38,14 @@ export const ProductCard = ({ p }) => {
   const primaryImgUrl = getPrimaryImg(p);
   const secondImgUrl  = getSecondImg(p);
 
+  const pid       = p.id;
+  const legacyPid = p._id ? String(p._id) : null;
+
   const [wished,    setWished]    = useState(() => {
-    try { return JSON.parse(localStorage.getItem('ab_wishlist') || '[]').includes(p._id); } catch { return false; }
+    try {
+      const list = JSON.parse(localStorage.getItem('ab_wishlist') || '[]');
+      return list.includes(pid) || (legacyPid && list.includes(legacyPid));
+    } catch { return false; }
   });
   const [heartAnim, setHeartAnim] = useState(false);
   const [added,     setAdded]     = useState(false);
@@ -50,7 +56,8 @@ export const ProductCard = ({ p }) => {
       const next = !v;
       try {
         const list = JSON.parse(localStorage.getItem('ab_wishlist') || '[]');
-        const updated = next ? [...list.filter(id => id !== p._id), p._id] : list.filter(id => id !== p._id);
+        const cleaned = list.filter(id => id !== pid && id !== legacyPid);
+        const updated = next ? [...cleaned, pid] : cleaned;
         localStorage.setItem('ab_wishlist', JSON.stringify(updated));
       } catch {}
       return next;
@@ -693,7 +700,7 @@ export const QuickView = () => {
                 );
               })()}
 
-              <ProductReviews productId={product._id} />
+              <ProductReviews productId={product.id} />
             </div>
           </div>
         )}

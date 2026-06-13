@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useAdmin } from './AdminProvider';
 import { Plus, Pencil, Trash, Close } from '../ui/Icons';
+import { AdminToast, Btn, ConfirmDialog } from '../ui/index';
 import '../../styles/admin/_shipping.scss';
 
 export default function ShippingEditor() {
@@ -10,6 +11,13 @@ export default function ShippingEditor() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ visible: false, msg: '', type: 'success' });
+  const [deleting, setDeleting] = useState(null);
+
+  function showToast(msg, type = 'success') {
+    setToast({ visible: true, msg, type });
+    setTimeout(() => setToast(t => ({ ...t, visible: false })), 3500);
+  }
 
   // Form State
   const [name, setName] = useState('');
@@ -59,28 +67,35 @@ export default function ShippingEditor() {
     const payload = { id: editingId, name, country, region, charge, minOrderAmount, freeThreshold, estimatedTime, status, isDefault, displayPriority };
     const ok = editingId ? await updateShippingRate(payload) : await addShippingRate(payload);
     setSaving(false);
-    if (ok) setModalOpen(false);
-    else alert('Failed to save shipping rate.');
+    if (ok) {
+      setModalOpen(false);
+      showToast(editingId ? 'Shipping rate updated' : 'Shipping rate added');
+    } else {
+      showToast('Failed to save shipping rate.', 'error');
+    }
   }
 
-  async function handleDelete(id) {
-    if (window.confirm('Are you sure you want to delete this shipping rate?')) {
-      await deleteShippingRate(id);
-    }
+  async function handleConfirmDelete() {
+    if (!deleting) return;
+    const ok = await deleteShippingRate(deleting.id);
+    if (ok) showToast('Shipping rate deleted');
+    else showToast('Failed to delete shipping rate.', 'error');
   }
 
   const sortedRates = [...(shippingRates || [])].sort((a,b) => b.displayPriority - a.displayPriority || a.name.localeCompare(b.name));
 
   return (
     <div className="shipping">
+      <AdminToast message={toast.msg} type={toast.type} visible={toast.visible} />
+
       <div className="shipping__header">
         <div>
           <h1 className="shipping__header-title">Shipping Rates</h1>
           <p className="shipping__header-subtitle">Manage delivery charges, regions, and free shipping thresholds.</p>
         </div>
-        <button onClick={openNew} className="btn-primary flex items-center gap-2">
+        <Btn onClick={openNew}>
           <Plus /> Add Rate
-        </button>
+        </Btn>
       </div>
 
       <div className="shipping__card">
@@ -121,7 +136,7 @@ export default function ShippingEditor() {
                     <button onClick={() => openEdit(r)} className="shipping__action-btn shipping__action-btn--edit">
                       <Pencil size={18} />
                     </button>
-                    <button onClick={() => handleDelete(r.id)} className="shipping__action-btn shipping__action-btn--delete">
+                    <button onClick={() => setDeleting(r)} className="shipping__action-btn shipping__action-btn--delete">
                       <Trash size={18} />
                     </button>
                   </td>
@@ -216,6 +231,16 @@ export default function ShippingEditor() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleting}
+        onClose={() => setDeleting(null)}
+        onConfirm={handleConfirmDelete}
+        title="Delete Shipping Rate"
+        message={deleting ? `Delete "${deleting.name}"? This cannot be undone.` : ''}
+        confirmLabel="Delete"
+        variant="danger"
+      />
     </div>
   );
 }

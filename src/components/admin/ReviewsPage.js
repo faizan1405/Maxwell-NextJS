@@ -128,7 +128,7 @@ export default function ReviewsPage() {
 
   async function handleDelete(id) {
     await deleteReview(id);
-    showToast('Review deleted', 'error');
+    showToast('Review deleted');
     setDeleting(null);
   }
 

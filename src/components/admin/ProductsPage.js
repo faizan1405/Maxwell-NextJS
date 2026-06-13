@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useAuth, useAdmin } from './AdminProvider';
 import * as Icon from '../ui/Icons';
 import { 
@@ -188,10 +188,30 @@ function MediaGallerySection({ items, onFilesSelected, onReorder, onSetPrimary, 
         </div>
       )}
 
-      <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.webm" multiple className="hidden" style={{display: 'none'}}
+      <input ref={fileRef} type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.webm" multiple style={{display: 'none'}}
         onChange={e=>{ const f=Array.from(e.target.files||[]); if(f.length) onFilesSelected(f); e.target.value=''; }}/>
     </div>
   );
+}
+
+function isVercelBlobUrl(url) {
+  return typeof url === 'string' && url.includes('.vercel-storage.com');
+}
+
+async function deleteUnsavedBlob(url, token) {
+  if (!isVercelBlobUrl(url) || !token) return;
+  try {
+    await fetch('/api/upload', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ url, unsaved: true }),
+    });
+  } catch (e) {
+    // Best-effort cleanup; do not block UX.
+  }
 }
 
 function ProductForm({ open, onClose, initial, onSave }) {
@@ -202,6 +222,22 @@ function ProductForm({ open, onClose, initial, onSave }) {
   const [errors,     setErrors]        = useState({});
   const [formError,  setFormError]     = useState('');
   const [mediaItems, setMediaItems]    = useState([]);
+  // URLs that the server stored during this session but the user has NOT yet
+  // saved into the product. Used to clean up orphaned Vercel Blob objects
+  // when the modal is cancelled or the item is removed before save.
+  const [unsavedUrls, setUnsavedUrls] = useState(() => new Set());
+  // Snapshot of URLs that already belong to the saved product when the modal
+  // opened, so we never delete pre-existing media on cancel.
+  const [initialUrls, setInitialUrls] = useState(() => new Set());
+
+  const categoryOptions = useMemo(() => {
+    const list = Array.isArray(categories) ? [...categories] : [];
+    const hasCurrent = list.some(c => c.id === form.cat);
+    if (form.cat && !hasCurrent) {
+      list.push({ id: form.cat, name: `${titleFromSlug(form.cat)} (legacy)` });
+    }
+    return list.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+  }, [categories, form.cat]);
 
   const categoryOptions = useMemo(() => {
     const list = Array.isArray(categories) ? [...categories] : [];
@@ -220,20 +256,22 @@ function ProductForm({ open, onClose, initial, onSave }) {
       );
       setErrors({});
       setFormError('');
+      setUnsavedUrls(new Set());
+      let nextItems = [];
       if (initial && Array.isArray(initial.media) && initial.media.length > 0) {
-        setMediaItems(initial.media.map(m => ({ ...m, previewUrl: m.url, status: 'done', error: '', _file: null })));
+        nextItems = initial.media.map(m => ({ ...m, previewUrl: m.url, status: 'done', error: '', _file: null }));
       } else if (initial && initial.img) {
-        setMediaItems([{
+        nextItems = [{
           id: (initial.id||'legacy') + '-img',
           type: 'image', url: initial.img, previewUrl: initial.img,
           storageKey: null, altText: initial.name||'', sortOrder: 0, isPrimary: true,
           fileName: initial.img.split('/').pop()||'image', mimeType: 'image/jpeg',
           fileSize: 0, createdAt: initial.createdAt||Date.now(),
           status: 'done', error: '', _file: null,
-        }]);
-      } else {
-        setMediaItems([]);
+        }];
       }
+      setMediaItems(nextItems);
+      setInitialUrls(new Set(nextItems.map(m => m.url).filter(Boolean)));
     }
   }, [open, initial, categories]);
 
@@ -287,6 +325,15 @@ function ProductForm({ open, onClose, initial, onSave }) {
           type: data.type || m.type,
           status: 'done', error: '', _file: null,
         }));
+        // Newly uploaded but not yet saved on the product — mark for cleanup
+        // if the user cancels the modal or removes this item before saving.
+        if (data.url) {
+          setUnsavedUrls(prev => {
+            const next = new Set(prev);
+            next.add(data.url);
+            return next;
+          });
+        }
       } catch (err) {
         setMediaItems(prev => prev.map(m => m.id !== item.id ? m : {
           ...m, status: 'error', error: err.message, _file: null,
@@ -317,8 +364,35 @@ function ProductForm({ open, onClose, initial, onSave }) {
         if (fi) fi.isPrimary = true;
       }
       if (removed.previewUrl && removed.previewUrl.startsWith('blob:')) URL.revokeObjectURL(removed.previewUrl);
+
+      // If the removed item was uploaded during this session but NOT yet saved
+      // into the product, fire a best-effort blob cleanup. Saved items stay in
+      // Blob until the product is saved with the new media array, at which
+      // point the server diffs and deletes them.
+      const url = removed?.url;
+      if (url && isVercelBlobUrl(url) && !initialUrls.has(url)) {
+        deleteUnsavedBlob(url, session?.token);
+        setUnsavedUrls(prevSet => {
+          if (!prevSet.has(url)) return prevSet;
+          const nextSet = new Set(prevSet);
+          nextSet.delete(url);
+          return nextSet;
+        });
+      }
       return next;
     });
+  }
+
+  function handleCancel() {
+    // Clean up any blobs uploaded during this session that the user did not save.
+    if (unsavedUrls.size > 0 && session?.token) {
+      const token = session.token;
+      for (const url of unsavedUrls) {
+        deleteUnsavedBlob(url, token);
+      }
+    }
+    setUnsavedUrls(new Set());
+    onClose();
   }
 
   function validate() {
@@ -358,6 +432,9 @@ function ProductForm({ open, onClose, initial, onSave }) {
     };
     try {
       await onSave(data);
+      // Successful save: all uploaded URLs are now persisted on the product,
+      // so they should no longer be considered "unsaved orphans".
+      setUnsavedUrls(new Set());
       setSaving(false);
       onClose();
     } catch (err) {
@@ -370,10 +447,10 @@ function ProductForm({ open, onClose, initial, onSave }) {
   const isEdit         = !!initial;
 
   return (
-    <Modal open={open} onClose={onClose} size="xl" title={isEdit ? `Edit: ${initial?.name}` : 'Add New Product'}
+    <Modal open={open} onClose={handleCancel} size="xl" title={isEdit ? `Edit: ${initial?.name}` : 'Add New Product'}
       footer={<>
         {formError && <span style={{flex: 1, fontSize: '0.75rem', color: '#dc2626', fontWeight: 500, marginRight: '0.5rem'}}>{formError}</span>}
-        <Btn variant="secondary" onClick={onClose}>Cancel</Btn>
+        <Btn variant="secondary" onClick={handleCancel}>Cancel</Btn>
         <Btn onClick={handleSave} disabled={saving||uploadingCount>0}>
           {saving
             ? <><Spinner size={14}/>Saving…</>
@@ -600,13 +677,7 @@ function StockHistoryModal({ open, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (open) {
-      fetchHistory();
-    }
-  }, [open]);
-
-  async function fetchHistory() {
+  const fetchHistory = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
@@ -623,7 +694,13 @@ function StockHistoryModal({ open, onClose }) {
     } finally {
       setLoading(false);
     }
-  }
+  }, [session?.token]);
+
+  useEffect(() => {
+    if (open) {
+      fetchHistory();
+    }
+  }, [open, fetchHistory]);
 
   function fmtDate(ts) {
     return new Date(ts).toLocaleString('en-ZA', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });

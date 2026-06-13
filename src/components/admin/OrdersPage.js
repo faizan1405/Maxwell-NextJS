@@ -5,9 +5,7 @@ import { useAuth, useAdmin, fmtMoney, fmtDate, fmtDateTime, initials } from './A
 import * as Icon from '../ui/Icons';
 import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast } from '../ui/index';
 import { formatZar } from '../../utils/currency';
-
-const API_BASE = '/api'; // Adjust if needed based on typical Next.js setup, or maybe the legacy file just used window.API_BASE. The legacy file had `fetch(\`\${API_BASE}/api/orders\`)`. Actually, usually it's just `/api/...` in Next.js. The legacy had `API_BASE`, let's just leave it empty string if it's relative.
-// Let's check how a-orders.jsx handled API_BASE. It was just an undeclared global, or imported? It wasn't imported. We'll define `const API_BASE = '';`
+import { printInvoice } from '../../utils/invoice';
 
 const ORDERS_PER_PAGE = 10;
 
@@ -105,7 +103,6 @@ function PayStatusBadge({ status }) {
   }
   return <span className={`admin-badge ${payStatusClass(status)}`}>{label}</span>;
 }
-import { printInvoice } from '../../utils/invoice';
 
 function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequired, confirmLabel, confirmVariant='danger', onConfirm, onCancel }) {
   const [val, setVal] = useState('');
@@ -320,12 +317,16 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
   };
 
   useEffect(() => {
+    if (!order) return;
+    setNote(order.notes || '');
+    setTrackNum(order.trackingNumber || '');
+    setCarrier(order.carrier || '');
+    setTrackLink(order.trackingLink || '');
+    setDispatchDate(getSafeISODate(order.dispatchDate));
+  }, [order?.notes, order?.trackingNumber, order?.carrier, order?.trackingLink, order?.dispatchDate]);
+
+  useEffect(() => {
     if (order) {
-      setNote(order.notes || '');
-      setTrackNum(order.trackingNumber || '');
-      setCarrier(order.carrier || '');
-      setTrackLink(order.trackingLink || '');
-      setDispatchDate(getSafeISODate(order.dispatchDate));
       setNoteEdit(false);
       setTrackEdit(false);
       setActiveTab('details');
@@ -449,6 +450,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     value={orderStatus}
                     onChange={(e) => {
                       const val = e.target.value;
+                      if (val === orderStatus) return;
                       if (val === 'Cancelled') {
                         setConfirmDlg({ type:'cancel', title:'Cancel Order?', message:'This cannot be undone.', confirmLabel:'Cancel Order', confirmVariant:'danger', note:true, noteLabel:'Reason for cancellation', noteRequired:false });
                       } else {
@@ -458,11 +460,21 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     disabled={saving}
                     className="admin-order-detail__status-select"
                   >
-                    <option value={isEFT ? 'Awaiting Payment' : 'Order Placed'}>Pending</option>
+                    {/* Pin the current value as an option so non-writable / legacy values
+                        ('Cancelled', 'Order Placed', 'Awaiting Payment', or lowercase legacy)
+                        still display correctly even if not a normal transition target. */}
+                    {!['Order Placed','Awaiting Payment','Confirmed','Processing','Dispatched','Delivered','Cancelled'].includes(orderStatus) && orderStatus && (
+                      <option value={orderStatus}>{orderStatus}</option>
+                    )}
+                    {orderStatus === 'Order Placed' && <option value="Order Placed">Order Placed</option>}
+                    {orderStatus === 'Awaiting Payment' && <option value="Awaiting Payment">Awaiting Payment</option>}
+                    {!isEFT && orderStatus !== 'Order Placed' && <option value="Order Placed">Order Placed</option>}
+                    {isEFT && orderStatus !== 'Awaiting Payment' && <option value="Awaiting Payment">Awaiting Payment</option>}
                     <option value="Confirmed">Confirmed</option>
                     <option value="Processing">Processing</option>
-                    <option value="Dispatched">Shipped</option>
+                    <option value="Dispatched">Dispatched</option>
                     <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
                   </select>
                 </div>
               )}
@@ -788,8 +800,7 @@ export default function OrdersPage() {
     const simpleStatus = simpleMap[newStatus] || newStatus;
     setSaving(true);
     try {
-      const apiUrl = window?.API_BASE ? window.API_BASE + '/api/orders' : '/api/orders';
-      const res = await fetch(apiUrl, {
+      const res = await fetch('/api/orders', {
         method: 'PATCH',
         headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
         body: JSON.stringify({ id, orderStatus: newStatus, status: simpleStatus }),
@@ -814,8 +825,7 @@ export default function OrdersPage() {
   async function handlePayStatusChange(id, newPayStatus, note) {
     setSaving(true);
     try {
-      const apiUrl = window?.API_BASE ? window.API_BASE + '/api/orders' : '/api/orders';
-      const res = await fetch(apiUrl, {
+      const res = await fetch('/api/orders', {
         method: 'PATCH',
         headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
         body: JSON.stringify({ id, paymentStatus: newPayStatus, statusNote: note }),
@@ -844,8 +854,7 @@ export default function OrdersPage() {
 
   async function handleInternalNoteAdd(id, note) {
     try {
-      const apiUrl = window?.API_BASE ? window.API_BASE + '/api/orders' : '/api/orders';
-      const res = await fetch(apiUrl, {
+      const res = await fetch('/api/orders', {
         method: 'PATCH',
         headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
         body: JSON.stringify({ id, internalNotes: note }),
@@ -875,6 +884,15 @@ export default function OrdersPage() {
     const c = { all: orders.length };
     orders.forEach(o => {
       const s = effectiveOrderStatus(o);
+      c[s] = (c[s] || 0) + 1;
+    });
+    return c;
+  }, [orders]);
+
+  const payStatusCounts = useMemo(() => {
+    const c = { all: orders.length };
+    orders.forEach(o => {
+      const s = effectivePayStatus(o);
       c[s] = (c[s] || 0) + 1;
     });
     return c;
@@ -1049,7 +1067,9 @@ export default function OrdersPage() {
         </select>
         <select value={payStatusFilter} onChange={e => setPayStatusFilter(e.target.value)}
           className="admin-orders__filter-select">
-          {PAY_STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {PAY_STATUS_OPTIONS.filter(o => o.value === 'all' || payStatusCounts[o.value] > 0 || o.value === payStatusFilter).map(o => (
+            <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && payStatusCounts[o.value] ? ` (${payStatusCounts[o.value]})` : ''}</option>
+          ))}
         </select>
         <select value={sort} onChange={e => setSort(e.target.value)}
           className="admin-orders__filter-select">

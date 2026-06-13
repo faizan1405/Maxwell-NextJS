@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useAdmin } from './AdminProvider';
-import { StatCard, Btn, Avatar, Badge, Spinner, SkeletonBox } from '../ui/index';
+import { StatCard, Btn, Avatar, Badge, Spinner } from '../ui/index';
 import { Icon } from '../ui/Icons';
 import { formatZar, formatZarCompact } from '../../utils/currency';
 import '../../styles/admin/_dashboard.scss';
@@ -240,8 +240,8 @@ export default function DashboardPage({ setPage }) {
                     <td className="dashboard-page__cell dashboard-page__cell--order">{o.orderNumber}</td>
                     <td className="dashboard-page__cell">
                       <div className="dashboard-page__cell--customer">
-                        <Avatar name={o.customer.name} size={26}/>
-                        <span className="dashboard-page__customer-name">{o.customer.name}</span>
+                        <Avatar name={o.customer?.name} size={26}/>
+                        <span className="dashboard-page__customer-name">{o.customer?.name || '—'}</span>
                       </div>
                     </td>
                     <td className="dashboard-page__cell dashboard-page__cell--total">{fmtMoney(o.total)}</td>

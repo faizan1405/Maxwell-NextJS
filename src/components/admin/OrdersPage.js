@@ -1061,7 +1061,10 @@ export default function OrdersPage() {
         </select>
         <select value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value)}
           className="admin-orders__filter-select">
-          {ORDER_STATUS_OPTIONS.filter(o => o.value === 'all' || orderStatusCounts[o.value] > 0).map(o => (
+          {ORDER_STATUS_OPTIONS
+            .filter(o => isAdmin || !['Cancelled', 'cancelled'].includes(o.value))
+            .filter(o => o.value === 'all' || orderStatusCounts[o.value] > 0)
+            .map(o => (
             <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && orderStatusCounts[o.value] ? ` (${orderStatusCounts[o.value]})` : ''}</option>
           ))}
         </select>

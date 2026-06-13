@@ -239,15 +239,6 @@ function ProductForm({ open, onClose, initial, onSave }) {
     return list.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }, [categories, form.cat]);
 
-  const categoryOptions = useMemo(() => {
-    const list = Array.isArray(categories) ? [...categories] : [];
-    const hasCurrent = list.some(c => c.id === form.cat);
-    if (form.cat && !hasCurrent) {
-      list.push({ id: form.cat, name: `${titleFromSlug(form.cat)} (legacy)` });
-    }
-    return list.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-  }, [categories, form.cat]);
-
   useEffect(() => {
     if (open) {
       setForm(initial

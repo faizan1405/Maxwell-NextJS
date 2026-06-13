@@ -104,23 +104,23 @@ function PayStatusBadge({ status }) {
   return <span className={`admin-badge ${payStatusClass(status)}`}>{label}</span>;
 }
 
-function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequired, confirmLabel, confirmVariant='danger', onConfirm, onCancel }) {
+function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequired, confirmLabel, confirmVariant='danger', busy=false, onConfirm, onCancel }) {
   const [val, setVal] = useState('');
   useEffect(() => { if (open) setVal(''); }, [open]);
   if (!open) return null;
   return (
     <Modal
       open={open}
-      onClose={onCancel}
+      onClose={busy ? () => {} : onCancel}
       title={title}
       size="sm"
       footer={
         <>
-          <Btn variant="ghost" size="sm" onClick={onCancel}>Cancel</Btn>
+          <Btn variant="ghost" size="sm" onClick={onCancel} disabled={busy}>Cancel</Btn>
           <Btn variant={confirmVariant} size="sm"
-            disabled={note && noteRequired && !val.trim()}
+            disabled={busy || (note && noteRequired && !val.trim())}
             onClick={() => onConfirm(val.trim())}>
-            {confirmLabel || 'Confirm'}
+            {busy ? 'Saving…' : (confirmLabel || 'Confirm')}
           </Btn>
         </>
       }
@@ -197,7 +197,7 @@ function ProofViewer({ order }) {
   );
 }
 
-function EftActions({ order, onAction }) {
+function EftActions({ order, onAction, disabled = false }) {
   const payStatus = order.paymentStatus || order.payment?.status || '';
   const hasProof  = !!order.proofOfPaymentUrl;
 
@@ -214,22 +214,22 @@ function EftActions({ order, onAction }) {
   return (
     <div className="admin-order-detail__actions-wrap">
       {canVerify && (
-        <Btn variant="success" size="sm" onClick={() => onAction('verify')}>
+        <Btn variant="success" size="sm" disabled={disabled} onClick={() => onAction('verify')}>
           ✓ Approve Payment
         </Btn>
       )}
       {canReject && (
-        <Btn variant="danger" size="sm" onClick={() => onAction('reject')}>
+        <Btn variant="danger" size="sm" disabled={disabled} onClick={() => onAction('reject')}>
           ✗ Reject Payment
         </Btn>
       )}
       {canCorrect && (
-        <Btn variant="secondary" size="sm" onClick={() => onAction('correct')}>
+        <Btn variant="secondary" size="sm" disabled={disabled} onClick={() => onAction('correct')}>
           ↩ Request Correction
         </Btn>
       )}
       {canMoveToConfirmed && (
-        <Btn variant="primary" size="sm" onClick={() => onAction('moveConfirmed')}>
+        <Btn variant="primary" size="sm" disabled={disabled} onClick={() => onAction('moveConfirmed')}>
           → Move to Confirmed
         </Btn>
       )}
@@ -240,7 +240,7 @@ function EftActions({ order, onAction }) {
   );
 }
 
-function CodActions({ order, onAction }) {
+function CodActions({ order, onAction, disabled = false }) {
   const os = order.orderStatus || order.status || '';
   const ps = order.paymentStatus || order.payment?.status || '';
 
@@ -265,12 +265,12 @@ function CodActions({ order, onAction }) {
   return (
     <div className="admin-order-detail__actions-wrap">
       {flow?.next && (
-        <Btn variant={flow.variant} size="sm" onClick={() => onAction('orderStatus', flow.next)}>
+        <Btn variant={flow.variant} size="sm" disabled={disabled} onClick={() => onAction('orderStatus', flow.next)}>
           {flow.label}
         </Btn>
       )}
       {(os === 'Delivered' || os === 'delivered') && !isCashCollected && (
-        <Btn variant="success" size="sm" onClick={() => onAction('cashCollected')}>
+        <Btn variant="success" size="sm" disabled={disabled} onClick={() => onAction('cashCollected')}>
           💵 Mark Cash Collected
         </Btn>
       )}
@@ -345,8 +345,14 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
   const isCashPaid    = payStatus === 'Paid' || order.payment?.status === 'paid';
   const codFee        = order.codFee || 0;
 
-  function saveNote() { onNoteChange(order.id, note); setNoteEdit(false); }
-  function saveTracking() { onTrackingChange(order.id, trackNum.trim(), carrier.trim(), trackLink.trim(), dispatchDate); setTrackEdit(false); }
+  async function saveNote() {
+    if (saving) return;
+    try { await onNoteChange(order.id, note); setNoteEdit(false); } catch {}
+  }
+  async function saveTracking() {
+    if (saving) return;
+    try { await onTrackingChange(order.id, trackNum.trim(), carrier.trim(), trackLink.trim(), dispatchDate); setTrackEdit(false); } catch {}
+  }
 
   function handleEftAction(type) {
     const configs = {
@@ -366,28 +372,33 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
     }
   }
 
-  function handleConfirm(noteVal) {
+  async function handleConfirm(noteVal) {
+    // Guard against double-clicks: if a save is already in flight, ignore.
+    if (saving) return;
     const dlg = confirmDlg;
-    setConfirmDlg(null);
     if (!dlg) return;
 
-    if (dlg.type === 'verify') {
-      onPayStatusChange(order.id, 'Paid', noteVal || 'Payment verified by admin');
-    } else if (dlg.type === 'reject') {
-      onPayStatusChange(order.id, 'Payment Rejected', noteVal);
-    } else if (dlg.type === 'correct') {
-      onPayStatusChange(order.id, 'Corrected Proof Requested', noteVal);
-    } else if (dlg.type === 'moveConfirmed') {
-      onOrderStatusChange(order.id, 'Confirmed');
-    } else if (dlg.type === 'orderStatus') {
-      onOrderStatusChange(order.id, dlg.value);
-    } else if (dlg.type === 'cashCollected') {
-      onPayStatusChange(order.id, 'Paid', 'Cash collected on delivery');
-    } else if (dlg.type === 'cancel') {
-      if (noteVal) {
-        onInternalNoteAdd(order.id, "Cancellation reason: " + noteVal);
+    try {
+      if (dlg.type === 'verify') {
+        await onPayStatusChange(order.id, 'Paid', noteVal || 'Payment verified by admin');
+      } else if (dlg.type === 'reject') {
+        await onPayStatusChange(order.id, 'Payment Rejected', noteVal);
+      } else if (dlg.type === 'correct') {
+        await onPayStatusChange(order.id, 'Corrected Proof Requested', noteVal);
+      } else if (dlg.type === 'moveConfirmed') {
+        await onOrderStatusChange(order.id, 'Confirmed');
+      } else if (dlg.type === 'orderStatus') {
+        await onOrderStatusChange(order.id, dlg.value);
+      } else if (dlg.type === 'cashCollected') {
+        await onPayStatusChange(order.id, 'Paid', 'Cash collected on delivery');
+      } else if (dlg.type === 'cancel') {
+        if (noteVal) {
+          await onInternalNoteAdd(order.id, "Cancellation reason: " + noteVal);
+        }
+        await onOrderStatusChange(order.id, 'Cancelled');
       }
-      onOrderStatusChange(order.id, 'Cancelled');
+    } finally {
+      setConfirmDlg(null);
     }
   }
 
@@ -570,8 +581,8 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     </div>
                   </div>
                   <div className="admin-order-detail__form-actions">
-                    <Btn variant="ghost" size="sm" onClick={() => { setTrackEdit(false); setTrackNum(order.trackingNumber || ''); setCarrier(order.carrier || ''); setTrackLink(order.trackingLink || ''); setDispatchDate(getSafeISODate(order.dispatchDate)); }}>Cancel</Btn>
-                    <Btn size="sm" onClick={saveTracking}>Save</Btn>
+                    <Btn variant="ghost" size="sm" disabled={saving} onClick={() => { setTrackEdit(false); setTrackNum(order.trackingNumber || ''); setCarrier(order.carrier || ''); setTrackLink(order.trackingLink || ''); setDispatchDate(getSafeISODate(order.dispatchDate)); }}>Cancel</Btn>
+                    <Btn size="sm" disabled={saving} onClick={saveTracking}>{saving ? 'Saving…' : 'Save'}</Btn>
                   </div>
                 </div>
               ) : (
@@ -596,8 +607,8 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                 <div className="admin-order-detail__form-space">
                   <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} className="admin-order-detail__input admin-order-detail__input--textarea"/>
                   <div className="admin-order-detail__form-actions">
-                    <Btn variant="ghost" size="sm" onClick={() => { setNoteEdit(false); setNote(order.notes || ''); }}>Cancel</Btn>
-                    <Btn size="sm" onClick={saveNote}>Save</Btn>
+                    <Btn variant="ghost" size="sm" disabled={saving} onClick={() => { setNoteEdit(false); setNote(order.notes || ''); }}>Cancel</Btn>
+                    <Btn size="sm" disabled={saving} onClick={saveNote}>{saving ? 'Saving…' : 'Save'}</Btn>
                   </div>
                 </div>
               ) : (
@@ -629,7 +640,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                   )}
                   
                   <div className="admin-order-detail__actions-section">
-                    <EftActions order={order} onAction={handleEftAction}/>
+                    <EftActions order={order} onAction={handleEftAction} disabled={saving}/>
                   </div>
                 </div>
               )}
@@ -654,7 +665,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                   )}
                   
                   <div className="admin-order-detail__actions-section">
-                    <CodActions order={order} onAction={handleCodAction}/>
+                    <CodActions order={order} onAction={handleCodAction} disabled={saving}/>
                   </div>
                 </div>
               )}
@@ -677,8 +688,13 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                   placeholder="Add internal note (not visible to customer)…"
                   className="admin-order-detail__input admin-order-detail__input--textarea"/>
                 <div className="admin-order-detail__form-actions">
-                  <Btn size="sm" disabled={!internalNote.trim()} onClick={() => { onInternalNoteAdd(order.id, internalNote.trim()); setInternalNote(''); }}>
-                    Add Note
+                  <Btn size="sm" disabled={saving || !internalNote.trim()}
+                    onClick={async () => {
+                      if (saving) return;
+                      const txt = internalNote.trim();
+                      try { await onInternalNoteAdd(order.id, txt); setInternalNote(''); } catch {}
+                    }}>
+                    {saving ? 'Saving…' : 'Add Note'}
                   </Btn>
                 </div>
               </div>
@@ -705,8 +721,9 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
         noteRequired={confirmDlg?.noteRequired}
         confirmLabel={confirmDlg?.confirmLabel}
         confirmVariant={confirmDlg?.confirmVariant}
+        busy={saving}
         onConfirm={handleConfirm}
-        onCancel={() => setConfirmDlg(null)}
+        onCancel={() => { if (!saving) setConfirmDlg(null); }}
       />
     </>
   );
@@ -794,6 +811,7 @@ export default function OrdersPage() {
   }
 
   async function handleOrderStatusChange(id, newStatus) {
+    if (saving) return;
     const simpleMap = {
       'Order Placed':'pending','Awaiting Payment':'pending','Confirmed':'confirmed',
       'Processing':'processing','Dispatched':'shipped','Delivered':'delivered','Cancelled':'cancelled',
@@ -824,6 +842,7 @@ export default function OrdersPage() {
   }
 
   async function handlePayStatusChange(id, newPayStatus, note) {
+    if (saving) return;
     setSaving(true);
     try {
       const res = await fetch('/api/orders', {
@@ -854,6 +873,8 @@ export default function OrdersPage() {
   }
 
   async function handleInternalNoteAdd(id, note) {
+    if (saving) return;
+    setSaving(true);
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
@@ -864,21 +885,47 @@ export default function OrdersPage() {
         const data = await res.json();
         if (data && data.id) setViewing(v => v ? { ...v, ...data } : null);
         showToast('Internal note saved');
+      } else {
+        const d = await res.json().catch(() => ({}));
+        showToast(d.error || 'Failed to save note', 'error');
+        throw new Error(d.error || 'failed');
       }
-    } catch {
-      showToast('Failed to save note', 'error');
+    } catch (e) {
+      if (e?.message !== 'failed') showToast('Failed to save note', 'error');
+      throw e;
+    } finally {
+      setSaving(false);
     }
   }
 
-  function handleNoteChange(id, notes) {
-    updateOrderNote(id, notes);
-    setViewing(v => v ? { ...v, notes } : null);
+  async function handleNoteChange(id, notes) {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateOrderNote(id, notes);
+      setViewing(v => v ? { ...v, notes } : null);
+      showToast('Order notes saved');
+    } catch (e) {
+      showToast(e?.message || 'Failed to save notes', 'error');
+      throw e;
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function handleTrackingChange(id, trackingNumber, carrier, trackingLink, dispatchDate) {
-    updateTracking(id, trackingNumber, carrier, trackingLink, dispatchDate);
-    setViewing(v => v ? { ...v, trackingNumber, carrier, trackingLink, dispatchDate } : null);
-    showToast('Tracking info saved');
+  async function handleTrackingChange(id, trackingNumber, carrier, trackingLink, dispatchDate) {
+    if (saving) return;
+    setSaving(true);
+    try {
+      await updateTracking(id, trackingNumber, carrier, trackingLink, dispatchDate);
+      setViewing(v => v ? { ...v, trackingNumber, carrier, trackingLink, dispatchDate } : null);
+      showToast('Tracking info saved');
+    } catch (e) {
+      showToast(e?.message || 'Failed to save tracking', 'error');
+      throw e;
+    } finally {
+      setSaving(false);
+    }
   }
 
   const orderStatusCounts = useMemo(() => {

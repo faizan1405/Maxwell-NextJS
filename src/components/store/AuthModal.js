@@ -15,7 +15,6 @@ export function AuthModal() {
   const [step,        setStep]        = useState('email'); // 'email' | 'otp'
   const [email,       setEmail]       = useState('');
   const [otp,         setOtp]         = useState('');
-  const [otpToken,    setOtpToken]    = useState('');
   const [loading,     setLoading]     = useState(false);
   const [error,       setError]       = useState('');
   const [resendSecs,  setResendSecs]  = useState(0);
@@ -28,7 +27,7 @@ export function AuthModal() {
     if (!authOpen) {
       const t = setTimeout(() => {
         setStep('email'); setEmail(''); setOtp('');
-        setOtpToken(''); setError(''); setResendSecs(0); setDevOtp('');
+        setError(''); setResendSecs(0); setDevOtp('');
       }, 300);
       return () => clearTimeout(t);
     }
@@ -50,14 +49,13 @@ export function AuthModal() {
     }
     setLoading(true); setError('');
     try {
-      const res  = await fetch(`${apiBase}/api/customer-auth`, {
+      const res  = await fetch(`${apiBase}/api/auth/otp/request`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'sendOtp', email: trimEmail }),
+        body: JSON.stringify({ email: trimEmail }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to send code. Try again.'); setLoading(false); return; }
-      setOtpToken(data.otpToken);
       setIsNew(!!data.isNew);
       setStep('otp');
       setResendSecs(60);
@@ -72,14 +70,15 @@ export function AuthModal() {
     if (code.length !== 6) { setError('Please enter the 6-digit code.'); return; }
     setLoading(true); setError('');
     try {
-      const res  = await fetch(`${apiBase}/api/customer-auth`, {
+      const res  = await fetch(`${apiBase}/api/auth/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verifyOtp', otpToken, otp: code }),
+        credentials: 'include',
+        body: JSON.stringify({ email: email.trim().toLowerCase(), otp: code }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Invalid code. Please try again.'); setOtp(''); setLoading(false); return; }
-      login(data.customer, data.sessionToken, data.expiresAt);
+      login(data.customer);
     } catch { setError('Network error. Please try again.'); }
     setLoading(false);
   }

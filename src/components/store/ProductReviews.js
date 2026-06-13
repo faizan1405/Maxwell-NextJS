@@ -57,7 +57,7 @@ function AccSpinner2() {
   return <span style={{ width: 14, height: 14, border: '2px solid rgba(255,255,255,.3)', borderTopColor: '#fff', borderRadius: '50%', flexShrink: 0, display: 'inline-block', animation: 'spin .7s linear infinite' }} />;
 }
 
-function ReviewForm({ productId, sessionToken, existingReview, onSubmitted, apiBase }) {
+function ReviewForm({ productId, existingReview, onSubmitted, apiBase }) {
   const [rating,   setRating]   = useState(existingReview?.rating || 0);
   const [text,     setText]     = useState(existingReview?.text   || '');
   const [saving,   setSaving]   = useState(false);
@@ -71,7 +71,8 @@ function ReviewForm({ productId, sessionToken, existingReview, onSubmitted, apiB
     try {
       const res  = await fetch(`${apiBase}/api/reviews`, {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body:    JSON.stringify({ productId, rating, text: text.trim() }),
       });
       const data = await res.json();
@@ -115,7 +116,7 @@ function ReviewForm({ productId, sessionToken, existingReview, onSubmitted, apiB
 }
 
 export function ProductReviews({ productId }) {
-  const { customer, sessionToken, isLoggedIn, openAuth, apiBase } = useCustomer();
+  const { customer, isLoggedIn, openAuth, apiBase } = useCustomer();
   const [reviews,       setReviews]       = useState(null);
   const [showForm,      setShowForm]      = useState(false);
   const [purchaseCheck, setPurchaseCheck] = useState(null); // null=unchecked, true, false
@@ -134,11 +135,11 @@ export function ProductReviews({ productId }) {
 
   /* Check if logged-in customer has purchased this product */
   useEffect(() => {
-    if (!isLoggedIn || !sessionToken || !productId) { setPurchaseCheck(false); return; }
+    if (!isLoggedIn || !productId) { setPurchaseCheck(false); return; }
     (async () => {
       try {
         const res  = await fetch(`${apiBase}/api/orders`, {
-          headers: { 'Authorization': `Bearer ${sessionToken}` },
+          credentials: 'include',
         });
         if (!res.ok) { setPurchaseCheck(false); return; }
         const orders = await res.json();
@@ -150,7 +151,7 @@ export function ProductReviews({ productId }) {
         setPurchaseCheck(bought);
       } catch { setPurchaseCheck(false); }
     })();
-  }, [isLoggedIn, sessionToken, productId, apiBase]);
+  }, [isLoggedIn, productId, apiBase]);
 
   const existingReview = reviews?.find(r => r.customerId === customer?.id || r.email === customer?.email);
   const avgRating = reviews?.length ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : 0;
@@ -213,7 +214,6 @@ export function ProductReviews({ productId }) {
       {showForm && (
         <ReviewForm
           productId={productId}
-          sessionToken={sessionToken}
           existingReview={existingReview}
           apiBase={apiBase}
           onSubmitted={(rev) => {

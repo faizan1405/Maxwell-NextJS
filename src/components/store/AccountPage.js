@@ -88,7 +88,7 @@ function AccSpinner() {
 }
 
 /* ─── Proof Upload Widget ────────────────────────────────────────────────────── */
-function ProofUploadWidget({ order, sessionToken, apiBase, onProofUploaded }) {
+function ProofUploadWidget({ order, apiBase, onProofUploaded }) {
   const [file,       setFile]       = useState(null);
   const [uploading,  setUploading]  = useState(false);
   const [error,      setError]      = useState('');
@@ -135,8 +135,8 @@ function ProofUploadWidget({ order, sessionToken, apiBase, onProofUploaded }) {
         headers: {
           'Content-Type': file.type,
           'x-filename':   file.name,
-          'Authorization': `Bearer ${sessionToken}`,
         },
+        credentials: 'include',
         body: file,
       });
       const data = await res.json();
@@ -250,7 +250,7 @@ function OrderTracker({ orderStatus, status }) {
 const CANCELLABLE_STATUSES = ['pending', 'confirmed', 'processing', 'Order Placed', 'Confirmed', 'Processing'];
 
 /* ─── Order Detail Modal ─────────────────────────────────────────────────────── */
-function OrderDetailModal({ order, sessionToken, apiBase, onClose, onReorder, onCancel, onProofUploaded }) {
+function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProofUploaded }) {
   const [cancelling,  setCancelling]  = useState(false);
   const [cancelError, setCancelError] = useState('');
 
@@ -405,7 +405,7 @@ function OrderDetailModal({ order, sessionToken, apiBase, onClose, onReorder, on
                   <p style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.4, margin: 0 }}>
                     Upload your bank proof of payment (PDF, JPG, PNG, or WEBP · max 5 MB).
                   </p>
-                  <ProofUploadWidget order={order} sessionToken={sessionToken} apiBase={apiBase} onProofUploaded={onProofUploaded} />
+                  <ProofUploadWidget order={order} apiBase={apiBase} onProofUploaded={onProofUploaded} />
                 </div>
               )}
             </div>
@@ -491,14 +491,14 @@ function OrderDetailModal({ order, sessionToken, apiBase, onClose, onReorder, on
 }
 
 /* ─── Orders Tab ─────────────────────────────────────────────────────────────── */
-function OrdersTab({ sessionToken, apiBase, onReorder }) {
+function OrdersTab({ apiBase, onReorder }) {
   const [orders,  setOrders]  = useState(null);
   const [error,   setError]   = useState('');
   const [viewing, setViewing] = useState(null);
 
   async function loadOrders() {
     try {
-      const res  = await fetch(`${apiBase}/api/orders`, { headers: { 'Authorization': `Bearer ${sessionToken}` } });
+      const res  = await fetch(`${apiBase}/api/orders`, { credentials: 'include' });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to load orders.'); setOrders([]); return; }
       const toMs = (v) => {
@@ -511,13 +511,14 @@ function OrdersTab({ sessionToken, apiBase, onReorder }) {
     } catch { setError('Network error. Please try again.'); setOrders([]); }
   }
 
-  useEffect(() => { loadOrders(); }, [sessionToken, apiBase]);
+  useEffect(() => { loadOrders(); }, [apiBase]);
 
   async function cancelOrder(orderId) {
     try {
       const res  = await fetch(`${apiBase}/api/orders`, {
         method:  'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body:    JSON.stringify({ id: orderId, status: 'cancelled' }),
       });
       const data = await res.json();
@@ -591,14 +592,14 @@ function OrdersTab({ sessionToken, apiBase, onReorder }) {
         );
       })}
       {viewing && (
-        <OrderDetailModal order={viewing} sessionToken={sessionToken} apiBase={apiBase} onClose={() => setViewing(null)} onReorder={onReorder} onCancel={cancelOrder} onProofUploaded={handleProofUploaded} />
+        <OrderDetailModal order={viewing} apiBase={apiBase} onClose={() => setViewing(null)} onReorder={onReorder} onCancel={cancelOrder} onProofUploaded={handleProofUploaded} />
       )}
     </div>
   );
 }
 
 /* ─── Profile Tab ────────────────────────────────────────────────────────────── */
-function ProfileTab({ customer, sessionToken, apiBase, onUpdate }) {
+function ProfileTab({ customer, apiBase, onUpdate }) {
   const [form,    setForm]    = useState({ name: customer?.name || '', phone: customer?.phone || '' });
   const [saving,  setSaving]  = useState(false);
   const [success, setSuccess] = useState(false);
@@ -612,7 +613,8 @@ function ProfileTab({ customer, sessionToken, apiBase, onUpdate }) {
     try {
       const res = await fetch(`${apiBase}/api/customer-auth`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ name: form.name.trim(), phone: form.phone.trim() }),
       });
       const data = await res.json();
@@ -652,7 +654,7 @@ function ProfileTab({ customer, sessionToken, apiBase, onUpdate }) {
 }
 
 /* ─── Addresses Tab ──────────────────────────────────────────────────────────── */
-function AddressesTab({ customer, sessionToken, apiBase, onUpdate }) {
+function AddressesTab({ customer, apiBase, onUpdate }) {
   const [adding,  setAdding]  = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving,  setSaving]  = useState(false);
@@ -673,7 +675,8 @@ function AddressesTab({ customer, sessionToken, apiBase, onUpdate }) {
       const body   = editing ? { action, addressId: editing, address: form } : { action, address: form };
       const res    = await fetch(`${apiBase}/api/customer-auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(body),
       });
       const data = await res.json();
@@ -689,7 +692,8 @@ function AddressesTab({ customer, sessionToken, apiBase, onUpdate }) {
     try {
       const res  = await fetch(`${apiBase}/api/customer-auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ action: 'deleteAddress', addressId }),
       });
       const data = await res.json();
@@ -701,7 +705,8 @@ function AddressesTab({ customer, sessionToken, apiBase, onUpdate }) {
     try {
       const res  = await fetch(`${apiBase}/api/customer-auth`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${sessionToken}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ action: 'setDefaultAddress', addressId }),
       });
       const data = await res.json();
@@ -803,18 +808,18 @@ function AddressesTab({ customer, sessionToken, apiBase, onUpdate }) {
 }
 
 /* ─── Reviews Tab ────────────────────────────────────────────────────────────── */
-function ReviewsTab({ customer, sessionToken, apiBase }) {
+function ReviewsTab({ customer, apiBase }) {
   const [orders,  setOrders]  = useState(null);
   const [reviews, setReviews] = useState(null);
   const { products } = useProducts();
 
   useEffect(() => {
-    if (!sessionToken) return;
+    if (!customer) return;
     (async () => {
       try {
         const [ordRes, revRes] = await Promise.all([
-          fetch(`${apiBase}/api/orders`,  { headers: { 'Authorization': `Bearer ${sessionToken}` } }),
-          fetch(`${apiBase}/api/reviews`, { headers: { 'Authorization': `Bearer ${sessionToken}` } }),
+          fetch(`${apiBase}/api/orders`,  { credentials: 'include' }),
+          fetch(`${apiBase}/api/reviews`, { credentials: 'include' }),
         ]);
         const ordData = ordRes.ok ? await ordRes.json() : [];
         const revData = revRes.ok ? await revRes.json() : [];
@@ -822,7 +827,7 @@ function ReviewsTab({ customer, sessionToken, apiBase }) {
         setReviews(Array.isArray(revData) ? revData.filter(r => r.customerId === customer?.id || r.email === customer?.email) : []);
       } catch { setOrders([]); setReviews([]); }
     })();
-  }, [sessionToken, apiBase, customer?.id]);
+  }, [customer, apiBase]);
 
   const reviewableProducts = useMemo(() => {
     if (!orders) return [];
@@ -887,7 +892,7 @@ function ReviewsTab({ customer, sessionToken, apiBase }) {
 
 /* ─── Account Page ───────────────────────────────────────────────────────────── */
 export default function AccountPage({ onGoHome }) {
-  const { customer, sessionToken, logout, updateCustomerData, apiBase, openAuth } = useCustomer();
+  const { customer, logout, updateCustomerData, apiBase, openAuth } = useCustomer();
   const { add, setOpen: openCart } = useCart();
   const { products } = useProducts();
   const [tab, setTab] = useState('profile');
@@ -964,10 +969,10 @@ export default function AccountPage({ onGoHome }) {
         </div>
 
         <div key={tab} className="ab-fade-in">
-          {tab === 'profile'   && <ProfileTab   customer={customer} sessionToken={sessionToken} apiBase={apiBase} onUpdate={updateCustomerData} />}
-          {tab === 'orders'    && <OrdersTab    sessionToken={sessionToken} apiBase={apiBase} onReorder={handleReorder} />}
-          {tab === 'addresses' && <AddressesTab customer={customer} sessionToken={sessionToken} apiBase={apiBase} onUpdate={updateCustomerData} />}
-          {tab === 'reviews'   && <ReviewsTab   customer={customer} sessionToken={sessionToken} apiBase={apiBase} />}
+          {tab === 'profile'   && <ProfileTab   customer={customer} apiBase={apiBase} onUpdate={updateCustomerData} />}
+          {tab === 'orders'    && <OrdersTab    apiBase={apiBase} onReorder={handleReorder} />}
+          {tab === 'addresses' && <AddressesTab customer={customer} apiBase={apiBase} onUpdate={updateCustomerData} />}
+          {tab === 'reviews'   && <ReviewsTab   customer={customer} apiBase={apiBase} />}
         </div>
       </div>
     </div>

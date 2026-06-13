@@ -14,7 +14,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Order, Product, Settings, Coupon, ShippingRate } from '../../../lib/models';
-import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+import { verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
@@ -505,7 +506,7 @@ export async function POST(req) {
     let body;
     try { body = await req.json(); } catch { body = {}; }
     
-    const custSession = verifyCustomerSession(req);
+    const custSession = await verifyCustomerCookie(req);
     const idemKey = (body.idempotencyKey || '').trim();
 
     const customer = body.customer || {};
@@ -712,8 +713,8 @@ export async function GET(req) {
   try {
     await connectToDatabase();
     const adminSession    = verifySession(req);
-    const customerSession = adminSession ? null : verifyCustomerSession(req);
-    
+    const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const orders = await Order.find({}).lean();
@@ -742,8 +743,8 @@ export async function PATCH(req) {
   try {
     await connectToDatabase();
     const adminSession    = verifySession(req);
-    const customerSession = adminSession ? null : verifyCustomerSession(req);
-    
+    const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     let body;

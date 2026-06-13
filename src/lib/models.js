@@ -138,6 +138,25 @@ const StockHistorySchema = new Schema({
   createdAt: Number,
 }, { strict: false });
 
+const EmailOtpSchema = new Schema({
+  id:        { type: String, required: true, unique: true },
+  email:     { type: String, required: true, index: true, lowercase: true },
+  otpHash:   { type: String, required: true },
+  expiresAt: { type: Number, required: true },
+  attempts:  { type: Number, default: 0 },
+  consumed:  { type: Boolean, default: false },
+  createdAt: { type: Number, required: true },
+});
+
+const CustomerSessionSchema = new Schema({
+  id:         { type: String, required: true, unique: true },
+  customerId: { type: String, required: true, index: true },
+  email:      { type: String, required: true, index: true, lowercase: true },
+  tokenHash:  { type: String, required: true, unique: true },
+  expiresAt:  { type: Number, required: true },
+  createdAt:  { type: Number, required: true },
+});
+
 export const Product = models.Product || model('Product', ProductSchema);
 export const Order = models.Order || model('Order', OrderSchema);
 export const Customer = models.Customer || model('Customer', CustomerSchema);
@@ -149,3 +168,5 @@ export const ShippingRate = models.ShippingRate || model('ShippingRate', Shippin
 export const AbandonedCart = models.AbandonedCart || model('AbandonedCart', AbandonedCartSchema);
 export const Settings = models.Settings || model('Settings', SettingsSchema);
 export const StockHistory = models.StockHistory || model('StockHistory', StockHistorySchema);
+export const EmailOtp = models.EmailOtp || model('EmailOtp', EmailOtpSchema);
+export const CustomerSession = models.CustomerSession || model('CustomerSession', CustomerSessionSchema);

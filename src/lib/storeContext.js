@@ -152,14 +152,13 @@ export function ProductsProvider({ children }) {
 }
 
 /* ── Customer context ──────────────────────────────────────────────────────── */
-const CUST_SESSION_KEY = 'ab_customer_session_v2';
+const CUST_SESSION_KEY = 'ab_customer_session_v2'; // kept only for cleanup on first load
 
 const CustomerContext = createContext(null);
 export const useCustomer = () => useContext(CustomerContext);
 
 export function CustomerProvider({ children }) {
   const [customer, setCustomer] = useState(null);
-  const [sessionToken, setSessionToken] = useState(null);
   const [authOpen, setAuthOpen] = useState(false);
   const [page, setPageState] = useState(() => {
     if (typeof window === 'undefined') return 'home';
@@ -197,36 +196,32 @@ export function CustomerProvider({ children }) {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Restore session
+  // Restore session from server cookie via /api/auth/me
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    try {
-      const raw = localStorage.getItem(CUST_SESSION_KEY);
-      if (!raw) return;
-      const s = JSON.parse(raw);
-      if (s && s.expiresAt > Date.now()) {
-        setCustomer(s.customer);
-        setSessionToken(s.sessionToken);
-      } else {
-        localStorage.removeItem(CUST_SESSION_KEY);
-      }
-    } catch {}
+    // Clean up old JWT-based session key from localStorage
+    try { localStorage.removeItem(CUST_SESSION_KEY); } catch {}
+    (async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.customer) setCustomer(data.customer);
+      } catch {}
+    })();
   }, []);
 
-  const login = useCallback((cust, token, expiresAt) => {
+  const login = useCallback((cust) => {
     setCustomer(cust);
-    setSessionToken(token);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(CUST_SESSION_KEY, JSON.stringify({ customer: cust, sessionToken: token, expiresAt }));
-    }
     setAuthOpen(false);
 
-    // Merge guest cart
+    // Merge guest cart into customer cart (cookie is already set by verify endpoint)
     const guestId = getGuestId();
     if (guestId) {
       fetch(`${API_BASE}/api/carts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ action: 'merge', guestId }),
       }).then(r => r.ok ? r.json() : null).then(data => {
         if (data?.items?.length) {
@@ -239,33 +234,21 @@ export function CustomerProvider({ children }) {
 
   const logout = useCallback(async () => {
     try {
-      await fetch(`${API_BASE}/api/customer-auth`, {
+      await fetch(`${API_BASE}/api/auth/logout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'logout' }),
+        credentials: 'include',
       });
     } catch {}
     setCustomer(null);
-    setSessionToken(null);
     setPage('home');
-    if (typeof window !== 'undefined') localStorage.removeItem(CUST_SESSION_KEY);
   }, [setPage]);
 
   const updateCustomerData = useCallback((updated) => {
     setCustomer(updated);
-    try {
-      const raw = localStorage.getItem(CUST_SESSION_KEY);
-      if (raw) {
-        const s = JSON.parse(raw);
-        s.customer = updated;
-        localStorage.setItem(CUST_SESSION_KEY, JSON.stringify(s));
-      }
-    } catch {}
   }, []);
 
   const value = useMemo(() => ({
     customer,
-    sessionToken,
     isLoggedIn: !!customer,
     login,
     logout,
@@ -276,7 +259,7 @@ export function CustomerProvider({ children }) {
     setPage,
     updateCustomerData,
     apiBase: API_BASE,
-  }), [customer, sessionToken, authOpen, page, login, logout, updateCustomerData, setPage]);
+  }), [customer, authOpen, page, login, logout, updateCustomerData, setPage]);
 
   return (
     <CustomerContext.Provider value={value}>
@@ -340,15 +323,13 @@ export function CartProvider({ children }) {
     if (typeof window === 'undefined') return;
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(() => {
+      if (!items.length) return;
       const guestId = getGuestId();
-      const session = (() => { try { const s = JSON.parse(localStorage.getItem('ab_customer_session_v2') || 'null'); return s?.expiresAt > Date.now() ? s : null; } catch { return null; } })();
-      if (!items.length && !session) return;
-      const headers = { 'Content-Type': 'application/json' };
-      if (session?.sessionToken) headers['Authorization'] = `Bearer ${session.sessionToken}`;
       fetch(`${API_BASE}/api/carts`, {
         method: 'POST',
-        headers,
-        body: JSON.stringify({ guestId, items, email: session?.customer?.email || null }),
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ guestId, items, email: null }),
       }).catch(() => {});
     }, 3000);
     return () => clearTimeout(syncTimer.current);
@@ -406,12 +387,10 @@ export function CartProvider({ children }) {
     setItems([]);
     setCoupon(null);
     const guestId = getGuestId();
-    const session = (() => { try { const s = JSON.parse(localStorage.getItem('ab_customer_session_v2') || 'null'); return s?.expiresAt > Date.now() ? s : null; } catch { return null; } })();
-    const headers = { 'Content-Type': 'application/json' };
-    if (session?.sessionToken) headers['Authorization'] = `Bearer ${session.sessionToken}`;
     fetch(`${API_BASE}/api/carts`, {
       method: 'POST',
-      headers,
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ guestId, action: 'convert' }),
     }).catch(() => {});
   };

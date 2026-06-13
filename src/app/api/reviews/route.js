@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Review, Order, Customer, Product } from '../../../lib/models';
-import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+import { verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 
 // Accepts canonical Product.id slug OR legacy ObjectId hex (older storefront callers).
 async function resolveProductSlug(input) {
@@ -31,7 +32,7 @@ export async function GET(req) {
     createdAt: r.createdAt, updatedAt: r.updatedAt,
   });
 
-  const cust = verifyCustomerSession(req);
+  const cust = await verifyCustomerCookie(req);
   const productIdRaw = req.nextUrl.searchParams.get('productId');
 
   let visible = reviews.filter(r =>
@@ -54,7 +55,7 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
-  const custSession = verifyCustomerSession(req);
+  const custSession = await verifyCustomerCookie(req);
   if (!custSession) return NextResponse.json({ error: 'You must be signed in to leave a review.' }, { status: 401 });
 
   await connectToDatabase();

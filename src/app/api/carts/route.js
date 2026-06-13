@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { AbandonedCart } from '../../../lib/models';
-import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+import { verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 
 const ABANDONED_THRESHOLD = 24 * 60 * 60 * 1000;   // 24 h
 const GUEST_TTL           = 10 * 24 * 60 * 60 * 1000; // 10 days
@@ -20,7 +21,7 @@ export async function POST(req) {
   await connectToDatabase();
   let body = await req.json().catch(() => ({}));
 
-  const custSession = verifyCustomerSession(req);
+  const custSession = await verifyCustomerCookie(req);
   const { guestId, items, email, action } = body;
   const now = Date.now();
 

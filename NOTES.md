@@ -9,17 +9,17 @@
 Instead of using an expensive platform like Shopify or WooCommerce, this project is a "custom-built" solution using Next.js. This gives the business 100% control over the design, speed, and database without paying monthly subscription fees to third-party e-commerce platforms.
 
 ### Project Statistics
-* **Total Files:** ~120
-* **Total Folders:** ~38
+* **Total Files:** ~140
+* **Total Folders:** ~42
 * **HTML Files:** 0 *(Next.js dynamically generates HTML using JavaScript)*
-* **CSS/SCSS Files:** 39
-* **JavaScript Files:** ~66
+* **CSS/SCSS Files:** 40
+* **JavaScript Files:** ~78
 * **TypeScript Files:** 0
-* **React Components:** ~28
+* **React Components:** ~29
 * **Next.js Pages:** 2 main entry points (Storefront and Admin Panel) which dynamically render sub-pages.
 * **API Routes:** 15 (Products, Orders, Carts, Reviews, Settings, Shipping, Categories, FAQs, Coupons, Upload, Proof, Auth, Customer Auth, Customers, Seed-Demo)
 * **Database Models:** 11
-* **Images/Assets:** 14
+* **Images/Assets:** Stored in `public/assets/` and `public/thumbs/`
 * **Configuration Files:** ~5 (`package.json`, `next.config.js`, `vercel.json`, etc.)
 
 ---
@@ -32,12 +32,15 @@ Amahle Blue E-Commerce
 │   │   ├── Home / Hero / Features
 │   │   ├── Shop / Product Grid
 │   │   ├── Cart & Checkout
-│   │   └── Customer Account (Orders, Profile)
+│   │   ├── Customer Account (Orders, Profile)
+│   │   └── FAQ Page
 │   └── Admin Panel (Business facing)
 │       ├── Dashboard (Stats & Revenue)
 │       ├── Products & Categories Management
 │       ├── Orders & Shipping Management
 │       ├── Customer Database
+│       ├── Reviews & FAQs Management
+│       ├── Reports & Abandoned Carts
 │       └── System Settings & Coupons
 ├── Backend (Next.js API Routes)
 │   ├── Products API
@@ -62,6 +65,14 @@ Amahle Blue E-Commerce
 │   ├── JWT (JSON Web Tokens)
 │   ├── Admin Login
 │   └── Customer Login/Registration
+├── SEO
+│   ├── robots.js (dynamic robots.txt)
+│   ├── sitemap.js (dynamic XML sitemap)
+│   └── seo.js lib (metadata helpers per page)
+├── Utilities
+│   ├── accounting.js (financial calculations)
+│   ├── currency.js (formatting helpers)
+│   └── invoice.js (invoice generation)
 ├── Payments
 │   └── Manual EFT / Proof of Payment system
 └── Deployment
@@ -78,41 +89,65 @@ The codebase is organized cleanly to separate the frontend visuals from the back
 Maxwell-NextJS/
 ├── data/                      # Static seed data bundled with serverless functions via import
 │   └── maxwell-products.json  # 20 demo products across 5 categories
+├── public/                    # Static assets served directly by Next.js
+│   ├── assets/                # Product images and brand assets
+│   └── thumbs/                # Thumbnail variants of product images
 ├── scripts/                   # Standalone Node scripts (local use only, not deployed)
 │   └── seed-products.mjs      # Local DB seeder (blocked by Atlas IP allowlist locally)
 ├── next.config.js             # Next.js config — SPA path rewrites for storefront pages
 ├── vercel.json                # Vercel config — headers and targeted API rewrites
 └── src/
     ├── app/                   # Next.js App Router
+    │   ├── [...store]/        # Catch-all storefront route (page.js)
     │   ├── admin/             # Admin Panel entry (layout.js + page.js)
     │   ├── api/               # Backend API routes (15 routes — one file per resource)
     │   ├── layout.js          # Root HTML shell
-    │   └── page.js            # Storefront entry point
+    │   ├── page.js            # Storefront entry point
+    │   ├── robots.js          # Dynamic robots.txt generation
+    │   └── sitemap.js         # Dynamic XML sitemap generation
     ├── components/            # React UI components
-    │   ├── admin/             # Admin Panel pages (Dashboard, Products, Orders, etc.)
-    │   ├── store/             # Storefront pages (Hero, Shop, Cart, Checkout, Account)
-    │   └── ui/                # Shared micro-components (Icons, index re-exports)
+    │   ├── admin/             # Admin Panel pages
+    │   │   ├── AbandonedPage.js / AdminApp.js / AdminLayout.js / AdminProvider.js
+    │   │   ├── CategoriesPage.js / CouponsPage.js / CustomersPage.js
+    │   │   ├── DashboardPage.js / FaqsPage.js / LoginPage.js
+    │   │   ├── OrdersPage.js / ProductsPage.js / ReportsPage.js
+    │   │   └── ReviewsPage.js / SettingsPage.js / ShippingEditor.js
+    │   ├── store/             # Storefront pages
+    │   │   ├── AccountPage.js / AuthModal.js / CartComponents.js
+    │   │   ├── ContentSections.js / FaqPage.js / Footer.js
+    │   │   ├── Header.js / HeroSection.js / ProductReviews.js
+    │   │   └── ShopPage.js / SwipeCarousel.js
+    │   └── ui/                # Shared micro-components (Icons.js, index.js re-exports)
     ├── lib/                   # Shared server + client utilities
     │   ├── auth.js            # JWT helpers — sign and verify admin/customer tokens
-    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, and Products)
+    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, Products)
     │   ├── email.js           # Email utility (transactional emails, future use)
     │   ├── models.js          # Central re-export of all Mongoose models
     │   ├── mongoose.js        # MongoDB connection with cached pool & lazy seed trigger
+    │   ├── seo.js             # Metadata/SEO helpers for page-level Open Graph & titles
     │   └── storeContext.js    # Storefront global state — cart, user, active page
     ├── models/                # Mongoose schemas (11 total)
     │   ├── Product.js / Order.js / Customer.js / Cart.js
     │   ├── Category.js / Coupon.js / Faq.js / Review.js
     │   └── Setting.js / ShippingRate.js / StockHistory.js
-    ├── scripts/               # One-off data migration utilities (src-local)
-    │   └── migrateData.js
-    └── styles/                # SCSS design system (39 files)
-        ├── _global.scss       # Site-wide base styles
-        ├── _mixins.scss       # Reusable SCSS mixins
-        ├── _variables.scss    # Design tokens (colors, spacing, fonts)
-        ├── main.scss          # SCSS entry point — imports all partials
-        ├── admin/             # Admin Panel page styles
-        │   └── components/    # Reusable admin UI styles (modals, buttons, badges, etc.)
-        └── store/             # Storefront page styles
+    ├── scripts/               # One-off local data utilities (not deployed, not all tracked)
+    │   ├── _dbCheck.js / _dbCheck2.js   # DB health-check scripts
+    │   ├── _fixStockDeducted.js         # Stock correction utility
+    │   ├── migrateData.js               # Data migration (untracked — local use only)
+    │   ├── resetStock.js                # Stock reset utility
+    │   └── upsertCategories.js          # Category upsert helper (untracked — local use only)
+    ├── styles/                # SCSS design system (40 files)
+    │   ├── _global.scss       # Site-wide base styles
+    │   ├── _mixins.scss       # Reusable SCSS mixins
+    │   ├── _variables.scss    # Design tokens (colors, spacing, fonts)
+    │   ├── main.scss          # SCSS entry point — imports all partials
+    │   ├── admin/             # Admin Panel page styles (14 partials)
+    │   │   └── components/    # Reusable admin UI styles (10 partials — modals, buttons, etc.)
+    │   └── store/             # Storefront page styles (12 partials)
+    └── utils/                 # Pure calculation and formatting helpers
+        ├── accounting.js      # Financial calculations (totals, tax, discounts)
+        ├── currency.js        # Currency formatting (ZAR display helpers)
+        └── invoice.js         # Invoice data assembly for order PDFs/display
 ```
 
 ---
@@ -238,7 +273,7 @@ Maxwell-NextJS/
 ## 20. Missing Features
 * Automated Credit Card / PayFast / Yoco integration.
 * Automated Email Notifications (e.g., "Your order has shipped").
-* Search Engine Optimization (SEO) for individual products.
+* SEO for individual product pages — foundation (robots.txt, sitemap, Open Graph metadata) is in place; dynamic per-product routes (`/product/[slug]`) are not yet implemented.
 
 ---
 

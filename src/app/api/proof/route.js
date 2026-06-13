@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { put, del } from '@vercel/blob';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Order } from '../../../lib/models';
-import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+import { verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { sendEmail } from '../../../lib/email';
 import { formatZar } from '../../../utils/currency';
 
@@ -114,8 +115,8 @@ async function sendProofCustomerEmail(order) {
 export async function POST(req) {
   await connectToDatabase();
   
-  const adminSession = verifySession(req);
-  const customerSession = adminSession ? null : verifyCustomerSession(req);
+  const adminSession    = verifySession(req);
+  const customerSession = adminSession ? null : await verifyCustomerCookie(req);
 
   if (!adminSession && !customerSession) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

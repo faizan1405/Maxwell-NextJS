@@ -205,7 +205,7 @@ export function CartPage({ onGoHome, onCheckout }) {
 
 /* ── CheckoutPage ────────────────────────────────────────────────────────────── */
 export function CheckoutPage({ onBack, onSuccess }) {
-  const { customer, sessionToken, isLoggedIn, openAuth, apiBase } = useCustomer();
+  const { customer, isLoggedIn, openAuth, apiBase } = useCustomer();
   const { detailed, subtotal, count, clear, coupon, setCoupon } = useCart();
 
   const [form, setForm] = useState({
@@ -353,9 +353,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
     const controller = new AbortController();
     const tid = setTimeout(() => controller.abort(), 30000);
     try {
-      const headers = { 'Content-Type': 'application/json' };
-      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
-      const res = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers, body: JSON.stringify(payload), signal: controller.signal });
+      const res = await fetch(`${apiBase}/api/orders`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'include', body: JSON.stringify(payload), signal: controller.signal });
       clearTimeout(tid);
 
       const text = await res.text();
@@ -662,7 +660,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
   const [upError, setUpError] = useState('');
   const [upOk, setUpOk] = useState(false);
   const [settings, setSettings] = useState(null);
-  const { apiBase, sessionToken, isLoggedIn } = useCustomer();
+  const { apiBase, isLoggedIn } = useCustomer();
   const { products } = useProducts();
   const fileRef = useRef(null);
 
@@ -709,10 +707,11 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
     setUpError('');
     setUploading(true);
     try {
-      const headers = { 'Content-Type': file.type, 'x-filename': file.name };
-      if (sessionToken) headers['Authorization'] = `Bearer ${sessionToken}`;
       const res = await fetch(`${apiBase}/api/proof?orderId=${encodeURIComponent(order.id)}`, {
-        method: 'POST', headers, body: file,
+        method: 'POST',
+        headers: { 'Content-Type': file.type, 'x-filename': file.name },
+        credentials: 'include',
+        body: file,
       });
       const data = await res.json();
       if (!res.ok) { setUpError(data.error || 'Upload failed. Please try again.'); setProof(null); setUploading(false); return; }

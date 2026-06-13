@@ -75,6 +75,8 @@ export async function POST(req) {
   }
 
   if (existing) {
+    // Mongoose 9: prefer `returnDocument: 'after'` over deprecated `new: true`,
+    // and chain `.lean()` instead of passing `lean` as a findOneAndUpdate option.
     const updated = await AbandonedCart.findOneAndUpdate(
       { id: existing.id },
       {
@@ -84,8 +86,8 @@ export async function POST(req) {
           updatedAt: now,
         }
       },
-      { new: true, lean: true }
-    );
+      { returnDocument: 'after' }
+    ).lean();
     return NextResponse.json(updated);
   }
 

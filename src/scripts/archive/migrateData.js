@@ -13,7 +13,15 @@
  * CAUTION: This script calls `deleteMany({})` on each collection before
  * inserting, which will wipe existing data. Run it only on a fresh database
  * or after taking a backup.
+ *
+ * SAFETY: Archived maintenance script. Requires
+ * ALLOW_DESTRUCTIVE_MAINTENANCE=migrate-data before it can run.
  */
+
+if (process.env.ALLOW_DESTRUCTIVE_MAINTENANCE !== 'migrate-data') {
+  console.error('Refusing to run. Set ALLOW_DESTRUCTIVE_MAINTENANCE=migrate-data for this archived maintenance script.');
+  process.exit(1);
+}
 
 const fs = require('fs');
 

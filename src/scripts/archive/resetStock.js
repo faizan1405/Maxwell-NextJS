@@ -1,7 +1,15 @@
 /**
  * One-off script: reset all product and variant stocks to 10.
- * Usage: node src/scripts/resetStock.js
+ * Archived from src/scripts/resetStock.js.
+ *
+ * SAFETY: This overwrites inventory values. Do not run against production.
+ * Requires ALLOW_DESTRUCTIVE_MAINTENANCE=reset-stock.
  */
+
+if (process.env.ALLOW_DESTRUCTIVE_MAINTENANCE !== 'reset-stock') {
+  console.error('Refusing to run. Set ALLOW_DESTRUCTIVE_MAINTENANCE=reset-stock for this archived maintenance script.');
+  process.exit(1);
+}
 
 const fs = require('fs');
 

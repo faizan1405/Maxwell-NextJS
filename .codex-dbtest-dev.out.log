@@ -1,0 +1,21 @@
+
+> maxwell-amahle-blue@1.0.0 dev
+> next dev -p 3002
+
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.1.11:3002
+- Environments: .env.local
+✓ Ready in 392ms
+Creating turbopack project { dir: 'C:\\Users\\Faiza\\Downloads\\Maxwell-NextJS', testMode: true }
+
+ GET / 200 in 358ms (next.js: 173ms, application-code: 185ms)
+ GET /api/categories 500 in 594ms (next.js: 363ms, application-code: 231ms)
+ GET /api/settings 500 in 607ms (next.js: 449ms, application-code: 158ms)
+ GET /api/shipping 500 in 607ms (next.js: 475ms, application-code: 132ms)
+ GET /api/products 500 in 611ms (next.js: 536ms, application-code: 75ms)
+ GET /api/faqs 500 in 616ms (next.js: 574ms, application-code: 42ms)
+✓ Compiled in 92ms
+✓ Compiled in 991ms
+✓ Compiled in 1363ms
+✓ Compiled in 2.3s

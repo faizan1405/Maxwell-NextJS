@@ -99,7 +99,7 @@ export const ProductCard = ({ p }) => {
         )}
         <div className="product-card__badges">
           {!outOfStock && <BadgeChip badge={p.badge} />}
-          {p.was && !outOfStock && <span className="product-card__save-badge">Save {money(p.was - p.price)}</span>}
+          {p.was && p.was > displayPrice && !outOfStock && <span className="product-card__save-badge">Save {money(p.was - displayPrice)}</span>}
         </div>
         <div className="product-card__actions">
           <button onClick={handleWish}
@@ -136,7 +136,7 @@ export const ProductCard = ({ p }) => {
                   {p.was && <span className="product-card__price-was">{money(p.was)}</span>}</>
             }
           </div>
-          {lowStock && <span className="product-card__stock-low">Only {displayStock} left</span>}
+          {lowStock && <span className="product-card__stock-low">{hasVariants && p.variants.length > 1 ? 'Limited stock' : `Only ${displayStock} left`}</span>}
         </div>
         {contactForPrice ? (
           <a href={`${BRAND.wa}?text=${encodeURIComponent(`Hi Amahle Blue, I would like to get a quote for the ${p.name}.`)}`} target="_blank" rel="noopener noreferrer"
@@ -160,14 +160,37 @@ export const ProductCard = ({ p }) => {
 
 export const Featured = () => {
   const { products } = useProducts();
-  const bestIds = ["all-purpose-cleaner", "hand-surface-sanitiser", "carpet-upholstery-shampoo", "tyre-dash-shine"];
-  
-  let best = products.filter((p) => p.badge === "Bestseller" || bestIds.includes(p.id));
-  if (best.length < 4) {
-    const remaining = products.filter((p) => !best.includes(p) && (typeof p.stock !== 'number' || p.stock > 0));
-    best = [...best, ...remaining];
-  }
-  best = best.slice(0, 4);
+
+  const isShoppable = (p) => {
+    if (!p) return false;
+    if (p.status && p.status !== 'active') return false;
+    if (p.outOfStock) return false;
+    const variants = Array.isArray(p.variants) ? p.variants : [];
+    const variantStock = variants.reduce((s, v) => s + (Number(v?.stock) || 0), 0);
+    if (variants.length > 0) {
+      const allVariantsOut = variants.every(v => v?.outOfStock || (Number(v?.stock) || 0) <= 0);
+      if (allVariantsOut) return false;
+      return true;
+    }
+    const stock = Number(p.stock);
+    if (Number.isFinite(stock) && stock <= 0) return false;
+    return true;
+  };
+
+  const reviewWeight = (p) => (Number(p?.reviews) || 0) * 10 + (Number(p?.rating) || 0);
+  const isBestsellerBadge = (b) => typeof b === 'string' && b.trim().toLowerCase() === 'bestseller';
+
+  const shoppable = (Array.isArray(products) ? products : []).filter(isShoppable);
+  const bestseller = shoppable.filter((p) => isBestsellerBadge(p.badge));
+  const byRating = shoppable
+    .filter((p) => !bestseller.includes(p))
+    .sort((a, b) => reviewWeight(b) - reviewWeight(a));
+
+  const ordered = [...bestseller, ...byRating];
+  const fallback = shoppable.filter((p) => !ordered.includes(p));
+  let best = [...ordered, ...fallback].slice(0, 4);
+
+  if (best.length === 0) return null;
 
   const goShop = (e) => { 
     e.preventDefault(); 
@@ -218,7 +241,22 @@ export const BulkPromo = () => {
               <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
                 <Whatsapp size={18} /> Request a bulk quote
               </a>
-              <a href="#contact" className="bulk-promo__btn-secondary">
+              <a href="/#contact" onClick={(e) => {
+                e.preventDefault();
+                if (typeof window === 'undefined') return;
+                window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#contact' } }));
+                let attempts = 0;
+                const tryScroll = () => {
+                  const el = document.getElementById('contact');
+                  if (el) {
+                    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+                    return;
+                  }
+                  attempts += 1;
+                  if (attempts < 10) setTimeout(tryScroll, 80);
+                };
+                setTimeout(tryScroll, 50);
+              }} className="bulk-promo__btn-secondary">
                 Contact sales <ArrowRight size={17} />
               </a>
             </div>
@@ -490,7 +528,7 @@ export const QuickView = () => {
                   </div>
                 )}
 
-                <div className="absolute left-3 top-3 flex gap-1.5 pointer-events-none">
+                <div className="quickview-badge-overlay">
                   <BadgeChip badge={product.badge} />
                 </div>
 
@@ -505,16 +543,14 @@ export const QuickView = () => {
                   </>
                 )}
 
-                <div className="absolute bottom-2 right-2 flex items-center gap-1.5 z-10">
+                <div className="quickview-media-controls">
                   {media.length > 1 && (
-                    <span className="rounded-full bg-black/60 px-2 py-0.5 text-[11px] text-white font-bold sm:hidden">
-                      {mediaIdx + 1}/{media.length}
-                    </span>
+                    <span className="quickview-media-counter">{mediaIdx + 1}/{media.length}</span>
                   )}
                   {currentMedia && currentMedia.type === 'image' && (
                     <button
                       onClick={() => setIsFullscreen(true)}
-                      className="hidden sm:grid h-7 w-7 place-items-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+                      className="quickview-fullscreen-btn"
                       title="Fullscreen"
                       aria-label="View fullscreen"
                     >
@@ -540,8 +576,9 @@ export const QuickView = () => {
                       }}
                     >
                       {m.type === 'video' ? (
-                        <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                        <div className="quickview-video-thumb">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          <span className="quickview-video-thumb__marker">▶</span>
                         </div>
                       ) : (
                         <img
@@ -550,9 +587,6 @@ export const QuickView = () => {
                           loading="lazy"
                           onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }}
                         />
-                      )}
-                      {m.type === 'video' && (
-                        <span className="absolute bottom-0.5 left-0.5 bg-slate-700/80 text-white text-[7px] font-bold px-1 py-0.5 rounded">▶</span>
                       )}
                     </button>
                   ))}
@@ -564,10 +598,10 @@ export const QuickView = () => {
             <div className="quickview-details">
               <span className="quickview-cat" style={{ color: c?.accent }}>{c?.name}</span>
               <h3 className="quickview-title">{product.name}</h3>
-              <div className="mt-2 flex items-center gap-2">
+              <div className="quickview-rating-row">
                 <Stars value={product.rating} size={15} />
-                <span className="text-[13px] font-semibold text-slate-500">{product.rating}</span>
-                <span className="text-[13px] text-slate-300">· {product.reviews} reviews</span>
+                <span className="quickview-rating-row__val">{product.rating}</span>
+                <span className="quickview-rating-row__count">· {product.reviews} reviews</span>
               </div>
               <p className="quickview-desc">{product.desc}</p>
               <ul className="quickview-benefits">
@@ -619,22 +653,22 @@ export const QuickView = () => {
                     <div className="quickview-price-section">
                       <div className="quickview-price-wrap">
                         {contactForPrice
-                          ? <span className="quickview-price text-slate-500 text-[20px]">Contact for price</span>
+                          ? <span className="quickview-price quickview-price--contact">Contact for price</span>
                           : <><span className="quickview-price">{money(activePrice)}</span>
                               {activeWas && <span className="quickview-price-was">{money(activeWas)}</span>}</>
                         }
                       </div>
                       <div className="quickview-stock-info">
                         <span className="quickview-stock-status">
-                          Available: {activeOutOfStock ? <span className="text-red-500 font-bold">Out of stock</span> : <span className="text-grass font-bold">{activeStock} units</span>}
+                          Available: {activeOutOfStock ? <span className="quickview-stock-status__oos">Out of stock</span> : <span className="quickview-stock-status__ok">{activeStock} units</span>}
                         </span>
-                        {activeLowStock && <p className="text-[11.5px] font-bold text-amber-600 mt-0.5">Only {activeStock} left — order soon!</p>}
+                        {activeLowStock && <p className="quickview-low-stock-note">Only {activeStock} left — order soon!</p>}
                       </div>
                     </div>
 
                     {contactForPrice ? (
                       <a href={`${BRAND.wa}?text=${encodeURIComponent(`Hi Amahle Blue, I would like to get a quote for the ${product.name}${activeSize ? ` (${activeSize})` : ''}.`)}`} target="_blank" rel="noopener noreferrer"
-                        className="quickview-add-btn bg-grass hover:bg-emerald-600">
+                        className="quickview-add-btn quickview-add-btn--quote">
                         <Whatsapp size={18} /> Get a quote on WhatsApp
                       </a>
                     ) : (
@@ -666,24 +700,40 @@ export const QuickView = () => {
       </div>
 
       {isFullscreen && product && currentMedia && (
-        <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/95" onClick={() => setIsFullscreen(false)}>
-          <button onClick={() => setIsFullscreen(false)} className="absolute top-4 right-4 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10" aria-label="Close fullscreen">
+        <div className="quickview-fullscreen" onClick={() => setIsFullscreen(false)}>
+          <button
+            onClick={() => setIsFullscreen(false)}
+            className="quickview-fullscreen__btn quickview-fullscreen__btn--close"
+            aria-label="Close fullscreen"
+          >
             <X size={20} />
           </button>
           {media.length > 1 && (
             <>
-              <button onClick={e => { e.stopPropagation(); goPrev(); }} className="absolute left-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10" aria-label="Previous">
+              <button
+                onClick={e => { e.stopPropagation(); goPrev(); }}
+                className="quickview-fullscreen__btn quickview-fullscreen__btn--prev"
+                aria-label="Previous"
+              >
                 <ChevronLeft size={20} />
               </button>
-              <button onClick={e => { e.stopPropagation(); goNext(); }} className="absolute right-4 top-1/2 -translate-y-1/2 grid h-10 w-10 place-items-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors z-10" aria-label="Next">
+              <button
+                onClick={e => { e.stopPropagation(); goNext(); }}
+                className="quickview-fullscreen__btn quickview-fullscreen__btn--next"
+                aria-label="Next"
+              >
                 <ChevronRight size={20} />
               </button>
             </>
           )}
-          <div className="relative max-w-[90vw] max-h-[80vh]" onClick={e => e.stopPropagation()}>
-            <img src={currentMedia.url} alt={product.name} className="max-w-full max-h-[80vh] object-contain" onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }} />
+          <div className="quickview-fullscreen__stage" onClick={e => e.stopPropagation()}>
+            <img
+              src={currentMedia.url}
+              alt={product.name}
+              onError={e => { e.target.onerror = null; e.target.src = '/assets/products/placeholder.svg'; }}
+            />
           </div>
-          <p className="mt-3 text-white/40 text-xs">{mediaIdx + 1} / {media.length}</p>
+          <p className="quickview-fullscreen__counter">{mediaIdx + 1} / {media.length}</p>
         </div>
       )}
     </div>

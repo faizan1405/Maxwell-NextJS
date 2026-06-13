@@ -86,7 +86,7 @@ function FaqAccordionItem({ item, isOpen, onToggle, index }) {
         className="faq-item__btn"
       >
         <span className="faq-item__question">{item.question}</span>
-        <span className="transition-colors duration-200">
+        <span>
           <FaqChevron open={isOpen} />
         </span>
       </button>
@@ -290,7 +290,7 @@ export function FaqPage({ onGoHome }) {
         )}
 
         {grouped && (
-          <div className="space-y-10 pb-4 mt-6">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2.5rem', paddingBottom: '1rem', marginTop: '1.5rem' }}>
             {usedCats
               .filter(c => (grouped[c.id] || []).length > 0)
               .map(cat => (
@@ -313,7 +313,7 @@ export function FaqPage({ onGoHome }) {
         )}
 
         {!grouped && filtered.length > 0 && (
-          <div className="faq-list pb-4 mt-6">
+          <div className="faq-list" style={{ paddingBottom: '1rem', marginTop: '1.5rem' }}>
             {filtered.map((item, i) => (
               <FaqAccordionItem
                 key={item.id}

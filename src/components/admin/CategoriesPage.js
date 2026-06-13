@@ -6,7 +6,7 @@ import * as Icon from '../ui/Icons';
 import { Badge, Btn, Input, Modal, AdminToast } from '../ui/index';
 
 export default function CategoriesPage() {
-  const { categories, products, addCategory, updateCategory, deleteCategory } = useAdmin();
+  const { categories, products, addCategory, updateCategory, deleteCategory, updateProduct } = useAdmin();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
@@ -65,8 +65,8 @@ export default function CategoriesPage() {
     setIsSaving(true);
     try {
       if (modalMode === 'add') {
-        if (!activeItem.id) activeItem.id = activeItem.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        await addCategory(activeItem);
+        const id = activeItem.id || activeItem.name;
+        await addCategory({ ...activeItem, id });
         showToast('Category created');
       } else {
         await updateCategory(activeItem.id, activeItem);
@@ -90,16 +90,10 @@ export default function CategoriesPage() {
           setIsSaving(false);
           return;
         }
-        for (const p of linkedProducts) {
-          // Normally we'd use updateProduct from useAdmin
-          // But as per legacy comment, using window.useAdmin().updateProduct or just directly
-          // We have updateProduct imported directly from useAdmin
-          const updateFn = updateProduct || window.useAdmin?.().updateProduct;
-          if (updateFn) await updateFn(p.id, { cat: reassignTo });
-        }
+        await Promise.all(linkedProducts.map(p => updateProduct(p.id, { cat: reassignTo })));
       }
 
-      await deleteCategory(activeItem.id);
+      await deleteCategory(activeItem.id, reassignTo);
       showToast('Category deleted');
       setModalMode(null);
     } catch (err) {
@@ -213,7 +207,7 @@ export default function CategoriesPage() {
           <form onSubmit={onSave} className="admin-cat-form__space-y">
             <div className="admin-cat-form__grid-2">
               <Input label="Category Name" value={activeItem.name} onChange={e => setActiveItem({ ...activeItem, name: e.target.value })} required />
-              <Input label="Slug (ID)" value={activeItem.id} onChange={e => setActiveItem({ ...activeItem, id: e.target.value.toLowerCase().replace(/[^a-z0-9-]+/g, '') })} placeholder="auto-generated if empty" disabled={modalMode === 'edit'} />
+              <Input label="Slug (ID)" value={activeItem.id} onChange={e => setActiveItem({ ...activeItem, id: e.target.value.toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') })} placeholder="auto-generated if empty" disabled={modalMode === 'edit'} />
             </div>
 
             <div className="admin-cat-form__grid-2">

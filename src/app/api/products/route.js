@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Product } from '../../../lib/models';
+import { Product, Category, StockHistory } from '../../../lib/models';
 import { verifySession } from '../../../lib/auth';
 import { del } from '@vercel/blob';
 
@@ -54,9 +54,39 @@ function sanitize(input) {
   return out;
 }
 
+function normalizeSlug(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 60);
+}
+
+async function resolveCategorySlug(value) {
+  const raw = String(value || '').trim();
+  const normalized = normalizeSlug(raw);
+  if (!raw && !normalized) return 'household';
+
+  const categories = await Category.find({}).lean();
+  const match = categories.find(c =>
+    c.id === raw ||
+    c.id === normalized ||
+    normalizeSlug(c.name) === normalized ||
+    normalizeSlug(c.short) === normalized
+  );
+  return match?.id || normalized || 'household';
+}
+
 export async function GET(req) {
-  await connectToDatabase();
   const all = req.nextUrl.searchParams.get('all');
+  if (all) {
+    const session = verifySession(req);
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  await connectToDatabase();
   
   let filter = {};
   if (!all) {
@@ -104,9 +134,12 @@ export async function POST(req) {
   }
   
   const clean = sanitize(body);
+  clean.cat = await resolveCategorySlug(clean.cat);
   if (!clean.name)                return NextResponse.json({ error: 'Product name is required.' }, { status: 400 });
   if (!('price' in clean))        return NextResponse.json({ error: 'Price is required.' }, { status: 400 });
   if (!clean.sku)                 return NextResponse.json({ error: 'SKU is required.' }, { status: 400 });
+  const skuExists = await Product.findOne({ sku: clean.sku }).lean();
+  if (skuExists) return NextResponse.json({ error: 'SKU already exists. Please use a unique SKU.' }, { status: 400 });
   
   const newProduct = {
     rating: 4.8, reviews: 0,
@@ -142,6 +175,7 @@ export async function PATCH(req) {
   if (adjustment) {
     const { variation, mode, qty, reason } = adjustment;
     const numQty = parseInt(qty, 10) || 0;
+    if (numQty <= 0) return NextResponse.json({ error: 'Adjustment quantity must be greater than 0.' }, { status: 400 });
     
     let prevStock = 0;
     let newStock = 0;
@@ -184,8 +218,26 @@ export async function PATCH(req) {
       { $set: { stock: product.stock, variants: product.variants, updatedAt: Date.now() } },
       { new: true, lean: true }
     );
+    await StockHistory.create({
+      id: `stock_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      productId: id,
+      variationName: variation || null,
+      change: newStock - prevStock,
+      type: mode === 'increase' ? 'restock' : mode === 'reduce' ? 'correction' : 'set',
+      reason: String(reason || 'Manual stock adjustment').slice(0, 500),
+      previousStock: prevStock,
+      newStock,
+      performedBy: session.username || session.user?.username || 'admin',
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
   } else {
     const sanitized = sanitize(body);
+    if (sanitized.cat !== undefined) sanitized.cat = await resolveCategorySlug(sanitized.cat);
+    if (sanitized.sku) {
+      const skuExists = await Product.findOne({ sku: sanitized.sku, id: { $ne: id } }).lean();
+      if (skuExists) return NextResponse.json({ error: 'SKU already exists. Please use a unique SKU.' }, { status: 400 });
+    }
     if (sanitized.variants && sanitized.variants.length > 0) {
       sanitized.stock = sanitized.variants.reduce((acc, v) => acc + (v.stock || 0), 0);
     }

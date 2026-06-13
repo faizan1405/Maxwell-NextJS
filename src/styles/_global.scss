@@ -126,6 +126,33 @@ input, select, textarea {
 
 .font-mono { font-family: monospace; }
 
+// Star rating row (shared ui/index Stars component)
+.ab-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+// ConfirmDialog message paragraph
+.confirm-dialog__message {
+  font-size: 14px;
+  color: $slate-600;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// Shared admin/customer Badge (ui/index Badge component)
+.ui-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  line-height: 1.4;
+}
+
 // Accessibility
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

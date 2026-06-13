@@ -60,59 +60,6 @@ export const Reveal = ({ children, className = "", delay = 0, y = 22, as = "div"
   );
 };
 
-export const Counter = ({ to, duration = 1700, prefix = "", suffix = "" }) => {
-  const [ref, vis] = useInView();
-  const [val, setVal] = useState(0);
-  const started = useRef(false);
-  useEffect(() => {
-    if (!vis || started.current) return;
-    started.current = true;
-    const start = performance.now();
-    const tick = (now) => {
-      const p = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(eased * to));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-    const safe = setTimeout(() => setVal(to), duration + 250);
-    return () => clearTimeout(safe);
-  }, [vis, to, duration]);
-  return <span ref={ref}>{prefix}{val}{suffix}</span>;
-};
-
-/* Placeholder zone for studio photography */
-export const Placeholder = ({ label, className = "", dark = true, rounded = "rounded-2xl" }) => (
-  <div
-    className={`relative overflow-hidden ${rounded} ${className}`}
-    style={{ background: dark ? "linear-gradient(135deg,#0F2C50 0%,#0A1929 100%)" : "linear-gradient(135deg,#dde7f1 0%,#c4d3e2 100%)" }}
-  >
-    <div
-      className="absolute inset-0"
-      style={{ backgroundImage: `repeating-linear-gradient(45deg, ${dark ? "rgba(255,255,255,0.045)" : "rgba(13,36,64,0.06)"} 0 12px, transparent 12px 24px)` }}
-    />
-    {dark && (
-      <div className="absolute inset-0" style={{ background: "radial-gradient(120% 90% at 70% 0%, rgba(30,144,255,0.18), transparent 60%)" }} />
-    )}
-    <div className="absolute inset-0 flex items-center justify-center p-4">
-      <span
-        className="font-mono text-[10px] sm:text-[11px] tracking-[0.28em] uppercase px-3 py-1.5 rounded-full backdrop-blur-sm text-center"
-        style={dark
-          ? { color: "rgba(186,210,236,0.85)", background: "rgba(10,25,41,0.45)", border: "1px solid rgba(255,255,255,0.12)" }
-          : { color: "rgba(31,52,77,0.7)", background: "rgba(255,255,255,0.55)", border: "1px solid rgba(13,36,64,0.12)" }}
-      >
-        {label}
-      </span>
-    </div>
-  </div>
-);
-
-export const Pill = ({ children, className = "" }) => (
-  <span className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-white/12 bg-white/5 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-electric ${className}`}>
-    {children}
-  </span>
-);
-
 /* FadeReveal: opacity + rise for non-critical elements */
 export const FadeReveal = ({ children, className = "", delay = 0, y = 16, as = "div" }) => {
   const [ref, vis] = useInView();
@@ -138,24 +85,6 @@ export const SkeletonBox = ({ className = "", rounded = "rounded-xl" }) => (
   <div className={`ab-skeleton ${rounded} ${className}`} aria-hidden="true" />
 );
 
-/* ProductCardSkeleton: matches ProductCard dimensions */
-export const ProductCardSkeleton = () => (
-  <div className="flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_2px_10px_rgba(11,46,107,0.04)]">
-    <SkeletonBox className="aspect-[3/4] w-full" rounded="rounded-none" />
-    <div className="flex flex-col p-4 gap-3">
-      <SkeletonBox className="h-3 w-16" />
-      <SkeletonBox className="h-5 w-4/5" />
-      <SkeletonBox className="h-3 w-full" />
-      <SkeletonBox className="h-3 w-3/5" />
-      <div className="mt-2 flex items-end justify-between">
-        <SkeletonBox className="h-7 w-20" />
-        <SkeletonBox className="h-5 w-14" />
-      </div>
-      <SkeletonBox className="h-10 w-full rounded-full" />
-    </div>
-  </div>
-);
-
 /* PageEnter: wraps page content with entrance animation */
 export const PageEnter = ({ children, className = "" }) => (
   <div className={`ab-page-enter ${className}`}>
@@ -172,40 +101,46 @@ export function Spinner({ size = 20 }) {
 
 /* ── Badge ───────────────────────────────────────────────────────────────────── */
 const BADGE_STYLES = {
-  active:     'bg-green-100 text-green-700',
-  archived:   'bg-slate-100 text-slate-500',
-  draft:      'bg-amber-100 text-amber-700',
-  pending:    'bg-amber-100 text-amber-700',
-  processing: 'bg-blue-100 text-blue-700',
-  shipped:    'bg-indigo-100 text-indigo-700',
-  delivered:  'bg-green-100 text-green-700',
-  cancelled:  'bg-red-100 text-red-600',
-  paid:       'bg-green-100 text-green-700',
-  refunded:   'bg-purple-100 text-purple-700',
-  household:  'bg-blue-50 text-blue-700',
-  sanitiser:  'bg-green-50 text-green-700',
-  car:        'bg-slate-100 text-slate-600',
-  Bestseller: 'bg-cobalt/10 text-cobalt',
-  New:        'bg-grass/10 text-grass',
-  'High Purity':'bg-purple-100 text-purple-700',
+  active:        { bg: '#dcfce7', color: '#15803d' },
+  archived:      { bg: '#f1f5f9', color: '#64748b' },
+  draft:         { bg: '#fef3c7', color: '#b45309' },
+  pending:       { bg: '#fef3c7', color: '#b45309' },
+  processing:    { bg: '#dbeafe', color: '#1d4ed8' },
+  shipped:       { bg: '#e0e7ff', color: '#4338ca' },
+  delivered:     { bg: '#dcfce7', color: '#15803d' },
+  cancelled:     { bg: '#fee2e2', color: '#dc2626' },
+  paid:          { bg: '#dcfce7', color: '#15803d' },
+  refunded:      { bg: '#f3e8ff', color: '#7e22ce' },
+  household:     { bg: '#eff6ff', color: '#1d4ed8' },
+  sanitiser:     { bg: '#f0fdf4', color: '#15803d' },
+  car:           { bg: '#f1f5f9', color: '#475569' },
+  Bestseller:    { bg: 'rgba(30,80,224,0.1)', color: '#1E50E0' },
+  New:           { bg: 'rgba(21,154,76,0.1)', color: '#159A4C' },
+  'High Purity': { bg: '#f3e8ff', color: '#7e22ce' },
 };
 export function Badge({ label, variant }) {
-  const cls = BADGE_STYLES[variant || label] || 'bg-slate-100 text-slate-600';
-  return <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-[600] capitalize ${cls}`}>{label}</span>;
+  const style = BADGE_STYLES[variant || label] || { bg: '#f1f5f9', color: '#475569' };
+  return (
+    <span
+      className="ui-badge"
+      style={{ background: style.bg, color: style.color }}
+    >
+      {label}
+    </span>
+  );
 }
 
 /* ── Badge Chip ─────────────────────────────────────────────────────────── */
 export function BadgeChip({ badge, className = "" }) {
   if (!badge) return null;
-  const map = {
-    "Bestseller": "bg-amber-400 text-amber-950",
-    "New": "bg-grass text-white",
-    "High Purity": "bg-cobalt text-white",
+  const variantMap = {
+    "Bestseller": "bestseller",
+    "New": "new",
+    "High Purity": "high-purity",
   };
-  const defaultClass = "bg-ink text-white";
-  const colors = map[badge] || defaultClass;
+  const variant = variantMap[badge] || "default";
   return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10.5px] font-[800] uppercase tracking-wider ${colors} ${className}`}>
+    <span className={`badge-chip badge-chip--${variant} ${className}`}>
       {badge}
     </span>
   );
@@ -214,7 +149,7 @@ export function BadgeChip({ badge, className = "" }) {
 /* ── Stars ───────────────────────────────────────────────────────────────────── */
 export function Stars({ value, size = 16, className = "" }) {
   return (
-    <div className={`flex items-center gap-[2px] ${className}`}>
+    <div className={`ab-stars ${className}`}>
       {[1, 2, 3, 4, 5].map(i => (
         <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={i <= value ? "#f59e0b" : "none"} stroke={i <= value ? "#f59e0b" : "#cbd5e1"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
@@ -375,7 +310,7 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
         </Btn>
       </>}
     >
-      <p className="text-sm text-slate-600">{message}</p>
+      <p className="confirm-dialog__message">{message}</p>
     </Modal>
   );
 }

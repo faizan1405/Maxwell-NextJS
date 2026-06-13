@@ -32,7 +32,7 @@ export const Hero = ({ onShopCat }) => {
         <div className="hero__content">
           <Reveal>
             <span className="hero__badge">
-              <Sparkles size={14} className="text-sky-500" /> Proudly made in South Africa
+              <Sparkles size={14} style={{ color: '#0ea5e9' }} /> Proudly made in South Africa
             </span>
           </Reveal>
           <Reveal delay={70}>
@@ -147,7 +147,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
       <div className="category-showcase__header">
         <Reveal><span className="category-showcase__label">Shop by category</span></Reveal>
         <Reveal delay={60}><h2 className="category-showcase__title">Find your clean</h2></Reveal>
-        <Reveal delay={110}><p className="category-showcase__desc">Three ranges, one standard of quality — built for homes, vehicles and busy hands.</p></Reveal>
+        <Reveal delay={110}><p className="category-showcase__desc">One standard of quality — built for homes, vehicles and businesses across South Africa.</p></Reveal>
       </div>
 
       <div className="category-showcase__grid">

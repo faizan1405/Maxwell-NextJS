@@ -7,7 +7,7 @@ import { Hero, TrustStrip, CategoryShowcase } from '../components/store/HeroSect
 import { Featured, BulkPromo, Shop, QuickView } from '../components/store/ShopPage';
 import { CartPage, CheckoutPage, OrderConfirmedPage } from '../components/store/CartComponents';
 import { AuthModal } from '../components/store/AuthModal';
-import { WhyUs, Reviews, Newsletter } from '../components/store/ContentSections';
+import { WhyUs, Reviews, Contact, Newsletter } from '../components/store/ContentSections';
 import { FaqPage, HomepageFaqSection } from '../components/store/FaqPage';
 import { Footer, WhatsappFab } from '../components/store/Footer';
 import AccountPage from '../components/store/AccountPage';
@@ -207,6 +207,7 @@ function StoreRouter() {
         <WhyUs />
         <Shop activeCat={activeCat} setActiveCat={setActiveCat} query={query} setQuery={setQuery} carousel />
         <Reviews />
+        <Contact />
         <Newsletter />
         <HomepageFaqSection />
       </main>

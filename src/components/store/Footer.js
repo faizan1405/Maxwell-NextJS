@@ -2,11 +2,16 @@
 
 import React from 'react';
 import { Truck, Lock, Award, Whatsapp, Facebook, Instagram, MapPin, Phone, Mail } from '../ui/Icons';
-import { BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money } from '../../lib/storeContext';
+import { BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money, useProducts } from '../../lib/storeContext';
 import { FadeReveal } from '../ui/index';
 import { Wordmark } from './Header';
 
-export const Footer = ({ onShopCat }) => (
+export const Footer = ({ onShopCat }) => {
+  const { categories } = useProducts();
+  const shopCategories = (Array.isArray(categories) && categories.length > 0)
+    ? categories
+    : DEFAULT_CATEGORIES;
+  return (
   <footer className="footer">
     <div className="footer__inner">
       {/* mini trust row */}
@@ -41,7 +46,7 @@ export const Footer = ({ onShopCat }) => (
         <div className="footer-links">
           <h4 className="footer-links__title">Shop</h4>
           <ul className="footer-links__list">
-            {DEFAULT_CATEGORIES.map(c => (
+            {shopCategories.map(c => (
               <li key={c.id}>
                 <button onClick={() => onShopCat && onShopCat(c.id)} className="footer-links__link">{c.name}</button>
               </li>
@@ -71,7 +76,7 @@ export const Footer = ({ onShopCat }) => (
                 }
               }} className="footer-links__link">Contact</button>
             </li>
-            <li><a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to inquire about bulk and trade pricing.")}`} target="_blank" rel="noopener noreferrer" className="footer-links__link text-left block w-full">Bulk &amp; trade</a></li>
+            <li><a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to inquire about bulk and trade pricing.")}`} target="_blank" rel="noopener noreferrer" className="footer-links__link">Bulk &amp; trade</a></li>
             <li><button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">Delivery &amp; returns</button></li>
             <li>
               <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">FAQs</button>
@@ -108,7 +113,8 @@ export const Footer = ({ onShopCat }) => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export const WhatsappFab = () => (
   <a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I need some help.")}`} target="_blank" rel="noopener noreferrer"

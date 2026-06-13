@@ -58,11 +58,9 @@ export function CartPage({ onGoHome, onCheckout }) {
         <div className="shop-page__empty-icon" style={{ marginBottom: '1.25rem' }}>
           <Bag size={36} />
         </div>
-        <h2 className="font-display text-[24px] font-extrabold text-ink">Your cart is empty</h2>
-        <p className="mt-2 text-slate-500 text-[15px] max-w-xs">Browse our cleaning, car-care and sanitiser range.</p>
-        <button onClick={onGoHome} className="mt-6 rounded-full bg-cobalt text-white font-bold px-8 py-3.5 hover:bg-cobalt-700 transition">
-          Start shopping
-        </button>
+        <h2 className="checkout-empty__title">Your cart is empty</h2>
+        <p className="checkout-empty__desc">Browse our cleaning, car-care and sanitiser range.</p>
+        <button onClick={onGoHome} className="checkout-empty__btn">Start shopping</button>
       </div>
     );
   }
@@ -680,10 +678,12 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
     );
   }
 
-  const { isCOD, isEFT } = { isCOD: order.paymentMethod === 'COD', isEFT: order.paymentMethod === 'EFT' };
+  const payMethod = order.paymentMethod || order.payment?.method || '';
+  const isCOD = payMethod === 'COD';
+  const isEFT = payMethod === 'EFT';
   const eftConfig = order.eftBankDetails || settings?.eft || {};
   const payStatus = order.paymentStatus || (order.payment?.status === 'paid' ? 'Paid' : 'Pending');
-  const isPaid = payStatus === 'Paid' || order.payment?.status === 'paid';
+  const isPaid = String(payStatus).toLowerCase() === 'paid' || order.payment?.status === 'paid';
   const showEFTInfo = isEFT && !isPaid;
   const vatAmount = (order.total || 0) - (order.total || 0) / 1.15;
   const amountPaid = isPaid ? order.total : 0;

@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight } from '../ui/Icons';
+import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight, MapPin, Phone, Whatsapp } from '../ui/Icons';
 import { Star } from '../ui/Icons';
 import { FadeReveal, Reveal, Stars } from '../ui/index';
 import { SwipeCarousel } from './SwipeCarousel';
+import { BRAND } from '../../lib/storeContext';
 
 const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
@@ -37,16 +38,16 @@ export const WhyUs = () => (
     <Reveal delay={120} className="why-images">
       <div className="why-images__grid">
         <div className="why-images__item">
-          <img src={typeof window !== 'undefined' && window.__resources?.allPurposeCleaner ? window.__resources.allPurposeCleaner : "/assets/products/all-purpose-cleaner.jpg"} alt="All Purpose Cleaner" />
+          <img src="/assets/products/all-purpose-cleaner.jpg" alt="All Purpose Cleaner" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src={typeof window !== 'undefined' && window.__resources?.tyreShine ? window.__resources.tyreShine : "/assets/products/tyre-shine.jpg"} alt="Tyre Shine" />
+          <img src="/assets/products/tyre-shine.jpg" alt="Tyre Shine" />
         </div>
         <div className="why-images__item why-images__item--up">
-          <img src={typeof window !== 'undefined' && window.__resources?.carpetShampoo ? window.__resources.carpetShampoo : "/assets/products/carpet-upholstery-shampoo.png"} alt="Carpet Shampoo" />
+          <img src="/assets/products/carpet-upholstery-shampoo.png" alt="Carpet Shampoo" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src={typeof window !== 'undefined' && window.__resources?.handSanitiser ? window.__resources.handSanitiser : "/assets/products/hand-surface-sanitiser.jpg"} alt="Sanitiser" />
+          <img src="/assets/products/hand-surface-sanitiser.jpg" alt="Sanitiser" />
         </div>
       </div>
       <div className="why-images__badge">
@@ -104,9 +105,70 @@ export const Reviews = () => (
           </Reveal>
         ))}
       </SwipeCarousel>
-      <Reveal delay={120}>
-        <p className="content-reviews__note">Sample reviews shown for demonstration — ready to connect to your live review platform.</p>
+    </div>
+  </section>
+);
+
+export const Contact = () => (
+  <section id="contact" className="contact-section">
+    <div className="contact-section__inner">
+      <Reveal className="contact-section__header">
+        <span className="contact-section__label">Get in touch</span>
+        <h2 className="contact-section__title">We're here to help</h2>
+        <p className="contact-section__desc">Questions about a product, a bulk order, or your delivery? Our Boksburg team is happy to help during business hours.</p>
       </Reveal>
+
+      <div className="contact-cards">
+        <Reveal delay={0}>
+          <div className="contact-card">
+            <span className="contact-card__icon"><MapPin size={20} /></span>
+            <div className="contact-card__body">
+              <p className="contact-card__label">Visit us</p>
+              <p className="contact-card__value">{BRAND?.address}</p>
+            </div>
+          </div>
+        </Reveal>
+        <Reveal delay={60}>
+          <div className="contact-card">
+            <span className="contact-card__icon"><Phone size={20} /></span>
+            <div className="contact-card__body">
+              <p className="contact-card__label">Call us</p>
+              <p className="contact-card__value"><a href={`tel:${BRAND?.phoneRaw}`}>{BRAND?.phone}</a></p>
+              <p className="contact-card__sub">Mon–Fri · 08:00–17:00</p>
+            </div>
+          </div>
+        </Reveal>
+        <Reveal delay={120}>
+          <div className="contact-card">
+            <span className="contact-card__icon"><Mail size={20} /></span>
+            <div className="contact-card__body">
+              <p className="contact-card__label">Email us</p>
+              <p className="contact-card__value"><a href={`mailto:${BRAND?.email}`}>{BRAND?.email}</a></p>
+              <p className="contact-card__sub">We aim to reply within one business day.</p>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+
+      <FadeReveal delay={140}>
+        <div className="contact-cta">
+          {BRAND?.wa && (
+            <a
+              href={`${BRAND.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to ask a question.")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-cta__btn contact-cta__btn--whatsapp"
+            >
+              <Whatsapp size={18} /> Chat on WhatsApp
+            </a>
+          )}
+          {BRAND?.phoneRaw && (
+            <a href={`tel:${BRAND.phoneRaw}`} className="contact-cta__btn contact-cta__btn--phone">
+              <Phone size={16} /> Call {BRAND.phone}
+            </a>
+          )}
+        </div>
+      </FadeReveal>
     </div>
   </section>
 );
@@ -114,7 +176,7 @@ export const Reviews = () => (
 export const Newsletter = () => {
   const [done, setDone] = useState(false);
   return (
-    <section id="contact" className="content-section newsletter-wrapper">
+    <section id="newsletter" className="content-section newsletter-wrapper">
       <Reveal>
         <div className="newsletter">
           <div className="newsletter__pattern" />

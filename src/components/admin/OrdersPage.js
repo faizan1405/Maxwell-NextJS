@@ -452,6 +452,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                       const val = e.target.value;
                       if (val === orderStatus) return;
                       if (val === 'Cancelled') {
+                        if (!isAdmin) return;
                         setConfirmDlg({ type:'cancel', title:'Cancel Order?', message:'This cannot be undone.', confirmLabel:'Cancel Order', confirmVariant:'danger', note:true, noteLabel:'Reason for cancellation', noteRequired:false });
                       } else {
                         onOrderStatusChange(order.id, val);
@@ -474,7 +475,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <option value="Processing">Processing</option>
                     <option value="Dispatched">Dispatched</option>
                     <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
+                    {isAdmin && <option value="Cancelled">Cancelled</option>}
                   </select>
                 </div>
               )}

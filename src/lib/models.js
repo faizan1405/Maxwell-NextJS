@@ -113,8 +113,10 @@ const OrderTimelineSchema = new Schema({
 
 const OrderSchema = new Schema({
   id: { type: String, required: true, unique: true, index: true },
-  orderNumber: { type: String, unique: true, sparse: true, index: true },
-  invoiceNumber: { type: String, unique: true, sparse: true, index: true },
+  // Unique indexes for these fields must be created manually in Atlas after
+  // running the duplicate checks documented in the launch runbook.
+  orderNumber: { type: String, default: null },
+  invoiceNumber: { type: String, default: null },
   customer: {
     id: { type: String, default: null },
     name: { type: String, default: '' },

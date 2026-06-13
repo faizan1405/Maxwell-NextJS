@@ -33,27 +33,34 @@ import { formatZar } from '../../../utils/currency';
  *
  */
 async function nextInvoiceAndOrderNumber() {
+  await Settings.updateOne(
+    { key: 'global_settings' },
+    {
+      $setOnInsert: {
+        key: 'global_settings',
+        value: { invoiceCounter: 1000, orderCounter: 10000 },
+      },
+    },
+    { upsert: true }
+  );
+
   const doc = await Settings.findOneAndUpdate(
     { key: 'global_settings' },
-    [{
-      $set: {
-        key: 'global_settings',
-        value: {
-          $mergeObjects: [
-            { $ifNull: ['$value', {}] },
-            {
-              invoiceCounter: { $add: [{ $ifNull: ['$value.invoiceCounter', 1000] }, 1] },
-              orderCounter: { $add: [{ $ifNull: ['$value.orderCounter', 10000] }, 1] },
-            },
-          ],
-        },
+    {
+      $setOnInsert: { key: 'global_settings' },
+      $inc: {
+        'value.invoiceCounter': 1,
+        'value.orderCounter': 1,
       },
-    }],
+    },
     { new: true, upsert: true, lean: true }
   );
 
-  const invoiceCounter = doc.value.invoiceCounter;
-  const orderCounter = doc.value.orderCounter;
+  const invoiceCounter = Number(doc.value?.invoiceCounter);
+  const orderCounter = Number(doc.value?.orderCounter);
+  if (!Number.isFinite(invoiceCounter) || !Number.isFinite(orderCounter)) {
+    throw orderPatchError('Order counters are not configured correctly.', 500);
+  }
   const year = new Date().getFullYear();
 
   return {
@@ -165,7 +172,14 @@ async function deductOrderItemStock(order, item, session, performedBy) {
   let newStock;
 
   if (variation) {
-    product = await Product.findOneAndUpdate(
+    product = await Product.findOne({ id: item.productId, 'variants.name': variation }).session(session).lean();
+    if (!product) throw orderPatchError(`Insufficient stock for "${item.name || item.productId}" (${variation}).`, 400);
+
+    const variant = product.variants?.find(v => v.name === variation);
+    previousStock = Number(variant?.stock) || 0;
+    newStock = previousStock - qty;
+
+    const result = await Product.updateOne(
       {
         id: item.productId,
         stock: { $gte: qty },
@@ -173,33 +187,33 @@ async function deductOrderItemStock(order, item, session, performedBy) {
         'variants.stock': { $gte: qty },
         'variants.outOfStock': { $ne: true },
       },
-      { $inc: { stock: -qty, 'variants.$.stock': -qty }, $set: { updatedAt: now } },
-      { new: false, lean: true, session }
+      {
+        $inc: { stock: -qty, 'variants.$.stock': -qty },
+        $set: {
+          updatedAt: now,
+          outOfStock: (Number(product.stock) || 0) - qty <= 0,
+          'variants.$.outOfStock': newStock <= 0,
+        },
+      },
+      { session }
     );
-    if (!product) throw orderPatchError(`Insufficient stock for "${item.name || item.productId}" (${variation}).`, 400);
-
-    const variant = product.variants?.find(v => v.name === variation);
-    previousStock = Number(variant?.stock) || 0;
-    newStock = previousStock - qty;
-
-    const set = { updatedAt: now };
-    if (newStock <= 0) set['variants.$.outOfStock'] = true;
-    if ((Number(product.stock) || 0) - qty <= 0) set.outOfStock = true;
-    if (Object.keys(set).length > 1) {
-      await Product.updateOne({ id: item.productId, 'variants.name': variation }, { $set: set }, { session });
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Insufficient stock for "${item.name || item.productId}" (${variation}).`, 400);
     }
   } else {
-    product = await Product.findOneAndUpdate(
-      { id: item.productId, stock: { $gte: qty }, outOfStock: { $ne: true } },
-      { $inc: { stock: -qty }, $set: { updatedAt: now } },
-      { new: false, lean: true, session }
-    );
+    product = await Product.findOne({ id: item.productId }).session(session).lean();
     if (!product) throw orderPatchError(`Insufficient stock for "${item.name || item.productId}".`, 400);
 
     previousStock = Number(product.stock) || 0;
     newStock = previousStock - qty;
-    if (newStock <= 0) {
-      await Product.updateOne({ id: item.productId }, { $set: { outOfStock: true, updatedAt: now } }, { session });
+
+    const result = await Product.updateOne(
+      { id: item.productId, stock: { $gte: qty }, outOfStock: { $ne: true } },
+      { $inc: { stock: -qty }, $set: { outOfStock: newStock <= 0, updatedAt: now } },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Insufficient stock for "${item.name || item.productId}".`, 400);
     }
   }
 
@@ -226,24 +240,36 @@ async function restoreOrderItemStock(order, item, session, performedBy) {
   let newStock;
 
   if (variation) {
-    product = await Product.findOneAndUpdate(
-      { id: item.productId, 'variants.name': variation },
-      { $inc: { stock: qty, 'variants.$.stock': qty }, $set: { outOfStock: false, 'variants.$.outOfStock': false, updatedAt: now } },
-      { new: false, lean: true, session }
-    );
+    product = await Product.findOne({ id: item.productId, 'variants.name': variation }).session(session).lean();
     if (!product) throw orderPatchError(`Cannot restore stock for "${item.name || item.productId}" (${variation}).`, 400);
+
     const variant = product.variants?.find(v => v.name === variation);
     previousStock = Number(variant?.stock) || 0;
     newStock = previousStock + qty;
-  } else {
-    product = await Product.findOneAndUpdate(
-      { id: item.productId },
-      { $inc: { stock: qty }, $set: { outOfStock: false, updatedAt: now } },
-      { new: false, lean: true, session }
+
+    const result = await Product.updateOne(
+      { id: item.productId, 'variants.name': variation },
+      { $inc: { stock: qty, 'variants.$.stock': qty }, $set: { outOfStock: false, 'variants.$.outOfStock': false, updatedAt: now } },
+      { session }
     );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Stock restoration failed for "${item.name || item.productId}" (${variation}).`, 400);
+    }
+  } else {
+    product = await Product.findOne({ id: item.productId }).session(session).lean();
     if (!product) throw orderPatchError(`Cannot restore stock for "${item.name || item.productId}".`, 400);
+
     previousStock = Number(product.stock) || 0;
     newStock = previousStock + qty;
+
+    const result = await Product.updateOne(
+      { id: item.productId },
+      { $inc: { stock: qty }, $set: { outOfStock: false, updatedAt: now } },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Stock restoration failed for "${item.name || item.productId}".`, 400);
+    }
   }
 
   await writeStockHistory({

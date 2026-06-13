@@ -134,7 +134,7 @@ export default function CouponsPage() {
 
   async function handleDelete(c) {
     await deleteCoupon(c.id);
-    showToast('Coupon deleted', 'error');
+    showToast('Coupon deleted');
     setDeleting(null);
   }
 

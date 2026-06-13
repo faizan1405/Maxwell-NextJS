@@ -13,11 +13,13 @@ export function SwipeCarousel({
   hint = 'Swipe to explore more',
 }) {
   const scrollerRef = useRef(null);
-  const dragRef = useRef({ active: false, startX: 0, startLeft: 0, moved: false });
+  const dragRef = useRef({ pointerId: null, startX: 0, startLeft: 0, dragging: false, moved: false });
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(false);
   const [progress, setProgress] = useState(0);
   const [hintHidden, setHintHidden] = useState(false);
+
+  const DRAG_THRESHOLD = 8;
 
   const items = useMemo(() => React.Children.toArray(children).filter(Boolean), [children]);
 
@@ -62,18 +64,26 @@ export function SwipeCarousel({
   const handlePointerDown = (event) => {
     const el = scrollerRef.current;
     if (!el || event.pointerType === 'touch') return;
-    dragRef.current = { active: true, startX: event.clientX, startLeft: el.scrollLeft, moved: false };
-    el.setPointerCapture?.(event.pointerId);
-    el.classList.add('swipe-carousel__track--dragging');
+    dragRef.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startLeft: el.scrollLeft,
+      dragging: false,
+      moved: false,
+    };
   };
 
   const handlePointerMove = (event) => {
     const el = scrollerRef.current;
     const drag = dragRef.current;
-    if (!el || !drag.active) return;
+    if (!el || drag.pointerId !== event.pointerId) return;
     const delta = event.clientX - drag.startX;
-    if (Math.abs(delta) > 6) {
+    if (!drag.dragging) {
+      if (Math.abs(delta) < DRAG_THRESHOLD) return;
+      drag.dragging = true;
       drag.moved = true;
+      el.classList.add('swipe-carousel__track--dragging');
+      try { el.setPointerCapture?.(event.pointerId); } catch {}
       setHintHidden(true);
     }
     el.scrollLeft = drag.startLeft - delta;
@@ -81,10 +91,13 @@ export function SwipeCarousel({
 
   const finishDrag = (event) => {
     const el = scrollerRef.current;
-    if (!el || !dragRef.current.active) return;
-    el.releasePointerCapture?.(event.pointerId);
-    el.classList.remove('swipe-carousel__track--dragging');
-    dragRef.current.active = false;
+    const drag = dragRef.current;
+    if (!el || drag.pointerId !== event.pointerId) return;
+    if (drag.dragging) {
+      try { el.releasePointerCapture?.(event.pointerId); } catch {}
+      el.classList.remove('swipe-carousel__track--dragging');
+    }
+    dragRef.current = { ...drag, pointerId: null, dragging: false };
     updateState();
   };
 

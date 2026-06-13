@@ -60,7 +60,13 @@ export function CartPage({ onGoHome, onCheckout }) {
         </div>
         <h2 className="checkout-empty__title">Your cart is empty</h2>
         <p className="checkout-empty__desc">Browse our cleaning, car-care and sanitiser range.</p>
-        <button onClick={onGoHome} className="checkout-empty__btn">Start shopping</button>
+        <button
+          type="button"
+          onClick={onGoHome}
+          className="checkout-empty__btn"
+        >
+          Start shopping
+        </button>
       </div>
     );
   }

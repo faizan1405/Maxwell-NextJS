@@ -6,6 +6,21 @@ import { BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money, useProducts } from '../../
 import { FadeReveal } from '../ui/index';
 import { Wordmark } from './Header';
 
+const scrollToHomeSection = (section) => {
+  if (typeof window === 'undefined') return;
+  let attempts = 0;
+  const tryScroll = () => {
+    const el = document.getElementById(section);
+    if (el) {
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+      return;
+    }
+    attempts += 1;
+    if (attempts < 10) setTimeout(tryScroll, 80);
+  };
+  setTimeout(tryScroll, 50);
+};
+
 export const Footer = ({ onShopCat }) => {
   const { categories } = useProducts();
   const shopCategories = (Array.isArray(categories) && categories.length > 0)
@@ -59,20 +74,20 @@ export const Footer = ({ onShopCat }) => {
           <h4 className="footer-links__title">Company</h4>
           <ul className="footer-links__list">
             <li>
-              <button onClick={(e) => { 
-                e.preventDefault(); 
+              <button onClick={(e) => {
+                e.preventDefault();
                 if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#about' } })); 
-                  setTimeout(() => { const el = document.getElementById('about'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#about' } }));
+                  scrollToHomeSection('about');
                 }
               }} className="footer-links__link">About us</button>
             </li>
             <li>
-              <button onClick={(e) => { 
-                e.preventDefault(); 
+              <button onClick={(e) => {
+                e.preventDefault();
                 if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#contact' } })); 
-                  setTimeout(() => { const el = document.getElementById('contact'); if(el) el.scrollIntoView({ behavior: 'smooth' }); else window.scrollTo(0,0); }, 50); 
+                  window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#contact' } }));
+                  scrollToHomeSection('contact');
                 }
               }} className="footer-links__link">Contact</button>
             </li>

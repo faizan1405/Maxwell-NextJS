@@ -173,14 +173,17 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
   }, []);
 
   const scrollToSection = (section) => {
-    setTimeout(() => {
+    let attempts = 0;
+    const tryScroll = () => {
       const el = document.getElementById(section);
       if (el) {
         window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: "smooth" });
-      } else {
-        window.scrollTo(0, 0);
+        return;
       }
-    }, 50);
+      attempts += 1;
+      if (attempts < 10) setTimeout(tryScroll, 80);
+    };
+    setTimeout(tryScroll, 50);
   };
 
   const go = (e, item) => {

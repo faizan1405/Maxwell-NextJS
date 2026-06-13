@@ -1157,9 +1157,177 @@
   
   &--active {
     background-color: $cobalt;
-    
+
     &:hover {
       background-color: $cobalt-700;
     }
+  }
+}
+
+/* ── QuickView gallery overlays ─────────────────────────────────────────── */
+.quickview-badge-overlay {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  display: flex;
+  gap: 0.375rem;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.quickview-media-controls {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  z-index: 10;
+}
+
+.quickview-media-counter {
+  border-radius: $radius-full;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.quickview-fullscreen-btn {
+  display: grid;
+  height: 1.75rem;
+  width: 1.75rem;
+  place-items: center;
+  border-radius: $radius-full;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  transition: background-color $transition-fast;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+}
+
+.quickview-video-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: $slate-800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__marker {
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    background: rgba(51, 65, 85, 0.8);
+    color: #fff;
+    font-size: 7px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+}
+
+/* ── QuickView rating row, stock + price helpers ────────────────────────── */
+.quickview-rating-row {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &__val {
+    font-size: 13px;
+    font-weight: 600;
+    color: $slate-500;
+  }
+
+  &__count {
+    font-size: 13px;
+    color: $slate-400;
+  }
+}
+
+.quickview-stock-status__oos {
+  color: $red-500;
+  font-weight: 700;
+}
+
+.quickview-stock-status__ok {
+  color: $grass;
+  font-weight: 700;
+}
+
+.quickview-low-stock-note {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: $amber-600;
+  margin-top: 2px;
+}
+
+.quickview-price--contact {
+  color: $slate-500;
+  font-size: 20px;
+}
+
+.quickview-add-btn--quote {
+  background: $grass;
+  color: #fff;
+
+  &:hover {
+    background: $emerald-600;
+  }
+}
+
+/* ── QuickView Fullscreen Modal ─────────────────────────────────────────── */
+.quickview-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.95);
+
+  &__btn {
+    position: absolute;
+    display: grid;
+    height: 40px;
+    width: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    z-index: 10;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    &--close { top: 16px; right: 16px; }
+    &--prev  { left: 16px;  top: 50%; transform: translateY(-50%); }
+    &--next  { right: 16px; top: 50%; transform: translateY(-50%); }
+  }
+
+  &__stage {
+    position: relative;
+    max-width: 90vw;
+    max-height: 80vh;
+
+    img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+    }
+  }
+
+  &__counter {
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 12px;
   }
 }

@@ -863,18 +863,49 @@
   justify-content: center;
   text-align: center;
   padding: 4rem 1rem;
-  
+
   p {
     font-size: 15px;
     color: $slate-500;
-    
+
     button {
       font-weight: 700;
       color: $cobalt;
-      
+
       &:hover {
         text-decoration: underline;
       }
+    }
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-size: 24px;
+    font-weight: 800;
+    color: $ink;
+    margin: 0;
+  }
+
+  &__desc {
+    margin: 0.5rem 0 0 0;
+    color: $slate-500;
+    font-size: 15px;
+    max-width: 20rem;
+  }
+
+  &__btn {
+    margin-top: 1.5rem;
+    border-radius: $radius-full;
+    background: $cobalt;
+    color: #fff;
+    font-weight: 700;
+    padding: 0.875rem 2rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color $transition-fast;
+
+    &:hover {
+      background: $cobalt-700;
     }
   }
 }

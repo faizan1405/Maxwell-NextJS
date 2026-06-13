@@ -501,7 +501,13 @@ function OrdersTab({ sessionToken, apiBase, onReorder }) {
       const res  = await fetch(`${apiBase}/api/orders`, { headers: { 'Authorization': `Bearer ${sessionToken}` } });
       const data = await res.json();
       if (!res.ok) { setError(data.error || 'Failed to load orders.'); setOrders([]); return; }
-      setOrders(Array.isArray(data) ? [...data].sort((a, b) => b.createdAt - a.createdAt) : []);
+      const toMs = (v) => {
+        if (v == null) return 0;
+        if (typeof v === 'number') return Number.isFinite(v) ? v : 0;
+        const t = new Date(v).getTime();
+        return Number.isFinite(t) ? t : 0;
+      };
+      setOrders(Array.isArray(data) ? [...data].sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt)) : []);
     } catch { setError('Network error. Please try again.'); setOrders([]); }
   }
 
@@ -857,8 +863,8 @@ function ReviewsTab({ customer, sessionToken, apiBase }) {
         return (
           <div key={item.productId} className="acc-review-card">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              {product?.img && (
-                <img src={product.img} alt={product?.name || item.name} style={{ width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem', objectFit: 'cover', border: '1px solid #f1f5f9', backgroundColor: '#f8fafc' }} onError={e=>{e.target.onerror=null;e.target.src='assets/products/placeholder.svg'}} />
+              {product && (
+                <img src={getPrimaryImg(product)} alt={product?.name || item.name} style={{ width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem', objectFit: 'cover', border: '1px solid #f1f5f9', backgroundColor: '#f8fafc' }} onError={e=>{e.target.onerror=null;e.target.src='/assets/products/placeholder.svg'}} />
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontWeight: 700, fontSize: '14px', color: '#0B2545', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product?.name || item.name}</p>
@@ -957,7 +963,7 @@ export default function AccountPage({ onGoHome }) {
           ))}
         </div>
 
-        <div key={tab} style={{ animation: 'ab-fade-in 0.3s ease forwards' }}>
+        <div key={tab} className="ab-fade-in">
           {tab === 'profile'   && <ProfileTab   customer={customer} sessionToken={sessionToken} apiBase={apiBase} onUpdate={updateCustomerData} />}
           {tab === 'orders'    && <OrdersTab    sessionToken={sessionToken} apiBase={apiBase} onReorder={handleReorder} />}
           {tab === 'addresses' && <AddressesTab customer={customer} sessionToken={sessionToken} apiBase={apiBase} onUpdate={updateCustomerData} />}

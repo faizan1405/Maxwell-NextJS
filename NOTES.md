@@ -310,7 +310,7 @@ Seed 20 demo products across all 5 categories (4 per category): household, indus
 
 ### Verification Steps
 1. Wait for Vercel git-triggered deployment to finish (~1-2 min per push).
-2. Hit `/api/seed-demo?secret=<SEED_SECRET>` once to force-run the upsert.
+2. Hit `/api/seed-demo?secret=<SEED_SECRET>` once to force-run the upsert (value lives in Vercel env vars; do not commit it).
 3. Refresh `/shop` — products appear (4 per category × 5 categories = 20 demos).
 4. Check MongoDB Atlas → Browse Collections → `products` to confirm documents.
 

@@ -1,6 +1,26 @@
-.vercel
-.env*.local
+# Dependencies
 node_modules/
+
+# Next.js build output
 .next/
+
+# Vercel
 .vercel
-.env*.local
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+.codex-*.log
+.codex-*.out
+.codex-*.err
+
+# Test runner output
+test-results/
+playwright-report/
+
+# Local temporary / one-off scripts (underscore-prefixed by convention)
+src/scripts/_*

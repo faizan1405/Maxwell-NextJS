@@ -967,46 +967,51 @@ export default function OrdersPage() {
 
   async function handleExportPDF() {
     if (!isAdmin) return showToast('Unauthorized', 'error');
+    if (isExporting) return;
     setIsExporting(true);
     try {
-      if (!window.jspdf) throw new Error('jsPDF not loaded');
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('landscape');
-      
-      const headers = [['Order ID', 'Date', 'Customer', 'Phone', 'Email', 'Address', 'Products', 'Total', 'Pay Method', 'Pay Status', 'Status']];
-      const data = filtered.map(o => {
-        const items = o.items || [];
-        const products = items.map(i => `${i.qty}x ${i.name}`).join('\n');
-        return [
-          o.orderNumber,
-          new Date(o.createdAt).toLocaleString('en-ZA'),
-          o.customer?.name || '—',
-          o.customer?.phone || '—',
-          o.customer?.email || '—',
-          o.address || '—',
-          products,
-          fmtMoney(o.total),
-          effectivePayMethod(o),
-          effectivePayStatus(o),
-          effectiveOrderStatus(o)
-        ];
-      });
+      const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable'),
+      ]);
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
-      doc.text('Orders Export', 14, 15);
-      doc.autoTable({
-        startY: 20,
+      const safe = (v) => (v == null ? '—' : String(v).replace(/[ -]/g, ' '));
+
+      const headers = [['Order #', 'Date', 'Customer', 'Phone', 'Email', 'Status', 'Pay Method', 'Pay Status', 'Total']];
+      const data = filtered.map(o => [
+        safe(o.orderNumber),
+        safe(new Date(o.createdAt).toLocaleString('en-ZA')),
+        safe(o.customer?.name),
+        safe(o.customer?.phone),
+        safe(o.customer?.email),
+        safe(effectiveOrderStatus(o)),
+        safe(effectivePayMethod(o)),
+        safe(effectivePayStatus(o)),
+        safe(fmtMoney(o.total)),
+      ]);
+
+      doc.setFontSize(14);
+      doc.text('Orders Export', 40, 30);
+      doc.setFontSize(9);
+      doc.text(`${filtered.length} orders · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
+
+      autoTable(doc, {
+        startY: 60,
         head: headers,
         body: data,
-        styles: { fontSize: 7, cellPadding: 1.5, overflow: 'linebreak' },
-        headStyles: { fillColor: [30, 80, 224] }
+        styles: { fontSize: 8, cellPadding: 4, overflow: 'linebreak' },
+        headStyles: { fillColor: [30, 80, 224], textColor: 255 },
+        columnStyles: { 8: { halign: 'right' } },
+        margin: { left: 40, right: 40 },
       });
-      
+
       const dateStr = new Date().toISOString().split('T')[0];
       doc.save(`orders-export-${dateStr}.pdf`);
-      showToast('PDF Export successful');
+      showToast(`PDF exported (${filtered.length} orders)`);
     } catch (e) {
-      console.error(e);
-      showToast('Export failed', 'error');
+      console.error('PDF export failed', e);
+      showToast(`Export failed: ${e?.message || 'unknown error'}`, 'error');
     } finally {
       setIsExporting(false);
     }

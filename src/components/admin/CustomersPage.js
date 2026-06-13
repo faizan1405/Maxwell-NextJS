@@ -244,39 +244,49 @@ export default function CustomersPage() {
 
   async function handleExportPDF() {
     if (!isAdmin) return showToast('Unauthorized', 'error');
+    if (isExporting) return;
     setIsExporting(true);
     try {
-      if (!window.jspdf) throw new Error('jsPDF not loaded');
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('landscape');
-      
-      const headers = [['Name', 'Phone', 'Email', 'Address', 'Reg Date', 'Orders', 'Spent', 'Last Order']];
+      const [{ jsPDF }, { default: autoTable }] = await Promise.all([
+        import('jspdf'),
+        import('jspdf-autotable'),
+      ]);
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+      const safe = (v) => (v == null ? '—' : String(v).replace(/[\x00-\x1F\x7F]/g, ' '));
+
+      const headers = [['Name', 'Email', 'Phone', 'Type', 'Orders', 'Total Spent', 'Last Order']];
       const data = filtered.map(c => [
-        c.name || '—',
-        c.phone || '—',
-        c.email || '—',
-        c.orders?.[0]?.address || '—',
-        c.hasAccount ? new Date(c.accountSince).toLocaleDateString('en-ZA') : '—',
+        safe(c.name),
+        safe(c.email),
+        safe(c.phone),
+        c.hasAccount ? 'Registered' : 'Guest',
         c.orderCount || 0,
-        fmtMoney(c.totalSpent || 0),
-        c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString('en-ZA') : '—'
+        safe(fmtMoney(c.totalSpent || 0)),
+        c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleDateString('en-ZA') : '—',
       ]);
 
-      doc.text('Customers Export', 14, 15);
-      doc.autoTable({
-        startY: 20,
+      doc.setFontSize(14);
+      doc.text('Customers Export', 40, 30);
+      doc.setFontSize(9);
+      doc.text(`${filtered.length} customers · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
+
+      autoTable(doc, {
+        startY: 60,
         head: headers,
         body: data,
-        styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
-        headStyles: { fillColor: [30, 80, 224] }
+        styles: { fontSize: 9, cellPadding: 4, overflow: 'linebreak' },
+        headStyles: { fillColor: [30, 80, 224], textColor: 255 },
+        columnStyles: { 4: { halign: 'right' }, 5: { halign: 'right' } },
+        margin: { left: 40, right: 40 },
       });
-      
+
       const dateStr = new Date().toISOString().split('T')[0];
       doc.save(`customers-export-${dateStr}.pdf`);
-      showToast('PDF Export successful');
+      showToast(`PDF exported (${filtered.length} customers)`);
     } catch (e) {
-      console.error(e);
-      showToast('Export failed', 'error');
+      console.error('PDF export failed', e);
+      showToast(`Export failed: ${e?.message || 'unknown error'}`, 'error');
     } finally {
       setIsExporting(false);
     }

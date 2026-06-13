@@ -168,7 +168,7 @@ export default function FaqsPage() {
 
   async function handleDelete() {
     await deleteFaq(deleting.id);
-    showToast('FAQ deleted', 'error');
+    showToast('FAQ deleted');
   }
 
   const homepageCount = (faqs || []).filter(f => f.showOnHomepage && f.enabled !== false).length;

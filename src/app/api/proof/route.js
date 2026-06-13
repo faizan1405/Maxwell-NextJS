@@ -6,6 +6,10 @@ import { verifySession, verifyCustomerSession } from '../../../lib/auth';
 import { sendEmail } from '../../../lib/email';
 import { formatZar } from '../../../utils/currency';
 
+function isVercelBlob(url) {
+  return typeof url === 'string' && url.includes('.vercel-storage.com');
+}
+
 const MAX_PROOF_BYTES = 5 * 1024 * 1024; // 5 MB
 
 const ALLOWED_TYPES = new Set([
@@ -194,6 +198,7 @@ export async function POST(req) {
 
     // Update order
     const oldStorageKey = order.proofOfPaymentStorageKey;
+    const oldProofUrl   = order.proofOfPaymentUrl;
 
     order.proofOfPaymentUrl = blob.url;
     order.proofOfPaymentStorageKey = storageKey;
@@ -216,8 +221,10 @@ export async function POST(req) {
 
     await order.save();
 
-    // Delete old proof to free space
-    if (oldStorageKey) {
+    // Delete old proof to free space. Only delete if the previous proof URL
+    // points at our Vercel Blob storage — never touch external URLs even if
+    // a storageKey was somehow set against a non-Vercel-hosted proof.
+    if (oldStorageKey && (oldProofUrl == null || isVercelBlob(oldProofUrl))) {
       try {
         await del(oldStorageKey, { token });
       } catch (delErr) {

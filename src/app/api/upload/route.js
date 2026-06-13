@@ -103,6 +103,8 @@ export async function PATCH(req) {
   const session = verifySession(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+
   try {
     const body = await req.json();
     const { productId, media } = body;
@@ -111,6 +113,8 @@ export async function PATCH(req) {
 
     const product = await Product.findOne({ id: productId });
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+
+    const prevUrls = (product.media || []).map(m => m.url).filter(Boolean);
 
     const cleanMedia = media.slice(0, 12).map(sanitizeMediaItem);
     if (!cleanMedia.some(m => m.isPrimary && m.type === 'image')) {
@@ -124,6 +128,21 @@ export async function PATCH(req) {
     product.img = primaryImg ? primaryImg.url : (product.img || '');
     await product.save();
 
+    // Diff-and-cleanup: any previously-saved URL that's no longer present in
+    // the new media array AND is a Vercel Blob URL is safe to delete.
+    // Non-Vercel URLs (external CDNs, legacy /assets/*) are NEVER deleted.
+    if (token) {
+      const nextUrls = new Set(cleanMedia.map(m => m.url).filter(Boolean));
+      const removed = prevUrls.filter(u => !nextUrls.has(u) && isVercelBlob(u));
+      if (removed.length) {
+        try {
+          await del(removed, { token });
+        } catch (e) {
+          console.error('[/api/upload PATCH] media diff cleanup error:', e.message);
+        }
+      }
+    }
+
     return NextResponse.json(product);
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -131,16 +150,41 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  await connectToDatabase();
   const session = verifySession(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 });
 
+  let body;
   try {
-    const body = await req.json();
-    const { productId, mediaId } = body;
+    body = await req.json();
+  } catch {
+    body = {};
+  }
+
+  // Unsaved-blob cleanup path: the admin uploaded a file in the Add/Edit
+  // Product modal but cancelled or removed it before saving. The URL is not
+  // attached to any product. Defensive: only delete Vercel Blob URLs.
+  if (body && body.unsaved && body.url) {
+    if (!isVercelBlob(body.url)) {
+      // External URL — refuse to touch it.
+      return NextResponse.json({ ok: true, skipped: 'non-vercel-url' });
+    }
+    try {
+      await del(body.url, { token });
+      return NextResponse.json({ ok: true });
+    } catch (e) {
+      console.error('[/api/upload DELETE unsaved] blob error:', e.message);
+      return NextResponse.json({ ok: false, error: 'cleanup-failed' }, { status: 200 });
+    }
+  }
+
+  // Standard path: remove a media item already attached to a product.
+  await connectToDatabase();
+
+  try {
+    const { productId, mediaId } = body || {};
     if (!productId || !mediaId) return NextResponse.json({ error: 'Missing productId or mediaId' }, { status: 400 });
 
     const product = await Product.findOne({ id: productId });

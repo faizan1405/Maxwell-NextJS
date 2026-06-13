@@ -43,7 +43,9 @@ function CustomerDetail({ customer, onClose }) {
           <div className="admin-customer-detail__stat-box admin-customer-detail__stat-box--avg">
             <div className="admin-customer-detail__stat-val admin-customer-detail__stat-val--avg">
               {(() => {
-                const paidOrders = (customer.orders || []).filter(o => o.payment?.status === 'paid');
+                const paidOrders = (customer.orders || []).filter(o =>
+                  o.payment?.status === 'paid' || o.paymentStatus === 'Paid'
+                );
                 return paidOrders.length > 0 ? fmtMoney(customer.totalSpent / paidOrders.length) : fmtMoney(0);
               })()}
             </div>

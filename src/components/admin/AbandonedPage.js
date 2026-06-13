@@ -76,8 +76,8 @@ export default function AbandonedPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.map(cart => {
-                    const cartKey = cart.guestId || cart.email || cart.id || Math.random();
+                  {paged.map((cart, cartIdx) => {
+                    const cartKey = cart.guestId || cart.email || cart.id || `cart-${(page - 1) * ABANDONED_PAGE_SIZE + cartIdx}`;
                     const cartValue = (cart.items || []).reduce((s, i) => s + (i.price || 0) * (i.qty || 1), 0);
                     const itemCount = (cart.items || []).reduce((s, i) => s + (i.qty || 1), 0);
                     const isExpanded = expanded === cartKey;

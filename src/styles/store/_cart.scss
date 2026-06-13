@@ -893,19 +893,33 @@
     max-width: 20rem;
   }
 
+  .checkout-empty__btn,
   &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 1.5rem;
     border-radius: $radius-full;
     background: $cobalt;
     color: #fff;
     font-weight: 700;
+    font-size: 15px;
+    line-height: 1.2;
     padding: 0.875rem 2rem;
+    min-height: 2.75rem;
     border: none;
     cursor: pointer;
-    transition: background-color $transition-fast;
+    text-decoration: none;
+    transition: background-color $transition-fast, transform $transition-fast;
 
     &:hover {
       background: $cobalt-700;
+      transform: translateY(-1px);
+    }
+
+    &:focus-visible {
+      outline: 2px solid $cobalt;
+      outline-offset: 3px;
     }
   }
 }

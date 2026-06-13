@@ -103,6 +103,27 @@ function StoreRouter() {
     if (page === "shop") syncShopFiltersFromUrl();
   }, [page, urlTick]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (page !== 'home') return;
+    const hash = window.location.hash ? window.location.hash.slice(1) : '';
+    if (!hash) return;
+    let attempts = 0;
+    let cancelled = false;
+    const tryScroll = () => {
+      if (cancelled) return;
+      const el = document.getElementById(hash);
+      if (el) {
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+        return;
+      }
+      attempts += 1;
+      if (attempts < 12) setTimeout(tryScroll, 90);
+    };
+    setTimeout(tryScroll, 50);
+    return () => { cancelled = true; };
+  }, [page, urlTick]);
+
   const onNavCat = (cat, q) => {
     const nextCat = typeof q === "string" ? "all" : (cat || "all");
     const nextQuery = typeof q === "string" ? q : "";

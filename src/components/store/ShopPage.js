@@ -165,24 +165,32 @@ export const Featured = () => {
     if (!p) return false;
     if (p.status && p.status !== 'active') return false;
     if (p.outOfStock) return false;
-    if (typeof p.stock === 'number' && p.stock <= 0) {
-      const variantStock = Array.isArray(p.variants) ? p.variants.reduce((s, v) => s + (v.stock || 0), 0) : 0;
-      if (variantStock <= 0) return false;
+    const variants = Array.isArray(p.variants) ? p.variants : [];
+    const variantStock = variants.reduce((s, v) => s + (Number(v?.stock) || 0), 0);
+    if (variants.length > 0) {
+      const allVariantsOut = variants.every(v => v?.outOfStock || (Number(v?.stock) || 0) <= 0);
+      if (allVariantsOut) return false;
+      return true;
     }
+    const stock = Number(p.stock);
+    if (Number.isFinite(stock) && stock <= 0) return false;
     return true;
   };
 
   const reviewWeight = (p) => (Number(p?.reviews) || 0) * 10 + (Number(p?.rating) || 0);
+  const isBestsellerBadge = (b) => typeof b === 'string' && b.trim().toLowerCase() === 'bestseller';
 
-  const shoppable = products.filter(isShoppable);
-  const bestseller = shoppable.filter((p) => p.badge === 'Bestseller');
-  const byRating = [...shoppable]
+  const shoppable = (Array.isArray(products) ? products : []).filter(isShoppable);
+  const bestseller = shoppable.filter((p) => isBestsellerBadge(p.badge));
+  const byRating = shoppable
     .filter((p) => !bestseller.includes(p))
     .sort((a, b) => reviewWeight(b) - reviewWeight(a));
 
   const ordered = [...bestseller, ...byRating];
   const fallback = shoppable.filter((p) => !ordered.includes(p));
   let best = [...ordered, ...fallback].slice(0, 4);
+
+  if (best.length === 0) return null;
 
   const goShop = (e) => { 
     e.preventDefault(); 
@@ -233,7 +241,22 @@ export const BulkPromo = () => {
               <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
                 <Whatsapp size={18} /> Request a bulk quote
               </a>
-              <a href="#contact" className="bulk-promo__btn-secondary">
+              <a href="/#contact" onClick={(e) => {
+                e.preventDefault();
+                if (typeof window === 'undefined') return;
+                window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'home', url: '/#contact' } }));
+                let attempts = 0;
+                const tryScroll = () => {
+                  const el = document.getElementById('contact');
+                  if (el) {
+                    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 110, behavior: 'smooth' });
+                    return;
+                  }
+                  attempts += 1;
+                  if (attempts < 10) setTimeout(tryScroll, 80);
+                };
+                setTimeout(tryScroll, 50);
+              }} className="bulk-promo__btn-secondary">
                 Contact sales <ArrowRight size={17} />
               </a>
             </div>

@@ -28,9 +28,9 @@ export function buildOtpHtml(otp, name) {
 </html>`;
 }
 
-export async function sendEmail(to, subject, html) {
+export async function sendEmail(to, subject, html, from) {
   const RESEND_KEY = process.env.RESEND_API_KEY;
-  const FROM = process.env.FROM_EMAIL || 'Amahle Blue <noreply@amahle-blue.co.za>';
+  const FROM = from || process.env.FROM_EMAIL || 'Amahle Blue <noreply@amahle-blue.co.za>';
   const GMAIL_USER = process.env.GMAIL_USER;
   const GMAIL_PASS = process.env.GMAIL_APP_PASSWORD;
 
@@ -91,14 +91,15 @@ export async function sendOtpEmail(email, otp, name) {
   const GMAIL_USER = process.env.GMAIL_USER;
 
   if (!RESEND_KEY && !GMAIL_USER && isLocal) {
-    console.log(`[DEV] OTP for ${email}: ${otp}`);
+    console.log(`[DEV] OTP for ${email}: [REDACTED — check your email client or use devOtp in response]`);
     return { ok: true, dev: true, devOtp: otp };
   }
 
   const subject = `${otp} — Your Amahle Blue sign-in code`;
-  const html = buildOtpHtml(otp, name);
-  const sent = await sendEmail(email, subject, html);
-  
+  const html    = buildOtpHtml(otp, name);
+  const otpFrom = process.env.OTP_FROM_EMAIL || undefined;
+  const sent    = await sendEmail(email, subject, html, otpFrom);
+
   if (sent.ok) {
     return { ok: true, dev: sent.dev, devOtp: sent.dev ? otp : undefined };
   }

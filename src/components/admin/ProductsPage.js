@@ -198,14 +198,13 @@ function isVercelBlobUrl(url) {
   return typeof url === 'string' && url.includes('.vercel-storage.com');
 }
 
-async function deleteUnsavedBlob(url, token) {
-  if (!isVercelBlobUrl(url) || !token) return;
+async function deleteUnsavedBlob(url) {
+  if (!isVercelBlobUrl(url)) return;
   try {
     await fetch('/api/upload', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify({ url, unsaved: true }),
     });
@@ -273,7 +272,6 @@ function ProductForm({ open, onClose, initial, onSave }) {
   const changeVariant = (i,field,val) => setForm(f => { const v=[...f.variants]; v[i]={...v[i],[field]:field==='stock'?parseInt(val)||0:field==='price'?parseFloat(val)||0:field==='outOfStock'?!!val:val}; return {...f,variants:v}; });
 
   async function handleFilesSelected(files) {
-    const token  = session?.token;
     const canAdd = MEDIA_LIMITS.maxItems - mediaItems.length;
     const toAdd  = Array.from(files).slice(0, canAdd);
     if (!toAdd.length) return;
@@ -304,7 +302,6 @@ function ProductForm({ open, onClose, initial, onSave }) {
           headers: {
             'Content-Type': item.mimeType,
             'x-filename':   item.fileName,
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
           },
           body: item._file,
         });
@@ -362,7 +359,7 @@ function ProductForm({ open, onClose, initial, onSave }) {
       // point the server diffs and deletes them.
       const url = removed?.url;
       if (url && isVercelBlobUrl(url) && !initialUrls.has(url)) {
-        deleteUnsavedBlob(url, session?.token);
+        deleteUnsavedBlob(url);
         setUnsavedUrls(prevSet => {
           if (!prevSet.has(url)) return prevSet;
           const nextSet = new Set(prevSet);
@@ -376,10 +373,9 @@ function ProductForm({ open, onClose, initial, onSave }) {
 
   function handleCancel() {
     // Clean up any blobs uploaded during this session that the user did not save.
-    if (unsavedUrls.size > 0 && session?.token) {
-      const token = session.token;
+    if (unsavedUrls.size > 0) {
       for (const url of unsavedUrls) {
-        deleteUnsavedBlob(url, token);
+        deleteUnsavedBlob(url);
       }
     }
     setUnsavedUrls(new Set());
@@ -592,10 +588,7 @@ function StockAdjustmentModal({ open, onClose, product, onSave }) {
       
       const res = await fetch('/api/products', {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.token || ''}`
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
@@ -673,9 +666,7 @@ function StockHistoryModal({ open, onClose }) {
     setError('');
     try {
       const res = await fetch('/api/settings?resource=stock-history', {
-        headers: {
-          'Authorization': `Bearer ${session?.token || ''}`
-        }
+        headers: {}
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch history');
@@ -685,7 +676,7 @@ function StockHistoryModal({ open, onClose }) {
     } finally {
       setLoading(false);
     }
-  }, [session?.token]);
+  }, []);
 
   useEffect(() => {
     if (open) {

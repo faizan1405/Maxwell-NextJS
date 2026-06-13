@@ -452,6 +452,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                       const val = e.target.value;
                       if (val === orderStatus) return;
                       if (val === 'Cancelled') {
+                        if (!isAdmin) return;
                         setConfirmDlg({ type:'cancel', title:'Cancel Order?', message:'This cannot be undone.', confirmLabel:'Cancel Order', confirmVariant:'danger', note:true, noteLabel:'Reason for cancellation', noteRequired:false });
                       } else {
                         onOrderStatusChange(order.id, val);
@@ -474,7 +475,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <option value="Processing">Processing</option>
                     <option value="Dispatched">Dispatched</option>
                     <option value="Delivered">Delivered</option>
-                    <option value="Cancelled">Cancelled</option>
+                    {isAdmin && <option value="Cancelled">Cancelled</option>}
                   </select>
                 </div>
               )}
@@ -802,7 +803,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, orderStatus: newStatus, status: simpleStatus }),
       });
       if (res.ok) {
@@ -827,7 +828,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, paymentStatus: newPayStatus, statusNote: note }),
       });
       if (res.ok) {
@@ -856,7 +857,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, internalNotes: note }),
       });
       if (res.ok) {
@@ -1061,7 +1062,10 @@ export default function OrdersPage() {
         </select>
         <select value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value)}
           className="admin-orders__filter-select">
-          {ORDER_STATUS_OPTIONS.filter(o => o.value === 'all' || orderStatusCounts[o.value] > 0).map(o => (
+          {ORDER_STATUS_OPTIONS
+            .filter(o => isAdmin || !['Cancelled', 'cancelled'].includes(o.value))
+            .filter(o => o.value === 'all' || orderStatusCounts[o.value] > 0)
+            .map(o => (
             <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && orderStatusCounts[o.value] ? ` (${orderStatusCounts[o.value]})` : ''}</option>
           ))}
         </select>

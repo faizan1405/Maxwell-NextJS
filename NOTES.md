@@ -9,17 +9,17 @@
 Instead of using an expensive platform like Shopify or WooCommerce, this project is a "custom-built" solution using Next.js. This gives the business 100% control over the design, speed, and database without paying monthly subscription fees to third-party e-commerce platforms.
 
 ### Project Statistics
-* **Total Files:** ~120
-* **Total Folders:** ~38
+* **Total Files:** ~140
+* **Total Folders:** ~42
 * **HTML Files:** 0 *(Next.js dynamically generates HTML using JavaScript)*
-* **CSS/SCSS Files:** 39
-* **JavaScript Files:** ~66
+* **CSS/SCSS Files:** 40
+* **JavaScript Files:** ~78
 * **TypeScript Files:** 0
-* **React Components:** ~28
+* **React Components:** ~29
 * **Next.js Pages:** 2 main entry points (Storefront and Admin Panel) which dynamically render sub-pages.
 * **API Routes:** 15 (Products, Orders, Carts, Reviews, Settings, Shipping, Categories, FAQs, Coupons, Upload, Proof, Auth, Customer Auth, Customers, Seed-Demo)
 * **Database Models:** 11
-* **Images/Assets:** 14
+* **Images/Assets:** Stored in `public/assets/` and `public/thumbs/`
 * **Configuration Files:** ~5 (`package.json`, `next.config.js`, `vercel.json`, etc.)
 
 ---
@@ -32,12 +32,15 @@ Amahle Blue E-Commerce
 │   │   ├── Home / Hero / Features
 │   │   ├── Shop / Product Grid
 │   │   ├── Cart & Checkout
-│   │   └── Customer Account (Orders, Profile)
+│   │   ├── Customer Account (Orders, Profile)
+│   │   └── FAQ Page
 │   └── Admin Panel (Business facing)
 │       ├── Dashboard (Stats & Revenue)
 │       ├── Products & Categories Management
 │       ├── Orders & Shipping Management
 │       ├── Customer Database
+│       ├── Reviews & FAQs Management
+│       ├── Reports & Abandoned Carts
 │       └── System Settings & Coupons
 ├── Backend (Next.js API Routes)
 │   ├── Products API
@@ -62,6 +65,14 @@ Amahle Blue E-Commerce
 │   ├── JWT (JSON Web Tokens)
 │   ├── Admin Login
 │   └── Customer Login/Registration
+├── SEO
+│   ├── robots.js (dynamic robots.txt)
+│   ├── sitemap.js (dynamic XML sitemap)
+│   └── seo.js lib (metadata helpers per page)
+├── Utilities
+│   ├── accounting.js (financial calculations)
+│   ├── currency.js (formatting helpers)
+│   └── invoice.js (invoice generation)
 ├── Payments
 │   └── Manual EFT / Proof of Payment system
 └── Deployment
@@ -78,41 +89,65 @@ The codebase is organized cleanly to separate the frontend visuals from the back
 Maxwell-NextJS/
 ├── data/                      # Static seed data bundled with serverless functions via import
 │   └── maxwell-products.json  # 20 demo products across 5 categories
+├── public/                    # Static assets served directly by Next.js
+│   ├── assets/                # Product images and brand assets
+│   └── thumbs/                # Thumbnail variants of product images
 ├── scripts/                   # Standalone Node scripts (local use only, not deployed)
 │   └── seed-products.mjs      # Local DB seeder (blocked by Atlas IP allowlist locally)
 ├── next.config.js             # Next.js config — SPA path rewrites for storefront pages
 ├── vercel.json                # Vercel config — headers and targeted API rewrites
 └── src/
     ├── app/                   # Next.js App Router
+    │   ├── [...store]/        # Catch-all storefront route (page.js)
     │   ├── admin/             # Admin Panel entry (layout.js + page.js)
     │   ├── api/               # Backend API routes (15 routes — one file per resource)
     │   ├── layout.js          # Root HTML shell
-    │   └── page.js            # Storefront entry point
+    │   ├── page.js            # Storefront entry point
+    │   ├── robots.js          # Dynamic robots.txt generation
+    │   └── sitemap.js         # Dynamic XML sitemap generation
     ├── components/            # React UI components
-    │   ├── admin/             # Admin Panel pages (Dashboard, Products, Orders, etc.)
-    │   ├── store/             # Storefront pages (Hero, Shop, Cart, Checkout, Account)
-    │   └── ui/                # Shared micro-components (Icons, index re-exports)
+    │   ├── admin/             # Admin Panel pages
+    │   │   ├── AbandonedPage.js / AdminApp.js / AdminLayout.js / AdminProvider.js
+    │   │   ├── CategoriesPage.js / CouponsPage.js / CustomersPage.js
+    │   │   ├── DashboardPage.js / FaqsPage.js / LoginPage.js
+    │   │   ├── OrdersPage.js / ProductsPage.js / ReportsPage.js
+    │   │   └── ReviewsPage.js / SettingsPage.js / ShippingEditor.js
+    │   ├── store/             # Storefront pages
+    │   │   ├── AccountPage.js / AuthModal.js / CartComponents.js
+    │   │   ├── ContentSections.js / FaqPage.js / Footer.js
+    │   │   ├── Header.js / HeroSection.js / ProductReviews.js
+    │   │   └── ShopPage.js / SwipeCarousel.js
+    │   └── ui/                # Shared micro-components (Icons.js, index.js re-exports)
     ├── lib/                   # Shared server + client utilities
     │   ├── auth.js            # JWT helpers — sign and verify admin/customer tokens
-    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, and Products)
+    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, Products)
     │   ├── email.js           # Email utility (transactional emails, future use)
     │   ├── models.js          # Central re-export of all Mongoose models
     │   ├── mongoose.js        # MongoDB connection with cached pool & lazy seed trigger
+    │   ├── seo.js             # Metadata/SEO helpers for page-level Open Graph & titles
     │   └── storeContext.js    # Storefront global state — cart, user, active page
     ├── models/                # Mongoose schemas (11 total)
     │   ├── Product.js / Order.js / Customer.js / Cart.js
     │   ├── Category.js / Coupon.js / Faq.js / Review.js
     │   └── Setting.js / ShippingRate.js / StockHistory.js
-    ├── scripts/               # One-off data migration utilities (src-local)
-    │   └── migrateData.js
-    └── styles/                # SCSS design system (39 files)
-        ├── _global.scss       # Site-wide base styles
-        ├── _mixins.scss       # Reusable SCSS mixins
-        ├── _variables.scss    # Design tokens (colors, spacing, fonts)
-        ├── main.scss          # SCSS entry point — imports all partials
-        ├── admin/             # Admin Panel page styles
-        │   └── components/    # Reusable admin UI styles (modals, buttons, badges, etc.)
-        └── store/             # Storefront page styles
+    ├── scripts/               # One-off local data utilities (not deployed, not all tracked)
+    │   ├── _dbCheck.js / _dbCheck2.js   # DB health-check scripts
+    │   ├── _fixStockDeducted.js         # Stock correction utility
+    │   ├── migrateData.js               # Data migration (untracked — local use only)
+    │   ├── resetStock.js                # Stock reset utility
+    │   └── upsertCategories.js          # Category upsert helper (untracked — local use only)
+    ├── styles/                # SCSS design system (40 files)
+    │   ├── _global.scss       # Site-wide base styles
+    │   ├── _mixins.scss       # Reusable SCSS mixins
+    │   ├── _variables.scss    # Design tokens (colors, spacing, fonts)
+    │   ├── main.scss          # SCSS entry point — imports all partials
+    │   ├── admin/             # Admin Panel page styles (14 partials)
+    │   │   └── components/    # Reusable admin UI styles (10 partials — modals, buttons, etc.)
+    │   └── store/             # Storefront page styles (12 partials)
+    └── utils/                 # Pure calculation and formatting helpers
+        ├── accounting.js      # Financial calculations (totals, tax, discounts)
+        ├── currency.js        # Currency formatting (ZAR display helpers)
+        └── invoice.js         # Invoice data assembly for order PDFs/display
 ```
 
 ---
@@ -238,7 +273,7 @@ Maxwell-NextJS/
 ## 20. Missing Features
 * Automated Credit Card / PayFast / Yoco integration.
 * Automated Email Notifications (e.g., "Your order has shipped").
-* Search Engine Optimization (SEO) for individual products.
+* SEO for individual product pages — foundation (robots.txt, sitemap, Open Graph metadata) is in place; dynamic per-product routes (`/product/[slug]`) are not yet implemented.
 
 ---
 
@@ -310,7 +345,7 @@ Seed 20 demo products across all 5 categories (4 per category): household, indus
 
 ### Verification Steps
 1. Wait for Vercel git-triggered deployment to finish (~1-2 min per push).
-2. Hit `/api/seed-demo?secret=seed-now-2026` once to force-run the upsert.
+2. Hit `/api/seed-demo?secret=<SEED_SECRET>` once to force-run the upsert (value lives in Vercel env vars; do not commit it).
 3. Refresh `/shop` — products appear (4 per category × 5 categories = 20 demos).
 4. Check MongoDB Atlas → Browse Collections → `products` to confirm documents.
 
@@ -322,14 +357,14 @@ Seed 20 demo products across all 5 categories (4 per category): household, indus
 
 6. **`dbConnect` cache-once pattern hides seed errors.**
    `seedDatabase()` runs only when a new Mongoose connection is established. Once the connection is cached in `global.mongoose`, every subsequent request returns early and the seed never re-runs. If the first cold-start seed silently fails, no later request can recover. Hard to debug because errors are caught and only logged — and Vercel logs sometimes do not surface every `console.log`.
-   **Mitigation:** Added an explicit `GET /api/seed-demo?secret=seed-now-2026` endpoint that runs the same upsert on demand and returns the `bulkWrite` result JSON (`upsertedCount`, `matchedCount`, `totalProductsInDB`) or the error/stack. Made debugging instant instead of guessing from missing logs.
+   **Mitigation:** Added an explicit `GET /api/seed-demo?secret=<SEED_SECRET>` endpoint that runs the same upsert on demand and returns the `bulkWrite` result JSON (`upsertedCount`, `matchedCount`, `totalProductsInDB`) or the error/stack. Made debugging instant instead of guessing from missing logs.
 
 7. **Path alias `@/` is not configured in this project.**
    The new seed-demo route initially used `@/lib/db` imports. Build failed with "Module not found: Can't resolve '@/lib/db'" because there is no `jsconfig.json` / `tsconfig.json` mapping `@/` to `src/`. Other API routes use relative paths.
    **Fix:** Use relative imports (`../../../lib/db`, `../../../models/Product`) to match the project's existing convention.
 
 ### Resolution
-Final commit chain: `75f1dc4` (static import) → `12bbdd8` (one-shot endpoint) → `c173654` (path-alias fix). After the last deployment went READY, hitting `/api/seed-demo?secret=seed-now-2026` returned `{success:true, jsonCount:20, upsertedCount:20, totalProductsInDB:21}`. Shop now shows all 4 products per category across 5 categories.
+Final commit chain: `75f1dc4` (static import) → `12bbdd8` (one-shot endpoint) → `c173654` (path-alias fix). After the last deployment went READY, hitting `/api/seed-demo?secret=<SEED_SECRET>` returned `{success:true, jsonCount:20, upsertedCount:20, totalProductsInDB:21}`. Shop now shows all 4 products per category across 5 categories.
 
 ### Important Operational Reminders (additional)
 * **Static imports for any runtime data on Vercel.** If a serverless function needs to read a file at runtime, `import` it. Do not use `fs.readFileSync` on project files — they will not be in the function bundle.

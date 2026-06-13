@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { ShippingRate } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin, verifySession } from '../../../lib/auth';
 
 const DEFAULT_SHIPPING = [
   {
@@ -44,8 +44,8 @@ export async function GET(req) {
 
 export async function POST(req) {
   await connectToDatabase();
-  const adminSession = verifySession(req);
-  if (!adminSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   await getShippingRates(); // ensure initialized
 
@@ -79,8 +79,8 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   await connectToDatabase();
-  const adminSession = verifySession(req);
-  if (!adminSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   
@@ -114,8 +114,8 @@ export async function PATCH(req) {
 
 export async function DELETE(req) {
   await connectToDatabase();
-  const adminSession = verifySession(req);
-  if (!adminSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   

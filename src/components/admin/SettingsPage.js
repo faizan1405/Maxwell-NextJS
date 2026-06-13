@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AdminProvider';
-import { AdminToast, Avatar, Badge, Input, Btn, Spinner, ConfirmDialog } from '../ui/index';
+import { AdminToast, Avatar, Badge, Input, Btn, Spinner } from '../ui/index';
 import { Eye, Check } from '../ui/Icons';
 import '../../styles/admin/_settings.scss';
 
-function PaymentSettingsTab({ token }) {
+function PaymentSettingsTab() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -20,7 +20,7 @@ function PaymentSettingsTab({ token }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('/api/settings', { headers: { 'Authorization': `Bearer ${token}` } });
+        const res = await fetch('/api/settings');
         if (!res.ok) throw new Error('Failed to load');
         const s = await res.json();
         setData(s);
@@ -29,7 +29,7 @@ function PaymentSettingsTab({ token }) {
       }
       setLoading(false);
     })();
-  }, [token]);
+  }, []);
 
   function setFieldValue(section, key, val) {
     setData(d => ({ ...d, [section]: { ...d[section], [key]: val } }));
@@ -42,7 +42,7 @@ function PaymentSettingsTab({ token }) {
     try {
       const res = await fetch('/api/settings', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ eft: data.eft, cod: data.cod }),
       });
       if (!res.ok) throw new Error('Save failed');
@@ -211,7 +211,6 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNext, setShowNext] = useState(false);
-  const [restoreCandidate, setRestoreCandidate] = useState(null);
 
   function showToast(msg, type = 'success') {
     setToast({ visible: true, msg, type });
@@ -232,7 +231,7 @@ export default function SettingsPage() {
       const res = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'changePassword', token: session.token, currentPassword: pwForm.current, newPassword: pwForm.next }),
+        body: JSON.stringify({ action: 'changePassword', currentPassword: pwForm.current, newPassword: pwForm.next }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -253,70 +252,6 @@ export default function SettingsPage() {
   function handleResetData() {
     localStorage.removeItem('ab_products');
     showToast('Local cache cleared. Reload to resync from server.');
-  }
-
-  function handleRestoreFromCache() {
-    let localProducts = null;
-    let localOrders = null;
-
-    try {
-      const rawProd = localStorage.getItem('ab_products') || localStorage.getItem('ab_admin_products_v2');
-      if (rawProd) {
-        const parsed = JSON.parse(rawProd);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          localProducts = parsed;
-        }
-      }
-    } catch (err) {}
-
-    try {
-      const rawOrd = localStorage.getItem('ab_admin_orders_v2');
-      if (rawOrd) {
-        const parsed = JSON.parse(rawOrd);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          localOrders = parsed;
-        }
-      }
-    } catch (err) {}
-
-    if (!localProducts && !localOrders) {
-      showToast('No products or orders found in your browser cache.', 'error');
-      return;
-    }
-
-    setRestoreCandidate({ products: localProducts, orders: localOrders });
-  }
-
-  async function runRestore() {
-    if (!restoreCandidate) return;
-    const { products: localProducts, orders: localOrders } = restoreCandidate;
-    setSaving(true);
-    try {
-      const res = await fetch('/api/settings?resource=restore', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.token}`
-        },
-        body: JSON.stringify({
-          products: localProducts,
-          orders: localOrders
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        showToast(data.error || 'Failed to restore database.', 'error');
-      } else {
-        showToast('Database successfully restored from cache! Reloading...', 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      }
-    } catch (err) {
-      showToast('Error: ' + err.message, 'error');
-    } finally {
-      setSaving(false);
-    }
   }
 
   return (
@@ -442,11 +377,10 @@ export default function SettingsPage() {
           <div className="settings__card">
             <h3 className="settings__card-title">Data Management</h3>
             <p className="settings__card-subtitle" style={{ marginTop: '0.25rem', marginBottom: '1rem', lineHeight: '1.5' }}>
-              Products and orders are stored in Vercel KV. <strong>Clear browser product cache</strong> removes the locally cached product snapshot used to speed up the storefront; the data itself stays in the database. <strong>Restore</strong> uploads any product/order snapshots in your browser cache back to the database — use only if the database was reset.
+              <strong>Clear browser product cache</strong> removes the locally cached product snapshot used to speed up the storefront; the data itself stays in the database.
             </p>
             <div className="settings__actions">
               <Btn variant="danger" size="sm" onClick={handleResetData}>Clear Browser Product Cache</Btn>
-              <Btn variant="primary" size="sm" onClick={handleRestoreFromCache}>Restore Database from Browser Cache</Btn>
             </div>
           </div>
 
@@ -462,20 +396,9 @@ export default function SettingsPage() {
       )}
 
       {tab === 'payment' && (
-        <PaymentSettingsTab token={session?.token} />
+        <PaymentSettingsTab />
       )}
 
-      <ConfirmDialog
-        open={!!restoreCandidate}
-        onClose={() => setRestoreCandidate(null)}
-        onConfirm={runRestore}
-        title="Restore database from browser cache?"
-        message={restoreCandidate
-          ? `Found ${restoreCandidate.products ? restoreCandidate.products.length : 0} products and ${restoreCandidate.orders ? restoreCandidate.orders.length : 0} orders in your browser cache. This will overwrite matching records in the database.`
-          : ''}
-        confirmLabel="Restore"
-        variant="primary"
-      />
     </div>
   );
 }

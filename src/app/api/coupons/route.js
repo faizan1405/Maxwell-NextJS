@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Coupon } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin, verifySession } from '../../../lib/auth';
 import { formatZar } from '../../../utils/currency';
 
 function calcDiscount(coupon, cartTotal) {
@@ -13,8 +13,8 @@ function calcDiscount(coupon, cartTotal) {
 
 export async function GET(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
   
   const coupons = await Coupon.find().lean();
   return NextResponse.json(coupons);
@@ -49,8 +49,8 @@ export async function POST(req) {
     });
   }
 
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   const code = (body.code || '').toUpperCase().trim();
   if (!code) return NextResponse.json({ error: 'Coupon code is required.' }, { status: 400 });
@@ -80,8 +80,8 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   const { id } = body;

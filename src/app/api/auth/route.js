@@ -1,9 +1,16 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { signJwt, verifyJwt } from '../../../lib/auth';
+import {
+  ADMIN_SESSION_SECONDS,
+  clearAdminSessionCookie,
+  publicAdminSession,
+  setAdminSessionCookie,
+  signJwt,
+  verifySession,
+} from '../../../lib/auth';
 
 const SALT       = 'ab_salt_2024:';
-const SESSION_S  = 8 * 60 * 60; // 8 hours
+const SESSION_S  = ADMIN_SESSION_SECONDS; // 8 hours
 
 function sha256hex(text) {
   return crypto.createHash('sha256').update(SALT + text).digest('hex');
@@ -66,7 +73,9 @@ export async function POST(req) {
   const { action } = body || {};
 
   if (action === 'logout') {
-    return NextResponse.json({ ok: true });
+    const response = NextResponse.json({ ok: true });
+    clearAdminSessionCookie(response);
+    return response;
   }
 
   if (action === 'login') {
@@ -112,17 +121,18 @@ export async function POST(req) {
 
     const exp   = Math.floor(Date.now() / 1000) + SESSION_S;
     const token = signJwt({ username: user.username, role: user.role, name: user.name, email: user.email, exp });
-    const session = { token, role: user.role, user: { username: user.username, name: user.name, email: user.email, role: user.role }, expiresAt: exp * 1000 };
-    return NextResponse.json({ ok: true, token, session });
+    const session = publicAdminSession({ username: user.username, role: user.role, name: user.name, email: user.email, exp });
+    const response = NextResponse.json({ ok: true, session });
+    setAdminSessionCookie(response, token);
+    return response;
   }
 
   if (action === 'changePassword') {
-    const { token: reqToken, currentPassword, newPassword } = body;
-    if (!reqToken) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    const { currentPassword, newPassword } = body;
     if (!currentPassword || !newPassword) return NextResponse.json({ error: 'Current and new passwords are required.' }, { status: 400 });
     if (String(newPassword).length < 8)   return NextResponse.json({ error: 'New password must be at least 8 characters.' }, { status: 400 });
 
-    const sess = verifyJwt(reqToken);
+    const sess = verifySession(req);
     if (!sess) return NextResponse.json({ error: 'Session expired. Sign in again.' }, { status: 401 });
 
     const creds   = getCredentials();
@@ -164,6 +174,11 @@ export async function POST(req) {
   }
 
   return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+}
+
+export async function GET(req) {
+  const session = verifySession(req);
+  return NextResponse.json({ session: publicAdminSession(session) });
 }
 
 export async function OPTIONS() {

@@ -2,6 +2,9 @@
  * Seed demo products into MongoDB.
  * Usage: node scripts/seed-products.mjs
  * Reads MONGODB_URI from .env.local automatically.
+ *
+ * SAFETY: This is a maintenance script. It must never be run casually against
+ * production. Set ALLOW_MAINTENANCE_SCRIPT=seed-products for intentional use.
  */
 
 import { MongoClient } from 'mongodb';
@@ -31,6 +34,11 @@ function loadEnv() {
 }
 
 loadEnv();
+
+if (process.env.ALLOW_MAINTENANCE_SCRIPT !== 'seed-products') {
+  console.error('Refusing to run. Set ALLOW_MAINTENANCE_SCRIPT=seed-products for this maintenance script.');
+  process.exit(1);
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {

@@ -12,9 +12,11 @@
  * Do not add stubs for them in lib/email.js.
  */
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Order, Product, Settings, Coupon, ShippingRate } from '../../../lib/models';
-import { verifySession, verifyCustomerSession } from '../../../lib/auth';
+import { Order, Product, Settings, Coupon, ShippingRate, StockHistory } from '../../../lib/models';
+import { verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
@@ -29,27 +31,38 @@ import { formatZar } from '../../../utils/currency';
  *   invoiceNumber → "INV-2025-1001"  (year + zero-padded 4-digit counter)
  *   orderNumber   → "#10001"         (plain incrementing number with # prefix)
  *
- * WARNING: This is NOT atomic in the MongoDB sense (no findAndModify / transactions).
- * Concurrent order placements could theoretically produce duplicate counters under
- * extreme load. For this application's scale this is acceptable.
  */
 async function nextInvoiceAndOrderNumber() {
-  let doc = await Settings.findOne({ key: 'global_settings' }).lean();
-  let s = doc ? doc.value : {};
-  // Bootstrap counters if they were somehow missing from the settings document
-  if (!s.invoiceCounter) s.invoiceCounter = 1000;
-  if (!s.orderCounter) s.orderCounter = 10000;
-  
-  const invoiceCounter = s.invoiceCounter + 1;
-  const orderCounter = s.orderCounter + 1;
-  const year = new Date().getFullYear();
-  
   await Settings.updateOne(
     { key: 'global_settings' },
-    { $set: { value: { ...s, invoiceCounter, orderCounter } } },
+    {
+      $setOnInsert: {
+        key: 'global_settings',
+        value: { invoiceCounter: 1000, orderCounter: 10000 },
+      },
+    },
     { upsert: true }
   );
-  
+
+  const doc = await Settings.findOneAndUpdate(
+    { key: 'global_settings' },
+    {
+      $setOnInsert: { key: 'global_settings' },
+      $inc: {
+        'value.invoiceCounter': 1,
+        'value.orderCounter': 1,
+      },
+    },
+    { new: true, upsert: true, lean: true }
+  );
+
+  const invoiceCounter = Number(doc.value?.invoiceCounter);
+  const orderCounter = Number(doc.value?.orderCounter);
+  if (!Number.isFinite(invoiceCounter) || !Number.isFinite(orderCounter)) {
+    throw orderPatchError('Order counters are not configured correctly.', 500);
+  }
+  const year = new Date().getFullYear();
+
   return {
     invoiceNumber: `INV-${year}-${String(invoiceCounter).padStart(4, '0')}`,
     orderNumber:   `#${orderCounter}`,
@@ -74,6 +87,260 @@ async function nextInvoiceAndOrderNumber() {
  * @param {string} country  - Customer's country (from address details).
  * @returns {{ charge: number, name: string }} The shipping charge and display name.
  */
+const SIMPLE_STATUS_FROM_DESCRIPTIVE = {
+  'Order Placed': 'pending',
+  'Awaiting Payment': 'pending',
+  Confirmed: 'confirmed',
+  Processing: 'processing',
+  Dispatched: 'shipped',
+  Delivered: 'delivered',
+  Cancelled: 'cancelled',
+};
+
+const DESCRIPTIVE_STATUS_FROM_SIMPLE = {
+  pending: null,
+  confirmed: 'Confirmed',
+  processing: 'Processing',
+  packed: 'Processing',
+  shipped: 'Dispatched',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+};
+
+const ORDER_TRANSITIONS = {
+  pending: new Set(['confirmed', 'cancelled']),
+  confirmed: new Set(['processing', 'cancelled']),
+  processing: new Set(['shipped', 'cancelled']),
+  packed: new Set(['shipped', 'cancelled']),
+  shipped: new Set(['delivered']),
+  delivered: new Set([]),
+  cancelled: new Set([]),
+};
+
+const DEDUCTED_STATES = new Set(['confirmed', 'processing', 'packed', 'shipped', 'delivered']);
+
+function orderPatchError(message, status = 400) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
+
+function normalizeOrderStatus(value) {
+  if (!value) return '';
+  return SIMPLE_STATUS_FROM_DESCRIPTIVE[value] || String(value).toLowerCase();
+}
+
+function describeOrderStatus(simple, prev) {
+  if (simple === 'pending') {
+    return (prev.paymentMethod === 'EFT' || prev.payment?.method === 'EFT') ? 'Awaiting Payment' : 'Order Placed';
+  }
+  return DESCRIPTIVE_STATUS_FROM_SIMPLE[simple] || simple;
+}
+
+function assertValidOrderTransition(prev, next, actorRole, isCustomerOnly) {
+  const from = normalizeOrderStatus(prev.status || prev.orderStatus || 'pending');
+  const to = normalizeOrderStatus(next);
+  if (!ORDER_TRANSITIONS[from] || !ORDER_TRANSITIONS[from].has(to)) {
+    throw orderPatchError(`Invalid order status transition: ${from} to ${to}.`, 400);
+  }
+  if (!isCustomerOnly && to === 'cancelled' && actorRole !== 'admin') {
+    throw orderPatchError('Forbidden', 403);
+  }
+}
+
+function actorName(session) {
+  return session?.user?.username || session?.username || session?.email || 'system';
+}
+
+async function writeStockHistory(entry, session) {
+  await StockHistory.create([{
+    id: `stock_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    ...entry,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  }], { session });
+}
+
+async function deductOrderItemStock(order, item, session, performedBy) {
+  const qty = Math.max(1, Number(item.qty) || 0);
+  if (!item.productId || qty <= 0) return;
+
+  const now = Date.now();
+  const variation = item.variation ? String(item.variation) : '';
+  let product;
+  let previousStock;
+  let newStock;
+
+  if (variation) {
+    product = await Product.findOne({ id: item.productId, 'variants.name': variation }).session(session).lean();
+    if (!product) throw orderPatchError(`Insufficient stock for "${item.name || item.productId}" (${variation}).`, 400);
+
+    const variant = product.variants?.find(v => v.name === variation);
+    previousStock = Number(variant?.stock) || 0;
+    newStock = previousStock - qty;
+
+    const result = await Product.updateOne(
+      {
+        id: item.productId,
+        stock: { $gte: qty },
+        'variants.name': variation,
+        'variants.stock': { $gte: qty },
+        'variants.outOfStock': { $ne: true },
+      },
+      {
+        $inc: { stock: -qty, 'variants.$.stock': -qty },
+        $set: {
+          updatedAt: now,
+          outOfStock: (Number(product.stock) || 0) - qty <= 0,
+          'variants.$.outOfStock': newStock <= 0,
+        },
+      },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Insufficient stock for "${item.name || item.productId}" (${variation}).`, 400);
+    }
+  } else {
+    product = await Product.findOne({ id: item.productId }).session(session).lean();
+    if (!product) throw orderPatchError(`Insufficient stock for "${item.name || item.productId}".`, 400);
+
+    previousStock = Number(product.stock) || 0;
+    newStock = previousStock - qty;
+
+    const result = await Product.updateOne(
+      { id: item.productId, stock: { $gte: qty }, outOfStock: { $ne: true } },
+      { $inc: { stock: -qty }, $set: { outOfStock: newStock <= 0, updatedAt: now } },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Insufficient stock for "${item.name || item.productId}".`, 400);
+    }
+  }
+
+  await writeStockHistory({
+    productId: item.productId,
+    variationName: variation || null,
+    change: -qty,
+    type: 'sale',
+    reason: `Order ${order.orderNumber || order.id} stock deduction`,
+    previousStock,
+    newStock,
+    performedBy,
+  }, session);
+}
+
+async function restoreOrderItemStock(order, item, session, performedBy) {
+  const qty = Math.max(1, Number(item.qty) || 0);
+  if (!item.productId || qty <= 0) return;
+
+  const now = Date.now();
+  const variation = item.variation ? String(item.variation) : '';
+  let product;
+  let previousStock;
+  let newStock;
+
+  if (variation) {
+    product = await Product.findOne({ id: item.productId, 'variants.name': variation }).session(session).lean();
+    if (!product) throw orderPatchError(`Cannot restore stock for "${item.name || item.productId}" (${variation}).`, 400);
+
+    const variant = product.variants?.find(v => v.name === variation);
+    previousStock = Number(variant?.stock) || 0;
+    newStock = previousStock + qty;
+
+    const result = await Product.updateOne(
+      { id: item.productId, 'variants.name': variation },
+      { $inc: { stock: qty, 'variants.$.stock': qty }, $set: { outOfStock: false, 'variants.$.outOfStock': false, updatedAt: now } },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Stock restoration failed for "${item.name || item.productId}" (${variation}).`, 400);
+    }
+  } else {
+    product = await Product.findOne({ id: item.productId }).session(session).lean();
+    if (!product) throw orderPatchError(`Cannot restore stock for "${item.name || item.productId}".`, 400);
+
+    previousStock = Number(product.stock) || 0;
+    newStock = previousStock + qty;
+
+    const result = await Product.updateOne(
+      { id: item.productId },
+      { $inc: { stock: qty }, $set: { outOfStock: false, updatedAt: now } },
+      { session }
+    );
+    if (result.modifiedCount !== 1) {
+      throw orderPatchError(`Stock restoration failed for "${item.name || item.productId}".`, 400);
+    }
+  }
+
+  await writeStockHistory({
+    productId: item.productId,
+    variationName: variation || null,
+    change: qty,
+    type: 'refund',
+    reason: `Order ${order.orderNumber || order.id} stock restoration`,
+    previousStock,
+    newStock,
+    performedBy,
+  }, session);
+}
+
+async function persistOrderPatchWithInventory(prev, patch, adminSession) {
+  const effectiveNewStatus = patch.status ?? prev.status;
+  const statusActuallyChanged = patch.status !== undefined && patch.status !== prev.status;
+  const shouldBeDeducted = DEDUCTED_STATES.has(effectiveNewStatus);
+  const isCurrentlyDeducted = !!prev.stockDeducted;
+  const shouldDeduct = statusActuallyChanged && shouldBeDeducted && !isCurrentlyDeducted;
+  const shouldRestore = statusActuallyChanged && !shouldBeDeducted && isCurrentlyDeducted;
+
+  if (!shouldDeduct && !shouldRestore) {
+    const updated = await Order.findOneAndUpdate({ id: prev.id }, { $set: patch }, { new: true, lean: true });
+    return updated || { ...prev, ...patch };
+  }
+
+  const session = await mongoose.startSession();
+  let updated;
+  try {
+    await session.withTransaction(async () => {
+      const current = await Order.findOne({ id: prev.id }).session(session).lean();
+      if (!current) throw orderPatchError('Order not found', 404);
+      if (current.status !== prev.status || !!current.stockDeducted !== isCurrentlyDeducted) {
+        throw orderPatchError('Order changed while updating. Please reload and try again.', 409);
+      }
+
+      const performedBy = actorName(adminSession);
+      for (const item of (current.items || [])) {
+        if (shouldDeduct) await deductOrderItemStock(current, item, session, performedBy);
+        if (shouldRestore) await restoreOrderItemStock(current, item, session, performedBy);
+      }
+
+      if (shouldDeduct) {
+        patch.stockDeducted = true;
+        if (current.status === 'cancelled' && current.couponId) {
+          await Coupon.updateOne({ id: current.couponId }, { $inc: { usedCount: 1 }, $set: { updatedAt: Date.now() } }, { session });
+        }
+      }
+
+      if (shouldRestore) {
+        patch.stockDeducted = false;
+        if (current.couponId) {
+          await Coupon.updateOne({ id: current.couponId, usedCount: { $gt: 0 } }, { $inc: { usedCount: -1 }, $set: { updatedAt: Date.now() } }, { session });
+        }
+      }
+
+      updated = await Order.findOneAndUpdate(
+        { id: current.id, stockDeducted: isCurrentlyDeducted, status: current.status },
+        { $set: patch },
+        { new: true, lean: true, session }
+      );
+      if (!updated) throw orderPatchError('Order changed while updating. Please reload and try again.', 409);
+    });
+  } finally {
+    await session.endSession();
+  }
+
+  return updated;
+}
+
 async function computeShipping(subtotal, province, country) {
   const rates = await ShippingRate.find({ status: 'active' }).lean();
   let rateObj = null;
@@ -132,7 +399,7 @@ function isValidSaMobile(raw) {
 function emailEnv() {
   return {
     KEY:  process.env.RESEND_API_KEY,
-    FROM: process.env.FROM_EMAIL || 'Amahle Blue <noreply@amahle-blue.co.za>',
+    FROM: process.env.FROM_EMAIL || 'Amahle Blue <sales@amahle-blue.co.za>',
   };
 }
 
@@ -154,12 +421,16 @@ async function sendEmail(to, subject, html) {
       headers: { 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json' },
       body:    JSON.stringify({ from: FROM, to: Array.isArray(to) ? to : [to], subject, html }),
     });
-    if (!res.ok) {
-      const err = await res.text().catch(() => '');
-      console.error('[orders] email send failed:', res.status, err.slice(0, 200));
+    let payload = null;
+    try { payload = await res.json(); } catch { payload = null; }
+    if (res.ok && payload?.id) {
+      console.log(`[orders] email sent id=${payload.id} subject="${subject}"`);
+    } else {
+      const errMsg = payload?.message || payload?.error || JSON.stringify(payload || {}).slice(0, 200);
+      console.error(`[orders] email send failed status=${res.status} error="${errMsg}" subject="${subject}"`);
     }
   } catch (e) {
-    console.error('[orders] email error:', e.message);
+    console.error(`[orders] email network error subject="${subject}" message="${e.message}"`);
   }
 }
 
@@ -505,7 +776,7 @@ export async function POST(req) {
     let body;
     try { body = await req.json(); } catch { body = {}; }
     
-    const custSession = verifyCustomerSession(req);
+    const custSession = await verifyCustomerCookie(req);
     const idemKey = (body.idempotencyKey || '').trim();
 
     const customer = body.customer || {};
@@ -712,8 +983,8 @@ export async function GET(req) {
   try {
     await connectToDatabase();
     const adminSession    = verifySession(req);
-    const customerSession = adminSession ? null : verifyCustomerSession(req);
-    
+    const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const orders = await Order.find({}).lean();
@@ -742,8 +1013,8 @@ export async function PATCH(req) {
   try {
     await connectToDatabase();
     const adminSession    = verifySession(req);
-    const customerSession = adminSession ? null : verifyCustomerSession(req);
-    
+    const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     let body;
@@ -762,48 +1033,21 @@ export async function PATCH(req) {
         prev.customer?.email?.toLowerCase() === customerSession.email.toLowerCase();
       if (!isOwner) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
       if (status !== 'cancelled') return NextResponse.json({ error: 'Customers can only cancel orders.' }, { status: 403 });
-      const cancellable = ['pending', 'confirmed', 'processing'];
-      if (!cancellable.includes(prev.status)) {
-        return NextResponse.json({ error: 'This order can no longer be cancelled.' }, { status: 400 });
-      }
+      assertValidOrderTransition(prev, 'cancelled', 'customer', true);
     }
 
     const patch = { updatedAt: Date.now() };
 
-    if (status !== undefined && !isCustomerOnly) {
-      const VALID_STATUS = ['pending','confirmed','processing','packed','shipped','delivered','cancelled'];
-      if (!VALID_STATUS.includes(status)) return NextResponse.json({ error: 'Invalid order status.' }, { status: 400 });
-      const STATUS_TO_DESCRIPTIVE = {
-        pending:    (prev.paymentMethod === 'EFT' || prev.payment?.method === 'EFT') ? 'Awaiting Payment' : 'Order Placed',
-        confirmed:  'Confirmed',
-        processing: 'Processing',
-        packed:     'Processing',
-        shipped:    'Dispatched',
-        delivered:  'Delivered',
-        cancelled:  'Cancelled',
-      };
-      patch.status      = status;
-      patch.orderStatus = STATUS_TO_DESCRIPTIVE[status] || status;
-    } else if (status !== undefined && isCustomerOnly) {
-      patch.status      = status;
-      patch.orderStatus = 'Cancelled';
-    }
+    const requestedSimpleStatus = (() => {
+      if (orderStatus !== undefined) return SIMPLE_STATUS_FROM_DESCRIPTIVE[orderStatus] || '';
+      if (status !== undefined) return normalizeOrderStatus(status);
+      return '';
+    })();
 
-    if (!isCustomerOnly && orderStatus !== undefined) {
-      const ORDER_STATUS_MAP = {
-        'Order Placed':     'pending',
-        'Awaiting Payment': 'pending',
-        'Confirmed':        'confirmed',
-        'Processing':       'processing',
-        'Dispatched':       'shipped',
-        'Delivered':        'delivered',
-        'Cancelled':        'cancelled',
-      };
-      if (!ORDER_STATUS_MAP.hasOwnProperty(orderStatus)) {
-        return NextResponse.json({ error: 'Invalid order status.' }, { status: 400 });
-      }
-      patch.orderStatus = orderStatus;
-      patch.status      = ORDER_STATUS_MAP[orderStatus];
+    if (requestedSimpleStatus) {
+      assertValidOrderTransition(prev, requestedSimpleStatus, adminSession?.role || 'customer', isCustomerOnly);
+      patch.status = requestedSimpleStatus;
+      patch.orderStatus = describeOrderStatus(requestedSimpleStatus, prev);
     }
 
     if (!isCustomerOnly) {
@@ -909,6 +1153,9 @@ export async function PATCH(req) {
      * COUPON: The coupon usedCount is also adjusted symmetrically — decremented on
      * deduction, incremented on restoration — so usage limits remain accurate.
      */
+    const updated = await persistOrderPatchWithInventory(prev, patch, adminSession);
+
+    /*
     const effectiveNewStatus = patch.status ?? prev.status;
     const DEDUCTED_STATES = ['confirmed', 'processing', 'shipped', 'delivered'];
     const statusActuallyChanged = patch.status !== undefined && patch.status !== prev.status;
@@ -1048,6 +1295,7 @@ export async function PATCH(req) {
 
     const updated = { ...prev, ...patch };
     await Order.updateOne({ id }, { $set: patch });
+    */
 
     if (!isCustomerOnly) {
       const prevOrderStatus = prev.orderStatus || prev.status;
@@ -1084,6 +1332,9 @@ export async function PATCH(req) {
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error) {
+    if (error?.status) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
     console.error('PATCH /api/orders error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

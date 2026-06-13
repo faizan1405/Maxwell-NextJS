@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { NextResponse } from 'next/server';
 
 /**
  * JWT AUTHENTICATION LAYER
@@ -87,16 +88,79 @@ export function verifyJwt(token) {
 /**
  * Extracts and verifies the admin session from an incoming Next.js request.
  *
- * Expects the token in the Authorization header as: "Bearer <token>"
+ * Reads the token from the HTTP-only admin cookie. Authorization header support
+ * remains as a short-term compatibility fallback for non-browser tooling.
  *
  * @param {Request} req - The Next.js App Router request object.
  * @returns {Object|null} Decoded admin JWT payload, or null if not authenticated.
  */
 export function verifySession(req) {
+  const cookie = req.cookies?.get?.(ADMIN_COOKIE)?.value;
   const header = req.headers.get('authorization') || '';
-  const token  = header.startsWith('Bearer ') ? header.slice(7).trim() : null;
+  const token  = cookie || (header.startsWith('Bearer ') ? header.slice(7).trim() : null);
   if (!token) return null;
   return verifyJwt(token);
+}
+
+export const ADMIN_COOKIE = 'ab_admin_session';
+export const ADMIN_SESSION_SECONDS = 8 * 60 * 60;
+
+export function publicAdminSession(session) {
+  if (!session) return null;
+  return {
+    role: session.role,
+    user: {
+      username: session.username,
+      name: session.name,
+      email: session.email,
+      role: session.role,
+    },
+    expiresAt: session.exp * 1000,
+  };
+}
+
+export function setAdminSessionCookie(response, token) {
+  const secure = process.env.NODE_ENV === 'production' || !!process.env.VERCEL_ENV;
+  response.cookies.set(ADMIN_COOKIE, token, {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax',
+    maxAge: ADMIN_SESSION_SECONDS,
+    path: '/',
+  });
+}
+
+export function clearAdminSessionCookie(response) {
+  response.cookies.set(ADMIN_COOKIE, '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL_ENV,
+    sameSite: 'lax',
+    maxAge: 0,
+    path: '/',
+  });
+}
+
+export function requireSession(req) {
+  const session = verifySession(req);
+  if (!session) {
+    return {
+      session: null,
+      response: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }),
+    };
+  }
+  return { session, response: null };
+}
+
+export function requireAdmin(req) {
+  const { session, response } = requireSession(req);
+  if (response) return { session: null, response };
+  if (session.role !== 'admin') {
+    return {
+      session,
+      response: NextResponse.json({ error: 'Forbidden' }, { status: 403 }),
+    };
+  }
+  return { session, response: null };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

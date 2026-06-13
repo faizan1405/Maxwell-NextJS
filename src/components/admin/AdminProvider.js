@@ -388,29 +388,50 @@ export function AdminProvider({ children }) {
   }, [session, fetchProducts]);
 
   // ── Order CRUD ────────────────────────────────────────────────────────────
+  // Pattern note: provider mutations apply an optimistic state update first,
+  // then call the API. On failure they refetch (to undo the optimistic state)
+  // and throw — callers are expected to catch and surface a toast.
   const updateOrderStatus = useCallback(async (id, status) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status, updatedAt: Date.now() } : o));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/orders`, {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, status }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchOrders();
+      throw new Error(errMsg);
     }
   }, [session, fetchOrders]);
 
   const updateOrderNote = useCallback(async (id, notes) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, notes, updatedAt: Date.now() } : o));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/orders`, {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, notes }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchOrders();
+      throw new Error(errMsg);
     }
   }, [session, fetchOrders]);
 
@@ -429,14 +450,23 @@ export function AdminProvider({ children }) {
 
   const updateTracking = useCallback(async (id, trackingNumber, carrier, trackingLink, dispatchDate) => {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, trackingNumber, carrier, trackingLink, dispatchDate, updatedAt: Date.now() } : o));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/orders`, {
+      const res = await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, trackingNumber, carrier, trackingLink, dispatchDate }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchOrders();
+      throw new Error(errMsg);
     }
   }, [session, fetchOrders]);
 
@@ -447,34 +477,53 @@ export function AdminProvider({ children }) {
       headers: apiHeaders(),
       body: JSON.stringify(payload),
     });
-    const data = await res.json();
-    if (res.ok) setCoupons(prev => [...prev, data]);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+    setCoupons(prev => [...prev, data]);
     return data;
   }, [session]);
 
   const updateCoupon = useCallback(async (id, patch) => {
     setCoupons(prev => prev.map(c => c.id === id ? { ...c, ...patch, updatedAt: Date.now() } : c));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/coupons`, {
+      const res = await fetch(`${API_BASE}/api/coupons`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchCoupons();
+      throw new Error(errMsg);
     }
   }, [session, fetchCoupons]);
 
   const deleteCoupon = useCallback(async (id) => {
     setCoupons(prev => prev.filter(c => c.id !== id));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/coupons`, {
+      const res = await fetch(`${API_BASE}/api/coupons`, {
         method: 'DELETE',
         headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchCoupons();
+      throw new Error(errMsg);
     }
   }, [session, fetchCoupons]);
 
@@ -485,38 +534,60 @@ export function AdminProvider({ children }) {
       headers: apiHeaders(),
       body: JSON.stringify(payload),
     });
-    const data = await res.json();
-    if (res.ok) setFaqs(prev => [...prev, data].sort((a, b) => (a.order || 0) - (b.order || 0)));
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Server error ${res.status}`);
+    setFaqs(prev => [...prev, data].sort((a, b) => (a.order || 0) - (b.order || 0)));
     return data;
   }, [session]);
 
   const updateFaq = useCallback(async (id, patch) => {
     setFaqs(prev => prev.map(f => f.id === id ? { ...f, ...patch, updatedAt: Date.now() } : f));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/faqs`, {
+      const res = await fetch(`${API_BASE}/api/faqs`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchFaqs();
+      throw new Error(errMsg);
     }
   }, [session, fetchFaqs]);
 
   const deleteFaq = useCallback(async (id) => {
     setFaqs(prev => prev.filter(f => f.id !== id));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/faqs`, {
+      const res = await fetch(`${API_BASE}/api/faqs`, {
         method: 'DELETE',
         headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchFaqs();
+      throw new Error(errMsg);
     }
   }, [session, fetchFaqs]);
 
   // ── Shipping Rates ──
+  // Shipping CRUD returns a structured result { ok, error } rather than
+  // throwing, because the existing ShippingEditor caller branches on the
+  // boolean. The error string lets the caller surface a useful toast.
   const addShippingRate = useCallback(async (rate) => {
     try {
       const res = await fetch(`${API_BASE}/api/shipping`, {
@@ -524,12 +595,12 @@ export function AdminProvider({ children }) {
         headers: apiHeaders(),
         body: JSON.stringify(rate)
       });
-      if (!res.ok) return false;
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, error: data.error || `Server error ${res.status}` };
       setShippingRates(prev => [...prev.filter(r => !data.isDefault || !r.isDefault), data]);
-      return true;
+      return { ok: true, data };
     } catch (e) {
-      return false;
+      return { ok: false, error: 'Network error — please try again.' };
     }
   }, [session]);
 
@@ -540,12 +611,12 @@ export function AdminProvider({ children }) {
         headers: apiHeaders(),
         body: JSON.stringify(rate)
       });
-      if (!res.ok) return false;
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) return { ok: false, error: data.error || `Server error ${res.status}` };
       setShippingRates(prev => prev.map(r => r.id === data.id ? data : (data.isDefault ? { ...r, isDefault: false } : r)));
-      return true;
+      return { ok: true, data };
     } catch (e) {
-      return false;
+      return { ok: false, error: 'Network error — please try again.' };
     }
   }, [session]);
 
@@ -556,10 +627,14 @@ export function AdminProvider({ children }) {
         headers: apiHeaders(),
         body: JSON.stringify({ id })
       });
-      if (res.ok) setShippingRates(prev => prev.filter(r => r.id !== id));
-      return res.ok;
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        return { ok: false, error: d.error || `Server error ${res.status}` };
+      }
+      setShippingRates(prev => prev.filter(r => r.id !== id));
+      return { ok: true };
     } catch (e) {
-      return false;
+      return { ok: false, error: 'Network error — please try again.' };
     }
   }, [session]);
 
@@ -616,27 +691,45 @@ export function AdminProvider({ children }) {
   // ── Review moderation ─────────────────────────────────────────────────────
   const updateReview = useCallback(async (id, patch) => {
     setReviews(prev => prev.map(r => r.id === id ? { ...r, ...patch, updatedAt: Date.now() } : r));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/reviews`, {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
         method: 'PATCH',
         headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchReviews();
+      throw new Error(errMsg);
     }
   }, [session, fetchReviews]);
 
   const deleteReview = useCallback(async (id) => {
     setReviews(prev => prev.filter(r => r.id !== id));
+    let errMsg = null;
     try {
-      await fetch(`${API_BASE}/api/reviews`, {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
         method: 'DELETE',
         headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        errMsg = d.error || `Server error ${res.status}`;
+      }
     } catch (e) {
+      errMsg = 'Network error — please try again.';
+    }
+    if (errMsg) {
       fetchReviews();
+      throw new Error(errMsg);
     }
   }, [session, fetchReviews]);
 

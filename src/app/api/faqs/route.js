@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Faq } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin, verifySession } from '../../../lib/auth';
 
 export async function GET(req) {
   await connectToDatabase();
@@ -22,8 +22,8 @@ export async function GET(req) {
 
 export async function POST(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   
@@ -51,8 +51,8 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   const { id } = body;
@@ -75,8 +75,8 @@ export async function PATCH(req) {
 
 export async function DELETE(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   let body = await req.json().catch(() => ({}));
   const { id } = body;

@@ -4,8 +4,6 @@ import React, { useState, useEffect, useContext, useCallback, useMemo, createCon
 import { calculateOrderStats } from '../../utils/accounting';
 import { formatZar } from '../../utils/currency';
 
-const SESSION_KEY = 'ab_admin_session_v2';
-
 const DEFAULT_CATEGORIES = [
   { id: "household", name: "Household", short: "Household", icon: "Home", blurb: "Everyday surfaces, floors, fabrics & fresh-smelling rooms.", accent: "#1D4ED8", status: 'active', displayOrder: 1 },
   { id: "industrial", name: "Industrial", short: "Industrial", icon: "Spray", blurb: "Heavy-duty degreasers, cleaners and specialty solutions for industrial use.", accent: "#B45309", status: 'active', displayOrder: 2 },
@@ -42,10 +40,9 @@ export function initials(name) {
 
 const API_BASE = '';
 
-function apiHeaders(token, extra) {
+function apiHeaders(_token, extra) {
   return {
     'Content-Type': 'application/json',
-    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
     ...extra
   };
 }
@@ -238,30 +235,31 @@ export function AdminProvider({ children }) {
     }
   }, []);
 
-  // Init — restore session from sessionStorage, then fetch data in background
+  // Init: restore session from the HTTP-only admin cookie, then fetch data.
   useEffect(() => {
     (async () => {
       let sess = null;
       try {
-        if (typeof window !== 'undefined') {
-          const s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
-          if (s && s.expiresAt > Date.now()) {
-            sess = s;
-            setSession(s);
+        const res = await fetch(`${API_BASE}/api/auth`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.session && data.session.expiresAt > Date.now()) {
+            sess = data.session;
+            setSession(sess);
           }
         }
       } catch (e) {}
 
       if (sess) {
-        fetchProducts(sess.token);
-        fetchOrders(sess.token);
-        fetchRegisteredCustomers(sess.token);
-        fetchCoupons(sess.token);
-        fetchReviews(sess.token);
-        fetchAbandonedCarts(sess.token);
-        fetchFaqs(sess.token);
-        fetchCategories(sess.token);
-        fetchShippingRates(sess.token);
+        fetchProducts();
+        fetchOrders();
+        fetchRegisteredCustomers();
+        fetchCoupons();
+        fetchReviews();
+        fetchAbandonedCarts();
+        fetchFaqs();
+        fetchCategories();
+        fetchShippingRates();
         fetchSettings();
       } else {
         setLoadingStates({
@@ -292,22 +290,19 @@ export function AdminProvider({ children }) {
       const data = await res.json();
       if (!res.ok) return { ok: false, error: data.error || 'Login failed' };
 
-      const { token, session: s } = data;
+      const { session: s } = data;
       setSession(s);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
-      }
 
       await Promise.all([
-        fetchProducts(token),
-        fetchOrders(token),
-        fetchRegisteredCustomers(token),
-        fetchCoupons(token),
-        fetchReviews(token),
-        fetchAbandonedCarts(token),
-        fetchFaqs(token),
-        fetchCategories(token),
-        fetchShippingRates(token),
+        fetchProducts(),
+        fetchOrders(),
+        fetchRegisteredCustomers(),
+        fetchCoupons(),
+        fetchReviews(),
+        fetchAbandonedCarts(),
+        fetchFaqs(),
+        fetchCategories(),
+        fetchShippingRates(),
         fetchSettings(),
       ]);
       return { ok: true };
@@ -317,15 +312,13 @@ export function AdminProvider({ children }) {
   }, [fetchProducts, fetchOrders, fetchRegisteredCustomers, fetchCoupons, fetchReviews, fetchAbandonedCarts, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
 
   const logout = useCallback(async () => {
-    if (session?.token) {
-      try {
-        await fetch(`${API_BASE}/api/auth`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'logout', token: session.token })
-        });
-      } catch (e) {}
-    }
+    try {
+      await fetch(`${API_BASE}/api/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+      });
+    } catch (e) {}
     setSession(null);
     setProducts([]);
     setOrders([]);
@@ -335,16 +328,13 @@ export function AdminProvider({ children }) {
     setAbandonedCarts([]);
     setFaqs([]);
     setCategories([]);
-    if (typeof window !== 'undefined') {
-      sessionStorage.removeItem(SESSION_KEY);
-    }
   }, [session]);
 
   // ── Product CRUD ──────────────────────────────────────────────────────────
   const addProduct = useCallback(async (p) => {
     const res = await fetch(`${API_BASE}/api/products`, {
       method: 'POST',
-      headers: apiHeaders(session?.token),
+      headers: apiHeaders(),
       body: JSON.stringify(p),
     });
     const data = await res.json();
@@ -359,7 +349,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/products`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
       if (!res.ok) {
@@ -370,7 +360,7 @@ export function AdminProvider({ children }) {
       errMsg = 'Network error — please try again.';
     }
     if (errMsg) {
-      fetchProducts(session?.token);
+      fetchProducts();
       throw new Error(errMsg);
     }
   }, [session, fetchProducts]);
@@ -381,7 +371,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/products`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
       if (!res.ok) {
@@ -392,7 +382,7 @@ export function AdminProvider({ children }) {
       errMsg = 'Network error — please try again.';
     }
     if (errMsg) {
-      fetchProducts(session?.token);
+      fetchProducts();
       throw new Error(errMsg);
     }
   }, [session, fetchProducts]);
@@ -403,11 +393,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, status }),
       });
     } catch (e) {
-      fetchOrders(session?.token);
+      fetchOrders();
     }
   }, [session, fetchOrders]);
 
@@ -416,11 +406,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, notes }),
       });
     } catch (e) {
-      fetchOrders(session?.token);
+      fetchOrders();
     }
   }, [session, fetchOrders]);
 
@@ -442,11 +432,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/orders`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, trackingNumber, carrier, trackingLink, dispatchDate }),
       });
     } catch (e) {
-      fetchOrders(session?.token);
+      fetchOrders();
     }
   }, [session, fetchOrders]);
 
@@ -454,7 +444,7 @@ export function AdminProvider({ children }) {
   const addCoupon = useCallback(async (payload) => {
     const res = await fetch(`${API_BASE}/api/coupons`, {
       method: 'POST',
-      headers: apiHeaders(session?.token),
+      headers: apiHeaders(),
       body: JSON.stringify(payload),
     });
     const data = await res.json();
@@ -467,11 +457,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/coupons`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
     } catch (e) {
-      fetchCoupons(session?.token);
+      fetchCoupons();
     }
   }, [session, fetchCoupons]);
 
@@ -480,11 +470,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/coupons`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
     } catch (e) {
-      fetchCoupons(session?.token);
+      fetchCoupons();
     }
   }, [session, fetchCoupons]);
 
@@ -492,7 +482,7 @@ export function AdminProvider({ children }) {
   const addFaq = useCallback(async (payload) => {
     const res = await fetch(`${API_BASE}/api/faqs`, {
       method: 'POST',
-      headers: apiHeaders(session?.token),
+      headers: apiHeaders(),
       body: JSON.stringify(payload),
     });
     const data = await res.json();
@@ -505,11 +495,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/faqs`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
     } catch (e) {
-      fetchFaqs(session?.token);
+      fetchFaqs();
     }
   }, [session, fetchFaqs]);
 
@@ -518,11 +508,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/faqs`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
     } catch (e) {
-      fetchFaqs(session?.token);
+      fetchFaqs();
     }
   }, [session, fetchFaqs]);
 
@@ -531,7 +521,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/shipping`, {
         method: 'POST',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify(rate)
       });
       if (!res.ok) return false;
@@ -547,7 +537,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/shipping`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify(rate)
       });
       if (!res.ok) return false;
@@ -563,7 +553,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/shipping`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id })
       });
       if (res.ok) setShippingRates(prev => prev.filter(r => r.id !== id));
@@ -577,7 +567,7 @@ export function AdminProvider({ children }) {
   const addCategory = useCallback(async (payload) => {
     const res = await fetch(`${API_BASE}/api/categories`, {
       method: 'POST',
-      headers: apiHeaders(session?.token),
+      headers: apiHeaders(),
       body: JSON.stringify(payload),
     });
     const data = await res.json();
@@ -591,7 +581,7 @@ export function AdminProvider({ children }) {
     try {
       const res = await fetch(`${API_BASE}/api/categories`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, patch }),
       });
       if (!res.ok) {
@@ -599,7 +589,7 @@ export function AdminProvider({ children }) {
         throw new Error(d.error || 'Server error');
       }
     } catch (e) {
-      fetchCategories(session?.token);
+      fetchCategories();
       throw e;
     }
   }, [session, fetchCategories]);
@@ -611,14 +601,14 @@ export function AdminProvider({ children }) {
       if (reassignTo) qs.set('reassignTo', reassignTo);
       const res = await fetch(`${API_BASE}/api/categories?${qs.toString()}`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token)
+        headers: apiHeaders()
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.error || 'Server error');
       }
     } catch (e) {
-      fetchCategories(session?.token);
+      fetchCategories();
       throw e;
     }
   }, [session, fetchCategories]);
@@ -629,11 +619,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/reviews`, {
         method: 'PATCH',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id, ...patch }),
       });
     } catch (e) {
-      fetchReviews(session?.token);
+      fetchReviews();
     }
   }, [session, fetchReviews]);
 
@@ -642,11 +632,11 @@ export function AdminProvider({ children }) {
     try {
       await fetch(`${API_BASE}/api/reviews`, {
         method: 'DELETE',
-        headers: apiHeaders(session?.token),
+        headers: apiHeaders(),
         body: JSON.stringify({ id }),
       });
     } catch (e) {
-      fetchReviews(session?.token);
+      fetchReviews();
     }
   }, [session, fetchReviews]);
 

@@ -802,7 +802,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, orderStatus: newStatus, status: simpleStatus }),
       });
       if (res.ok) {
@@ -827,7 +827,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, paymentStatus: newPayStatus, statusNote: note }),
       });
       if (res.ok) {
@@ -856,7 +856,7 @@ export default function OrdersPage() {
     try {
       const res = await fetch('/api/orders', {
         method: 'PATCH',
-        headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${session?.token}` },
+        headers: { 'Content-Type':'application/json' },
         body: JSON.stringify({ id, internalNotes: note }),
       });
       if (res.ok) {

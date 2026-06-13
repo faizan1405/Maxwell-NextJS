@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Settings, Product, Order, Customer, Coupon, ShippingRate, Faq, Review, Category, StockHistory } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { Settings, StockHistory } from '../../../lib/models';
+import { requireAdmin, requireSession, verifySession } from '../../../lib/auth';
 
 function deepMerge(target, source) {
   const out = { ...target };
@@ -81,7 +81,8 @@ export async function GET(req) {
 
     // 1. Stock History resource delegate
     if (resource === 'stock-history') {
-      if (!adminSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const auth = requireSession(req);
+      if (auth.response) return auth.response;
       const history = await StockHistory.find({}).sort({ createdAt: -1 });
       
       // Adapt field names for legacy frontend compatibility:
@@ -134,56 +135,10 @@ export async function GET(req) {
 
 export async function POST(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   try {
-    const { searchParams } = new URL(req.url);
-    const resource = searchParams.get('resource');
-
-    // Database restore delegate
-    if (resource === 'restore') {
-      const body = await req.json();
-      const { products, orders, settings, coupons, categories, shipping, faqs, reviews } = body;
-
-      if (Array.isArray(products)) {
-        await Product.deleteMany({});
-        await Product.insertMany(products);
-      }
-      if (Array.isArray(orders)) {
-        await Order.deleteMany({});
-        await Order.insertMany(orders);
-      }
-      if (settings) {
-        await Settings.deleteOne({ key: 'global_settings' });
-        await Settings.create({ key: 'global_settings', value: settings });
-      }
-      if (Array.isArray(coupons)) {
-        await Coupon.deleteMany({});
-        await Coupon.insertMany(coupons);
-      }
-      if (Array.isArray(categories)) {
-        await Category.deleteMany({});
-        await Category.insertMany(categories);
-      }
-      if (Array.isArray(shipping)) {
-        await ShippingRate.deleteMany({});
-        await ShippingRate.insertMany(shipping);
-      }
-      if (Array.isArray(faqs)) {
-        await Faq.deleteMany({});
-        await Faq.insertMany(faqs);
-      }
-      if (Array.isArray(reviews)) {
-        await Review.deleteMany({});
-        await Review.insertMany(reviews);
-      }
-
-      return NextResponse.json({ success: true, message: 'Database successfully restored.' });
-    }
-
     return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -192,10 +147,8 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   try {
     const body = await req.json();

@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { put, del } from '@vercel/blob';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Product } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin } from '../../../lib/auth';
 
 const ALLOWED_IMAGES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const ALLOWED_VIDEOS = new Set(['video/mp4', 'video/webm']);
@@ -35,8 +35,8 @@ function sanitizeMediaItem(m, i) {
 
 export async function POST(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 });
@@ -100,8 +100,8 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   await connectToDatabase();
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
 
@@ -150,8 +150,8 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   if (!token) return NextResponse.json({ error: 'BLOB_READ_WRITE_TOKEN is not configured.' }, { status: 500 });

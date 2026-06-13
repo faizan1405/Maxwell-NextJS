@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Review, Order, Customer, Product } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin, verifySession } from '../../../lib/auth';
 import { verifyCustomerCookie } from '../../../lib/customerAuth';
 
 // Accepts canonical Product.id slug OR legacy ObjectId hex (older storefront callers).
@@ -125,8 +125,8 @@ export async function POST(req) {
 }
 
 export async function PATCH(req) {
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   await connectToDatabase();
   
@@ -158,8 +158,8 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   await connectToDatabase();
   

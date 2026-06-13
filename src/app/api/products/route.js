@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Product, Category, StockHistory } from '../../../lib/models';
-import { verifySession } from '../../../lib/auth';
+import { requireAdmin, verifySession } from '../../../lib/auth';
 import { del } from '@vercel/blob';
 
 function isVercelBlob(url) {
@@ -252,10 +252,8 @@ export async function PATCH(req) {
 }
 
 export async function DELETE(req) {
-  const session = verifySession(req);
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  // if (session.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 }); // Wait, old code had this, keep it:
-  if (session.role && session.role !== 'admin') return NextResponse.json({ error: 'Admin only' }, { status: 403 });
+  const auth = requireAdmin(req);
+  if (auth.response) return auth.response;
 
   await connectToDatabase();
   

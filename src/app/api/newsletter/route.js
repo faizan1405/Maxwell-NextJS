@@ -6,6 +6,46 @@ import { verifySession } from '../../../lib/auth';
 // Public Email Validation Regex
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Lightweight in-memory rate limiter cache
+// Key: IP address (string), Value: Array of timestamps (numbers)
+const rateLimitCache = new Map();
+
+// Helper to clean up old timestamps and check limit
+function isRateLimited(ip) {
+  const now = Date.now();
+  const timeframe = 15 * 60 * 1000; // 15 minutes
+  const limit = 5; // max 5 submissions
+
+  if (!rateLimitCache.has(ip)) {
+    rateLimitCache.set(ip, [now]);
+    return false;
+  }
+
+  const timestamps = rateLimitCache.get(ip);
+  const recentTimestamps = timestamps.filter(t => now - t < timeframe);
+  
+  if (recentTimestamps.length >= limit) {
+    return true;
+  }
+
+  recentTimestamps.push(now);
+  rateLimitCache.set(ip, recentTimestamps);
+  
+  // Periodically clean up cache to prevent memory leak
+  if (rateLimitCache.size > 1000) {
+    for (const [key, val] of rateLimitCache.entries()) {
+      const filtered = val.filter(t => now - t < timeframe);
+      if (filtered.length === 0) {
+        rateLimitCache.delete(key);
+      } else {
+        rateLimitCache.set(key, filtered);
+      }
+    }
+  }
+
+  return false;
+}
+
 // GET: Admin-only List
 export async function GET(req) {
   const session = verifySession(req);
@@ -65,12 +105,55 @@ export async function GET(req) {
 // POST: Public subscribe or resubscribe
 export async function POST(req) {
   try {
+    // 1. IP Rate Limiting
+    const ip = req.headers.get('x-forwarded-for')?.split(',')[0].trim() || 
+               req.headers.get('x-real-ip') || 
+               '127.0.0.1';
+
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Too many subscription attempts. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json().catch(() => ({}));
+
+    // 2. Honeypot check
+    if (body.website && String(body.website).trim().length > 0) {
+      return NextResponse.json({
+        message: 'Thank you. You have been added to Amahle Blue updates.'
+      });
+    }
+
     const rawEmail = body.email || '';
     const email = String(rawEmail).trim().toLowerCase();
 
+    // 3. Validations
     if (!email || !EMAIL_REGEX.test(email)) {
       return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 });
+    }
+
+    if (email.length > 254) {
+      return NextResponse.json({ error: 'Email address is too long (maximum 254 characters).' }, { status: 400 });
+    }
+
+    const rawName = body.name || '';
+    const name = String(rawName).trim();
+    if (name.length > 100) {
+      return NextResponse.json({ error: 'Name is too long (maximum 100 characters).' }, { status: 400 });
+    }
+
+    const rawPhone = body.phone || '';
+    const phone = String(rawPhone).trim();
+    if (phone.length > 30) {
+      return NextResponse.json({ error: 'Phone number is too long (maximum 30 characters).' }, { status: 400 });
+    }
+
+    const rawSource = body.source || 'footer';
+    const source = String(rawSource).trim();
+    if (source.length > 50) {
+      return NextResponse.json({ error: 'Source is too long (maximum 50 characters).' }, { status: 400 });
     }
 
     await connectToDatabase();
@@ -103,9 +186,9 @@ export async function POST(req) {
     subscriber = await NewsletterSubscriber.create({
       id: newId,
       email,
-      name: body.name ? String(body.name).trim() : '',
-      phone: body.phone ? String(body.phone).trim() : '',
-      source: body.source ? String(body.source).trim() : 'footer',
+      name,
+      phone,
+      source,
       status: 'subscribed',
       subscribedAt: Date.now(),
       lastUpdatedAt: Date.now(),

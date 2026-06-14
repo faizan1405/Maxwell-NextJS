@@ -175,6 +175,7 @@ export const Contact = () => (
 
 export const Newsletter = () => {
   const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -191,7 +192,7 @@ export const Newsletter = () => {
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'footer' }),
+        body: JSON.stringify({ email, website, source: 'footer' }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -199,6 +200,7 @@ export const Newsletter = () => {
       } else {
         setSuccessMsg(data.message || 'Thanks for subscribing!');
         setEmail('');
+        setWebsite('');
       }
     } catch (err) {
       setErrorMsg('Network error. Please try again later.');
@@ -220,6 +222,16 @@ export const Newsletter = () => {
               <div className="newsletter__success"><CheckCircle size={18} /> {successMsg}</div>
             ) : (
               <form onSubmit={handleSubmit} className="newsletter-form">
+                {/* Honeypot field for spam protection */}
+                <input
+                  type="text"
+                  name="website"
+                  value={website}
+                  onChange={e => setWebsite(e.target.value)}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
                 <input
                   type="email"
                   required

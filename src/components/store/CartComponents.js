@@ -153,11 +153,26 @@ export function CartPage({ onGoHome, onCheckout }) {
               {detailed.map(({ product, qty, variation, price, size }) => (
                 <div key={`${product.id}-${variation || ''}`} className="order-summary__row">
                   <span className="order-summary__row-label">{product.name}{variation ? ` (${size})` : ''} ×{qty}</span>
+                  <span className="order-summary__row-value">{formatZar(price * qty)}</span>
                 </div>
               ))}
             </div>
+            <div className="order-summary__totals" style={{ borderTop: '1px solid #e2e8f0', marginTop: '0.75rem', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#475569' }}>
+                <span>Subtotal</span><span style={{ fontWeight: 600 }}>{formatZar(subtotal)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#475569' }}>
+                <span>Delivery</span><span style={{ fontWeight: 600, color: delivery === 0 ? '#16a34a' : '#111111' }}>{delivery === 0 ? 'FREE' : formatZar(delivery)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 800, color: '#111111', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
+                <span>Estimated Total</span><span style={{ color: '#264CFF' }}>{formatZar(total)}</span>
+              </div>
+              {remaining > 0 && (
+                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Add {formatZar(remaining)} more for free delivery</p>
+              )}
+            </div>
             <button onClick={onCheckout} className="order-summary__btn">
-              <Lock size={16} /> Proceed to Quote
+              <Lock size={16} /> Proceed to Checkout
             </button>
             <p className="order-summary__secure">
               <Shield size={13} /> Secure checkout · SSL encrypted
@@ -482,12 +497,35 @@ export function CheckoutPage({ onBack, onSuccess }) {
                     <p className="title">{product.name}</p>
                     <p className="meta">{size} ×{qty}</p>
                   </div>
+                  <span className="order-summary__item-price" style={{ fontWeight: 700, color: '#111111', fontSize: '13px' }}>{formatZar(price * qty)}</span>
                 </div>
               ))}
             </div>
 
+            <div className="order-summary__totals" style={{ borderTop: '1px solid #e2e8f0', marginTop: '0.75rem', paddingTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#475569' }}>
+                <span>Subtotal</span><span style={{ fontWeight: 600 }}>{formatZar(subtotal)}</span>
+              </div>
+              {couponDiscount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#16a34a' }}>
+                  <span>Coupon ({coupon?.code})</span><span style={{ fontWeight: 600 }}>−{formatZar(couponDiscount)}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#475569' }}>
+                <span>Delivery</span><span style={{ fontWeight: 600, color: delivery === 0 ? '#16a34a' : '#111111' }}>{delivery === 0 ? 'FREE' : formatZar(delivery)}</span>
+              </div>
+              {codFee > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#475569' }}>
+                  <span>COD Fee</span><span style={{ fontWeight: 600 }}>{formatZar(codFee)}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 800, color: '#111111', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
+                <span>Total</span><span style={{ color: '#264CFF' }}>{formatZar(total)}</span>
+              </div>
+            </div>
+
             <button type="submit" form="ck-form" disabled={placing || mobileMissing} className="order-summary__btn">
-              {placing ? <Spinner size={18} /> : <><Lock size={16} /> Submit Quote Request</>}
+              {placing ? <><Spinner size={18} /> Placing order…</> : <><Lock size={16} /> Place Order</>}
             </button>
             <p className="order-summary__secure">
               <Shield size={13} /> Secure checkout · SSL encrypted

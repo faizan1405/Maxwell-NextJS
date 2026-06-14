@@ -10,6 +10,7 @@ function isVercelBlob(url) {
 
 function sanitize(input) {
   const VALID_STATUS = ['active','draft','archived'];
+  const VALID_PURCHASE_MODE = ['cart','quote','both'];
   const out = {};
   if (input.name      !== undefined) out.name      = String(input.name).trim().slice(0, 120);
   if (input.cat       !== undefined) out.cat       = String(input.cat || '').trim().toLowerCase().slice(0, 60) || 'household';
@@ -51,6 +52,12 @@ function sanitize(input) {
     stock: Math.max(0, parseInt(v.stock, 10) || 0),
     outOfStock: !!v.outOfStock,
   }));
+  if (input.purchaseMode !== undefined) {
+    out.purchaseMode = VALID_PURCHASE_MODE.includes(input.purchaseMode) ? input.purchaseMode : 'cart';
+  }
+  if (input.whatsappEnabled !== undefined) out.whatsappEnabled = !!input.whatsappEnabled;
+  if (input.whatsappNumber  !== undefined) out.whatsappNumber  = String(input.whatsappNumber || '').replace(/[^\d+]/g, '').slice(0, 20);
+  if (input.whatsappMessage !== undefined) out.whatsappMessage = String(input.whatsappMessage || '').slice(0, 2000);
   return out;
 }
 

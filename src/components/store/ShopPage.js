@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useCart, useProducts, BRAND, DEFAULT_CATEGORIES, money, getPrimaryImg, getSecondImg, catOf } from '../../lib/storeContext';
-import { 
+import { formatZar } from '../../utils/currency';
+import { buildWaUrl, showCart, showWhatsApp, productPurchaseMode } from '../../utils/whatsapp';
+import {
   Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, ChevronRight, Cart, Minus, Tag
 } from '../ui/Icons';
 import { Reveal, Stars, BadgeChip } from '../ui/index';
@@ -20,12 +22,17 @@ export const openQuickView = (product) => {
 
 export const ProductCard = ({ p }) => {
   const { add } = useCart();
+  const { settings } = useProducts();
   const c = catOf(p.cat) || DEFAULT_CATEGORIES[0];
-  
+
+  const mode = productPurchaseMode(p);
+  const cartEnabled = showCart(p);
+  const waEnabled   = showWhatsApp(p);
+
   const hasVariants = p.variants && p.variants.length > 0;
   const outOfStock = p.outOfStock || (hasVariants ? p.variants.every(v => v.outOfStock || v.stock === 0) : p.stock === 0);
   const lowStock = !outOfStock && (hasVariants ? p.variants.some(v => v.stock > 0 && v.stock <= (p.lowStockThreshold || 10)) : p.stock > 0 && p.stock <= (p.lowStockThreshold || 10));
-  
+
   const prices = hasVariants ? p.variants.map(v => v.price) : [p.price];
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
@@ -33,7 +40,7 @@ export const ProductCard = ({ p }) => {
   const displayPrice = minPrice;
   const displaySize = hasVariants ? p.variants[0].name : p.size;
   const displayStock = hasVariants ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : p.stock;
-  const contactForPrice = !displayPrice || displayPrice <= 0;
+  const contactForPrice = !cartEnabled || !displayPrice || displayPrice <= 0;
 
   const primaryImgUrl = getPrimaryImg(p);
   const secondImgUrl  = getSecondImg(p);
@@ -106,7 +113,7 @@ export const ProductCard = ({ p }) => {
         )}
         <div className="product-card__badges">
           {!outOfStock && <BadgeChip badge={p.badge} />}
-          {!outOfStock && <span className="product-card__quote-badge">Quote Only</span>}
+          {!outOfStock && mode === 'quote' && <span className="product-card__quote-badge">Quote Only</span>}
         </div>
         <div className="product-card__actions">
           <button onClick={handleWish}
@@ -137,25 +144,43 @@ export const ProductCard = ({ p }) => {
         </div>
         <div className="product-card__price-row">
           <div className="product-card__price-wrap">
-            <span className="product-card__price product-card__price--contact">Quote Only</span>
+            {contactForPrice ? (
+              <span className="product-card__price product-card__price--contact">Quote on request</span>
+            ) : hasMultiplePrices ? (
+              <span className="product-card__price">{formatZar(minPrice)} – {formatZar(maxPrice)}</span>
+            ) : (
+              <>
+                <span className="product-card__price">{formatZar(displayPrice)}</span>
+                {p.was && p.was > displayPrice && (
+                  <span className="product-card__price-was">{formatZar(p.was)}</span>
+                )}
+              </>
+            )}
           </div>
           {lowStock && <span className="product-card__stock-low">{hasVariants && p.variants.length > 1 ? 'Limited stock' : `Only ${displayStock} left`}</span>}
         </div>
-        {contactForPrice ? (
-          <a href={`${BRAND.wa}?text=${encodeURIComponent(`Hi Amahle Blue, I would like to get a quote for the ${p.name}.`)}`} target="_blank" rel="noopener noreferrer"
-            className="product-card__btn product-card__btn--quote">
-            <Whatsapp size={16} /> Get a quote
-          </a>
-        ) : (
-          <button onClick={handleAdd} disabled={outOfStock}
-            className={`product-card__btn ${
-              outOfStock ? 'product-card__btn--oos' :
-              added      ? 'product-card__btn--added' :
-                           'product-card__btn--add'
-            }`}>
-            {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Quote Cart</>}
-          </button>
-        )}
+        <div className="product-card__btn-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          {cartEnabled && !contactForPrice && (
+            <button onClick={handleAdd} disabled={outOfStock}
+              className={`product-card__btn ${
+                outOfStock ? 'product-card__btn--oos' :
+                added      ? 'product-card__btn--added' :
+                             'product-card__btn--add'
+              }`}>
+              {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Cart</>}
+            </button>
+          )}
+          {waEnabled && (
+            <a
+              href={buildWaUrl(p, { settings })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="product-card__btn product-card__btn--quote"
+            >
+              <Whatsapp size={16} /> Get Quote on WhatsApp
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -382,6 +407,7 @@ export const Shop = ({ activeCat, setActiveCat, query, setQuery, carousel = fals
 
 export const QuickView = () => {
   const { add, setOpen } = useCart();
+  const { settings } = useProducts();
   const [product,      setProduct]      = useState(null);
   const [selectedVarName, setSelectedVarName] = useState(null);
   const [mediaIdx,     setMediaIdx]     = useState(0);
@@ -649,13 +675,24 @@ export const QuickView = () => {
                 const activeOutOfStock = !!product.outOfStock || (selectedVariant ? !!selectedVariant.outOfStock || selectedVariant.stock === 0 : product.stock === 0);
                 const activeLowStock = !activeOutOfStock && activeStock > 0 && activeStock <= (product.lowStockThreshold || 10);
                 const activeMaxQty = activeStock;
-                const contactForPrice = !activePrice || activePrice <= 0;
+                const cartEnabled = showCart(product);
+                const waEnabled   = showWhatsApp(product);
+                const contactForPrice = !cartEnabled || !activePrice || activePrice <= 0;
 
                 return (
                   <React.Fragment>
                     <div className="quickview-price-section">
                       <div className="quickview-price-wrap">
-                        <span className="quickview-price quickview-price--contact">Quote Only</span>
+                        {contactForPrice ? (
+                          <span className="quickview-price quickview-price--contact">Quote on request</span>
+                        ) : (
+                          <>
+                            <span className="quickview-price">{formatZar(activePrice)}</span>
+                            {activeWas && activeWas > activePrice && (
+                              <span className="quickview-price-was">{formatZar(activeWas)}</span>
+                            )}
+                          </>
+                        )}
                       </div>
                       <div className="quickview-stock-info">
                         <span className="quickview-stock-status">
@@ -665,29 +702,34 @@ export const QuickView = () => {
                       </div>
                     </div>
 
-                    {contactForPrice ? (
-                      <a href={`${BRAND.wa}?text=${encodeURIComponent(`Hi Amahle Blue, I would like to get a quote for the ${product.name}${activeSize ? ` (${activeSize})` : ''}.`)}`} target="_blank" rel="noopener noreferrer"
-                        className="quickview-add-btn quickview-add-btn--quote">
-                        <Whatsapp size={18} /> Get a quote on WhatsApp
-                      </a>
-                    ) : (
-                      <div className="quickview-add-section">
-                        {!activeOutOfStock && (
-                          <div className="quickview-qty-control">
-                            <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="quickview-qty-btn"><Minus size={16} /></button>
-                            <span className="quickview-qty-val">{qty}</span>
-                            <button onClick={() => setQty((q) => Math.min(activeMaxQty, q + 1))} className="quickview-qty-btn"><Plus size={16} /></button>
-                          </div>
-                        )}
+                    <div className="quickview-add-section" style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                      {cartEnabled && !contactForPrice && !activeOutOfStock && (
+                        <div className="quickview-qty-control">
+                          <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="quickview-qty-btn"><Minus size={16} /></button>
+                          <span className="quickview-qty-val">{qty}</span>
+                          <button onClick={() => setQty((q) => Math.min(activeMaxQty, q + 1))} className="quickview-qty-btn"><Plus size={16} /></button>
+                        </div>
+                      )}
+                      {cartEnabled && !contactForPrice && (
                         <button
                           disabled={activeOutOfStock}
                           onClick={() => { if (!activeOutOfStock) { add(product, qty, selectedVarName); setProduct(null); setTimeout(() => setOpen(true), 150); } }}
                           className={`quickview-add-btn ${activeOutOfStock ? 'quickview-add-btn--oos' : 'quickview-add-btn--active'}`}
                         >
-                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Quote Cart</>}
+                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Cart</>}
                         </button>
-                      </div>
-                    )}
+                      )}
+                      {waEnabled && (
+                        <a
+                          href={buildWaUrl(product, { variant: selectedVariant, settings })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="quickview-add-btn quickview-add-btn--quote"
+                        >
+                          <Whatsapp size={18} /> Get Quote on WhatsApp
+                        </a>
+                      )}
+                    </div>
                   </React.Fragment>
                 );
               })()}

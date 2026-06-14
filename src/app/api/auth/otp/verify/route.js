@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { connectToDatabase } from '../../../../../lib/mongoose';
-import { EmailOtp, Customer, CustomerSession } from '../../../../../lib/models';
+import { EmailOtp, Customer, CustomerSession, Order } from '../../../../../lib/models';
 import { generateSessionToken, hashSessionToken, setSessionCookie } from '../../../../../lib/customerAuth';
 
 const MAX_ATTEMPTS = 5;
@@ -91,6 +91,30 @@ export async function POST(req) {
       phone:     '',
       addresses: [],
     });
+  }
+
+  /* Link any guest orders placed with this email (or this customer's phone)
+   * back to the now-authenticated customer. Without this, a guest who later
+   * signs in would see "No orders" because My Orders queries by customerId
+   * first. We update orders whose customerId is null (guest orders) and which
+   * match the verified email or the stored phone number. Best-effort: errors
+   * here must not block sign-in. */
+  try {
+    const phone = String(customer.phone || '').trim();
+    const orMatch = [{ 'customer.email': email }];
+    if (phone) orMatch.push({ 'customer.phone': phone });
+
+    await Order.updateMany(
+      {
+        $and: [
+          { $or: [{ customerId: null }, { customerId: { $exists: false } }] },
+          { $or: orMatch },
+        ],
+      },
+      { $set: { customerId: customer.id, 'customer.id': customer.id, updatedAt: now } }
+    );
+  } catch (e) {
+    console.error('[otp/verify] guest-order backfill failed:', e.message);
   }
 
   const rawToken  = generateSessionToken();

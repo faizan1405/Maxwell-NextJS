@@ -59,6 +59,19 @@ const DEFAULT_SETTINGS = {
     phone:     '067 101 4345',
     address:   'Unit H, 13 Main Reef Road, Dunswart, Boksburg, Gauteng, South Africa',
   },
+  whatsapp: {
+    enabled: true,
+    number: '27671014345',
+    defaultMessage: `Hello Amahle Blue, I am interested in this product:
+
+Product: {{productName}}
+Variant/Size: {{variant}}
+Price: {{price}}
+SKU: {{sku}}
+Product Link: {{productUrl}}
+
+Please send me more details and quotation.`,
+  },
   invoiceCounter: 1000,
   orderCounter: 10000,
 };
@@ -110,6 +123,7 @@ export async function GET(req) {
         eft: s.eft,
         shipping: s.shipping,
         business: s.business,
+        whatsapp: s.whatsapp,
       });
     }
 
@@ -127,6 +141,11 @@ export async function GET(req) {
       },
       shipping: s.shipping,
       business: s.business,
+      whatsapp: {
+        enabled: s.whatsapp?.enabled !== false,
+        number: s.whatsapp?.number || '',
+        defaultMessage: s.whatsapp?.defaultMessage || '',
+      },
     });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
@@ -194,6 +213,17 @@ export async function PATCH(req) {
       if (typeof body.eft.allowProofUpload === 'boolean') allowed.eft.allowProofUpload = body.eft.allowProofUpload;
     }
 
+    if (body.whatsapp) {
+      allowed.whatsapp = {};
+      if (typeof body.whatsapp.enabled === 'boolean') allowed.whatsapp.enabled = body.whatsapp.enabled;
+      if (body.whatsapp.number !== undefined) {
+        allowed.whatsapp.number = String(body.whatsapp.number || '').replace(/[^\d+]/g, '').slice(0, 20);
+      }
+      if (body.whatsapp.defaultMessage !== undefined) {
+        allowed.whatsapp.defaultMessage = String(body.whatsapp.defaultMessage || '').slice(0, 2000);
+      }
+    }
+
     const currentDoc = await Settings.findOne({ key: 'global_settings' });
     const current = currentDoc ? currentDoc.value : DEFAULT_SETTINGS;
     const updated = deepMerge(current, allowed);
@@ -209,6 +239,7 @@ export async function PATCH(req) {
       eft: updated.eft,
       shipping: updated.shipping,
       business: updated.business,
+      whatsapp: updated.whatsapp,
     });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });

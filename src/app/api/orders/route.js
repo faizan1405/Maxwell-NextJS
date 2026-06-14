@@ -556,9 +556,9 @@ async function sendEFTEmail(order) {
     <div style="margin-bottom:24px;">
       <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Bank Details</p>
       <table style="width:100%;border-collapse:collapse;background:#f8fafc;border-radius:8px;overflow:hidden;"><tbody>${bankRows}</tbody></table>
-      <div style="background:#264CFF;color:#fff;padding:12px 16px;border-radius:8px;margin-top:8px;text-align:center;">
-        <p style="font-size:13px;font-weight:700;margin:0;">Amount Payable: ${formatZar(order.total)}</p>
-      </div>
+      <table style="width:100%;border-collapse:collapse;background:#f8fafc;border-radius:8px;overflow:hidden;margin-top:8px;"><tbody>
+        <tr><td style="padding:10px 16px;font-size:13px;color:#64748b;width:50%;">Amount Payable</td><td style="padding:10px 16px;font-size:15px;font-weight:800;color:#264CFF;text-align:right;">${formatZar(order.total)}</td></tr>
+      </tbody></table>
     </div>` : ''}
     <p style="font-size:13px;color:#64748b;margin:0 0 24px;line-height:1.6;background:#f8fafc;border-radius:8px;padding:14px 16px;">
       Please use your order number as the payment reference. Your order will be processed after the payment has been verified.
@@ -1225,12 +1225,26 @@ export async function GET(req) {
     }
 
     const { customerId, email } = customerSession;
-    const mine = await Order.find({
-      $or: [
-        { customerId: customerId },
-        { 'customer.email': email.toLowerCase() }
-      ]
-    }).lean();
+    const normalizedEmail = (email || '').toLowerCase();
+
+    // Resolve the customer's phone so guest orders placed with the same phone
+    // (but no customerId / different email) still surface in My Orders. Falls
+    // back gracefully if the Customer record is missing.
+    let customerPhone = '';
+    try {
+      const custDoc = await Customer.findOne({ id: customerId }).select('phone').lean();
+      customerPhone = String(custDoc?.phone || '').trim();
+    } catch {}
+
+    const orQuery = [
+      { customerId },
+      { 'customer.email': normalizedEmail },
+    ];
+    if (customerPhone) {
+      orQuery.push({ 'customer.phone': customerPhone });
+    }
+
+    const mine = await Order.find({ $or: orQuery }).sort({ createdAt: -1 }).lean();
 
     const safeMine = mine.map(({ internalNotes, idempotencyKey, eftBankDetails: _b, ...safe }) => {
       if (safe.paymentMethod === 'EFT' || safe.payment?.method === 'EFT') {

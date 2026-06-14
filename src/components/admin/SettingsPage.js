@@ -217,6 +217,121 @@ function PaymentSettingsTab({ onDirtyChange }) {
   );
 }
 
+function WhatsAppSettingsTab({ onDirtyChange }) {
+  const [data, setData] = useState(null);
+  const [initialData, setInitialData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState({ visible: false, msg: '', type: 'success' });
+
+  function showToast(msg, type = 'success') {
+    setToast({ visible: true, msg, type });
+    setTimeout(() => setToast(t => ({ ...t, visible: false })), 3500);
+  }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/settings');
+        if (!res.ok) throw new Error('Failed to load');
+        const s = await res.json();
+        const wa = s.whatsapp || { enabled: true, number: '', defaultMessage: '' };
+        setData(wa);
+        setInitialData(wa);
+      } catch {
+        showToast('Could not load WhatsApp settings.', 'error');
+      }
+      setLoading(false);
+    })();
+  }, []);
+
+  const isDirty = useMemo(() => {
+    if (!data || !initialData) return false;
+    return JSON.stringify(data) !== JSON.stringify(initialData);
+  }, [data, initialData]);
+
+  useEffect(() => {
+    if (onDirtyChange) onDirtyChange(isDirty);
+    return () => { if (onDirtyChange) onDirtyChange(false); };
+  }, [isDirty, onDirtyChange]);
+
+  async function save(e) {
+    e.preventDefault();
+    if (!data) return;
+    setSaving(true);
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ whatsapp: data }),
+      });
+      if (!res.ok) throw new Error('Save failed');
+      showToast('WhatsApp settings saved');
+      setInitialData(data);
+    } catch {
+      showToast('Failed to save. Please try again.', 'error');
+    }
+    setSaving(false);
+  }
+
+  if (loading) return <div className="settings__loading">Loading WhatsApp settings…</div>;
+  if (!data) return <div className="settings__error">Could not load WhatsApp settings.</div>;
+
+  return (
+    <form onSubmit={save} className="settings__form">
+      <AdminToast message={toast.msg} type={toast.type} visible={toast.visible} />
+
+      <div className="settings__card">
+        <div className="settings__payment-header">
+          <div>
+            <h3 className="settings__card-title">WhatsApp Quote</h3>
+            <p className="settings__card-subtitle">Global fallback number and message template used when a product has no per-product override.</p>
+          </div>
+          <label className="settings__toggle">
+            <span className="settings__toggle-label">Enabled</span>
+            <div
+              className={`settings__toggle-switch ${data.enabled ? 'on' : 'off'}`}
+              onClick={() => setData(d => ({ ...d, enabled: !d.enabled }))}
+              role="switch"
+              aria-checked={!!data.enabled}
+              tabIndex={0}
+              onKeyDown={e => (e.key === ' ' || e.key === 'Enter') && setData(d => ({ ...d, enabled: !d.enabled }))}
+            >
+              <span className={`settings__toggle-knob ${data.enabled ? 'on' : 'off'}`} />
+            </div>
+          </label>
+        </div>
+
+        <div className="settings__payment-field">
+          <label>Default WhatsApp Number</label>
+          <input
+            value={data.number || ''}
+            onChange={e => setData(d => ({ ...d, number: e.target.value }))}
+            placeholder="e.g. 27671014345 (country code + number, no spaces)"
+            className="font-mono"
+          />
+          <p className="hint">Used when a product has no override. Empty falls back to the brand default.</p>
+        </div>
+
+        <div className="settings__payment-field">
+          <label>Default Message Template</label>
+          <textarea
+            value={data.defaultMessage || ''}
+            onChange={e => setData(d => ({ ...d, defaultMessage: e.target.value }))}
+            rows={8}
+            placeholder="Hello Amahle Blue, I am interested in this product..."
+          />
+          <p className="hint">Variables: {'{{productName}}'} {'{{variant}}'} {'{{price}}'} {'{{productUrl}}'} {'{{sku}}'}</p>
+        </div>
+      </div>
+
+      <Btn type="submit" disabled={saving}>
+        {saving ? <><Spinner size={14}/> Saving…</> : 'Save WhatsApp Settings'}
+      </Btn>
+    </form>
+  );
+}
+
 export default function SettingsPage({ setUnsavedChanges }) {
   const { session } = useAuth();
   const [tab, setTab] = useState('account');
@@ -224,9 +339,10 @@ export default function SettingsPage({ setUnsavedChanges }) {
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
   const [pwErrors, setPwErrors] = useState({});
   const [isPaymentDirty, setIsPaymentDirty] = useState(false);
+  const [isWhatsAppDirty, setIsWhatsAppDirty] = useState(false);
 
   const isPwDirty = pwForm.current !== '' || pwForm.next !== '' || pwForm.confirm !== '';
-  const isDirty = isPaymentDirty || isPwDirty;
+  const isDirty = isPaymentDirty || isPwDirty || isWhatsAppDirty;
 
   useEffect(() => {
     if (setUnsavedChanges) {
@@ -256,6 +372,7 @@ export default function SettingsPage({ setUnsavedChanges }) {
     setShowDiscardConfirm(false);
     setPwForm({ current: '', next: '', confirm: '' });
     setIsPaymentDirty(false);
+    setIsWhatsAppDirty(false);
   }
   const [saving, setSaving] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
@@ -313,7 +430,7 @@ export default function SettingsPage({ setUnsavedChanges }) {
       </div>
 
       <div className="settings__tabs">
-        {['account', 'security', 'store', 'payment'].map(t => (
+        {['account', 'security', 'store', 'payment', 'whatsapp'].map(t => (
           <button key={t} onClick={() => handleTabChange(t)} className={tab === t ? 'active' : ''}>
             {t}
           </button>
@@ -446,6 +563,10 @@ export default function SettingsPage({ setUnsavedChanges }) {
 
       {tab === 'payment' && (
         <PaymentSettingsTab key={tab} onDirtyChange={setIsPaymentDirty} />
+      )}
+
+      {tab === 'whatsapp' && (
+        <WhatsAppSettingsTab key={tab} onDirtyChange={setIsWhatsAppDirty} />
       )}
 
       <ConfirmDialog

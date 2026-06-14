@@ -27,7 +27,7 @@ function getPrimaryImg(p) {
 }
 
 function blankProduct() {
-  return { name:'', cat:'household', sub:'', price:'', was:'', size:'', sku:'', scent:'', badge:null, img:'', media:[], desc:'', stock:0, lowStockThreshold:10, status:'active', outOfStock:false, benefits:['','','',''], variants:[], rating:4.8, reviews:0 };
+  return { name:'', cat:'household', sub:'', price:'', was:'', size:'', sku:'', scent:'', badge:null, img:'', media:[], desc:'', stock:0, lowStockThreshold:10, status:'active', outOfStock:false, benefits:['','','',''], variants:[], rating:4.8, reviews:0, purchaseMode:'cart', whatsappEnabled:false, whatsappNumber:'', whatsappMessage:'' };
 }
 
 function titleFromSlug(value) {
@@ -250,7 +250,11 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
     if (String(form.stock || '') !== String(baselineForm.stock || '')) return true;
     if (String(form.lowStockThreshold || '') !== String(baselineForm.lowStockThreshold || '')) return true;
     if (form.outOfStock !== baselineForm.outOfStock) return true;
-    
+    if ((form.purchaseMode || 'cart') !== (baselineForm.purchaseMode || 'cart')) return true;
+    if (!!form.whatsappEnabled !== !!baselineForm.whatsappEnabled) return true;
+    if (String(form.whatsappNumber || '') !== String(baselineForm.whatsappNumber || '')) return true;
+    if (String(form.whatsappMessage || '') !== String(baselineForm.whatsappMessage || '')) return true;
+
     if (JSON.stringify(form.benefits) !== JSON.stringify(baselineForm.benefits)) return true;
     if (JSON.stringify(form.variants) !== JSON.stringify(baselineForm.variants)) return true;
 
@@ -291,7 +295,15 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
   useEffect(() => {
     if (open) {
       setForm(initial
-        ? { ...initial, benefits: (initial.benefits||['','','','']).slice(0,4).concat(['','','','']).slice(0,4) }
+        ? {
+            ...blankProduct(),
+            ...initial,
+            benefits: (initial.benefits||['','','','']).slice(0,4).concat(['','','','']).slice(0,4),
+            purchaseMode: initial.purchaseMode || 'cart',
+            whatsappEnabled: !!initial.whatsappEnabled,
+            whatsappNumber: initial.whatsappNumber || '',
+            whatsappMessage: initial.whatsappMessage || '',
+          }
         : { ...blankProduct(), cat: categories && categories.length > 0 ? categories[0].id : '' }
       );
       setErrors({});
@@ -584,6 +596,54 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
           ) : (
             <p className="admin-product-form__variants-empty">No variants. Click "Add Variant" to create size options.</p>
           )}
+        </div>
+
+        <div className="admin-product-form__wa" style={{ borderTop: '1px solid #e5e7eb', paddingTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div>
+            <h4 style={{ fontSize: '0.875rem', fontWeight: 700, margin: '0 0 0.25rem 0', color: '#111111' }}>Purchase Mode & WhatsApp Quote</h4>
+            <p style={{ fontSize: '0.75rem', color: '#64748b', margin: 0 }}>Controls how customers can buy or request a quote for this product.</p>
+          </div>
+          <div className="admin-product-form__grid-2">
+            <Select
+              label="Purchase Mode"
+              value={form.purchaseMode || 'cart'}
+              onChange={e=>set('purchaseMode', e.target.value)}
+              hint="Normal = Add to Cart only · Quote Only = WhatsApp only · Both = Cart + WhatsApp"
+            >
+              <option value="cart">Normal Purchase (Cart only)</option>
+              <option value="quote">Quote Only (WhatsApp)</option>
+              <option value="both">Both — Cart + WhatsApp Quote</option>
+            </Select>
+            <div className="admin-product-form__oos-check">
+              <label className="admin-product-form__oos-check-label">
+                <input
+                  type="checkbox"
+                  checked={!!form.whatsappEnabled}
+                  onChange={e=>set('whatsappEnabled', e.target.checked)}
+                  className="admin-product-form__oos-check-input"
+                />
+                <span>Enable WhatsApp Quote</span>
+              </label>
+              <p className="admin-product-form__oos-check-hint">Required for Quote Only / Both modes</p>
+            </div>
+          </div>
+          <div className="admin-product-form__grid-2">
+            <Input
+              label="WhatsApp Number (override)"
+              value={form.whatsappNumber || ''}
+              onChange={e=>set('whatsappNumber', e.target.value)}
+              placeholder="e.g. 27671014345 — leave blank to use global default"
+              hint="Country code + number, no spaces. Empty = global WhatsApp from Settings."
+            />
+          </div>
+          <Textarea
+            label="WhatsApp Message Template (override)"
+            value={form.whatsappMessage || ''}
+            onChange={e=>set('whatsappMessage', e.target.value)}
+            rows={5}
+            placeholder="Leave blank to use the global default. Supported variables: {{productName}}, {{variant}}, {{price}}, {{productUrl}}, {{sku}}"
+            hint="Variables: {{productName}} {{variant}} {{price}} {{productUrl}} {{sku}}"
+          />
         </div>
       </div>
     </Modal>

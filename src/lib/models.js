@@ -43,6 +43,7 @@ export const PAYMENT_STATUS_VALUES = [
 export const PAYMENT_METHOD_VALUES = ['EFT', 'COD'];
 export const PRODUCT_STATUS_VALUES = ['active', 'inactive', 'draft', 'archived'];
 export const REVIEW_STATUS_VALUES = ['pending', 'approved', 'rejected', 'hidden'];
+export const PURCHASE_MODE_VALUES = ['cart', 'quote', 'both'];
 
 const VariantSchema = new Schema({
   name: { type: String, required: true },
@@ -90,6 +91,10 @@ const ProductSchema = new Schema({
   status: { type: String, enum: PRODUCT_STATUS_VALUES, default: 'active', index: true },
   variants: [VariantSchema],
   media: [MediaSchema],
+  purchaseMode: { type: String, enum: PURCHASE_MODE_VALUES, default: 'cart', index: true },
+  whatsappEnabled: { type: Boolean, default: false },
+  whatsappNumber: { type: String, default: '' },
+  whatsappMessage: { type: String, default: '' },
   createdAt: { type: Number },
   updatedAt: { type: Number },
 }, { timestamps: true });

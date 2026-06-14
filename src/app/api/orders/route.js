@@ -438,8 +438,8 @@ async function sendEmail(to, subject, html) {
 function buildItemRows(order) {
   return (order.items || []).map(i =>
     `<tr>
-      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">${i.name}</td>
-      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${i.qty}</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">${escHtml(i.name)}${i.variation ? ` <span style="font-size:12px;color:#94a3b8;">(${escHtml(i.variation)})</span>` : ''}</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${Number(i.qty)}</td>
       <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:14px;font-weight:700;color:#111111;">${formatZar(i.price * i.qty)}</td>
     </tr>`
   ).join('');
@@ -447,7 +447,7 @@ function buildItemRows(order) {
 
 function buildTotalsTable(order) {
   const couponRow = (order.couponDiscount || 0) > 0
-    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${order.couponCode})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#36F700;">−${formatZar(order.couponDiscount)}</td></tr>`
+    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${escHtml(order.couponCode)})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#36F700;">−${formatZar(order.couponDiscount)}</td></tr>`
     : '';
   const codFeeRow = (order.codFee || 0) > 0
     ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">COD Fee</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">${formatZar(order.codFee)}</td></tr>`
@@ -470,15 +470,24 @@ function emailWrapper(headerHtml, bodyHtml) {
   <div style="padding:32px 40px;">${bodyHtml}</div>
   <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 40px;text-align:center;">
     <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">Questions? Email us at <a href="mailto:info@amahle-blue.co.za" style="color:#264CFF;">info@amahle-blue.co.za</a></p>
-    <p style="color:#cbd5e1;font-size:11px;margin:0;">&copy; ${new Date().getFullYear()} Amahle Blue Cleaning Solutions &middot; Made in &#x1F1FF;&#x1F1E6;</p>
+    <p style="color:#cbd5e1;font-size:11px;margin:0 0 6px;">&copy; ${new Date().getFullYear()} Amahle Blue Cleaning Solutions &middot; Made in &#x1F1FF;&#x1F1E6;</p>
+    <p style="color:#cbd5e1;font-size:10px;margin:0;">
+      <a href="https://www.amahle-blue.co.za/privacy-policy" style="color:#94a3b8;text-decoration:none;">Privacy Policy</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://www.amahle-blue.co.za/terms" style="color:#94a3b8;text-decoration:none;">Terms &amp; Conditions</a>
+    </p>
   </div>
 </div>
 </body></html>`;
 }
 
+/* Escape HTML entities in user/admin-supplied strings before inserting into email HTML.
+ * Applies defence-in-depth on top of the write-time sanitization added in Phase 3B. */
+const escHtml = (v) => String(v || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 async function sendCODEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const header = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Order Placed!</h1>
@@ -506,26 +515,26 @@ async function sendCODEmail(order) {
     </table>
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
       <p style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Delivery Address</p>
-      <p style="font-size:14px;color:#166534;margin:0;">${order.address}</p>
+      <p style="font-size:14px;color:#166534;margin:0;">${escHtml(order.address)}</p>
     </div>
-    ${order.notes ? `<p style="font-size:13px;color:#64748b;font-style:italic;margin:0;padding:12px 16px;background:#f8fafc;border-radius:8px;">Note: ${order.notes}</p>` : ''}
+    ${order.notes ? `<p style="font-size:13px;color:#64748b;font-style:italic;margin:0;padding:12px 16px;background:#f8fafc;border-radius:8px;">Note: ${escHtml(order.notes)}</p>` : ''}
   `;
   await sendEmail(order.customer.email, `Order ${order.orderNumber} confirmed — Amahle Blue`, emailWrapper(header, body));
 }
 
 async function sendEFTEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const bank      = order.eftBankDetails || {};
   const ref       = order.eftReference   || order.orderNumber;
 
   const bankRows = [
-    bank.accountHolder && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:50%;">Account Holder</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.accountHolder}</td></tr>`,
-    bank.bankName      && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Bank</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.bankName}</td></tr>`,
-    bank.accountNumber && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Number</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.accountNumber}</td></tr>`,
-    bank.branchCode    && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Branch Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.branchCode}</td></tr>`,
-    bank.accountType   && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Type</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.accountType}</td></tr>`,
-    bank.swiftCode     && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">SWIFT Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.swiftCode}</td></tr>`,
+    bank.accountHolder && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:50%;">Account Holder</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${escHtml(bank.accountHolder)}</td></tr>`,
+    bank.bankName      && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Bank</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${escHtml(bank.bankName)}</td></tr>`,
+    bank.accountNumber && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Number</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${escHtml(bank.accountNumber)}</td></tr>`,
+    bank.branchCode    && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Branch Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${escHtml(bank.branchCode)}</td></tr>`,
+    bank.accountType   && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Type</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${escHtml(bank.accountType)}</td></tr>`,
+    bank.swiftCode     && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">SWIFT Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${escHtml(bank.swiftCode)}</td></tr>`,
   ].filter(Boolean).join('');
 
   const header = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 40px;text-align:center;">
@@ -553,7 +562,7 @@ async function sendEFTEmail(order) {
     </div>` : ''}
     <p style="font-size:13px;color:#64748b;margin:0 0 24px;line-height:1.6;background:#f8fafc;border-radius:8px;padding:14px 16px;">
       Please use your order number as the payment reference. Your order will be processed after the payment has been verified.
-      ${bank.instructions ? `<br/><br/><em>${bank.instructions}</em>` : ''}
+      ${bank.instructions ? `<br/><br/><em>${escHtml(bank.instructions)}</em>` : ''}
     </p>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;border:1px solid #f1f5f9;border-radius:8px;overflow:hidden;">
       <thead><tr style="background:#f8fafc;">
@@ -568,7 +577,7 @@ async function sendEFTEmail(order) {
     </table>
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:16px;">
       <p style="font-size:11px;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Delivery Address</p>
-      <p style="font-size:14px;color:#166534;margin:0;">${order.address}</p>
+      <p style="font-size:14px;color:#166534;margin:0;">${escHtml(order.address)}</p>
     </div>
   `;
   await sendEmail(order.customer.email, `Order ${order.orderNumber} received — please complete your EFT payment`, emailWrapper(header, body));
@@ -577,14 +586,15 @@ async function sendEFTEmail(order) {
 async function sendAdminEmail(order) {
   const to = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL;
   if (!to) return;
+  const custName = escHtml(order.customer?.name || 'a customer');
   const header = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:28px 40px;text-align:center;">
     <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">&#x1F6CD; New Order Received</h1>
-    <p style="color:#bfdbfe;font-size:13px;margin:4px 0 0;">From ${order.customer?.name || 'a customer'}</p>
+    <p style="color:#bfdbfe;font-size:13px;margin:4px 0 0;">From ${custName}</p>
   </div>`;
   const body = `
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:14px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
-      <p style="font-size:12px;color:#64748b;margin:0;">${order.customer?.name} · ${order.customer?.email}${order.customer?.phone ? ` · ${order.customer.phone}` : ''}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">${custName} · ${escHtml(order.customer?.email)}${order.customer?.phone ? ` · ${escHtml(order.customer.phone)}` : ''}</p>
       <p style="font-size:12px;color:#64748b;margin:4px 0 0;">Payment: <strong>${payLabel(order.paymentMethod || order.payment?.method)}</strong> · <strong>${order.paymentStatus || order.payment?.status}</strong></p>
     </div>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;border:1px solid #f1f5f9;border-radius:8px;overflow:hidden;">
@@ -597,7 +607,7 @@ async function sendAdminEmail(order) {
     </table>
     <p style="font-size:15px;font-weight:800;color:#264CFF;text-align:right;margin:0 0 12px;">Order Total: ${formatZar(order.total)}</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
-      <p style="font-size:12px;color:#64748b;margin:0;">Delivery to: ${order.address}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Delivery to: ${escHtml(order.address)}</p>
     </div>
   `;
   await sendEmail(to, `New Order ${order.orderNumber} — ${formatZar(order.total)} (${payLabel(order.paymentMethod || order.payment?.method)})`, emailWrapper(header, body));
@@ -605,7 +615,7 @@ async function sendAdminEmail(order) {
 
 async function sendOrderConfirmedEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const isCOD     = (order.paymentMethod || order.payment?.method) === 'COD';
   const header    = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 40px;text-align:center;">
     <p style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
@@ -623,7 +633,7 @@ async function sendOrderConfirmedEmail(order) {
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Your order has been confirmed and is being prepared for dispatch. We'll send you another email when it's on its way.</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
-      <p style="font-size:12px;color:#64748b;margin:0;">Delivering to: ${order.address}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Delivering to: ${escHtml(order.address)}</p>
     </div>
   `;
   await sendEmail(order.customer.email, `Order ${order.orderNumber} confirmed — Amahle Blue`, emailWrapper(header, body));
@@ -631,7 +641,7 @@ async function sendOrderConfirmedEmail(order) {
 
 async function sendOrderDispatchedEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const isCOD     = (order.paymentMethod || order.payment?.method) === 'COD';
   const header    = `<div style="background:linear-gradient(135deg,#0E7490,#164E63);padding:32px 40px;text-align:center;">
     <p style="color:#a5f3fc;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
@@ -647,9 +657,9 @@ async function sendOrderDispatchedEmail(order) {
       <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">&#128181; Cash Payment Reminder</p>
       <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please have <strong>${formatZar(order.total)}</strong> in cash ready for the delivery driver.</p>
     </div>` : ''}
-    <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Your order is on its way to you. ${order.trackingNumber ? `Tracking: <strong>${order.carrier || ''} ${order.trackingNumber}</strong>` : ''}</p>
+    <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Your order is on its way to you. ${order.trackingNumber ? `Tracking: <strong>${escHtml(order.carrier || '')} ${escHtml(order.trackingNumber)}</strong>` : ''}</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
-      <p style="font-size:12px;color:#64748b;margin:0;">Delivering to: ${order.address}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Delivering to: ${escHtml(order.address)}</p>
     </div>
   `;
   await sendEmail(order.customer.email, `Your order ${order.orderNumber} is on its way — Amahle Blue`, emailWrapper(header, body));
@@ -657,7 +667,7 @@ async function sendOrderDispatchedEmail(order) {
 
 async function sendOrderDeliveredEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const isCOD     = (order.paymentMethod || order.payment?.method) === 'COD';
   const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
@@ -680,7 +690,7 @@ async function sendOrderDeliveredEmail(order) {
 
 async function sendCashCollectedEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">&#x2705; Payment Received!</h1>
@@ -698,7 +708,7 @@ async function sendCashCollectedEmail(order) {
 
 async function sendPaymentVerifiedEmail(order) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">&#x2705; Payment Verified!</h1>
@@ -719,7 +729,7 @@ async function sendPaymentVerifiedEmail(order) {
 
 async function sendPaymentRejectedEmail(order, note) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const header    = `<div style="background:linear-gradient(135deg,#dc2626,#991b1b);padding:32px 40px;text-align:center;">
     <p style="color:#fecaca;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Payment Rejected</h1>
@@ -732,7 +742,7 @@ async function sendPaymentRejectedEmail(order, note) {
     </div>
     ${note ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:12px;font-weight:700;color:#92400e;margin:0 0 4px;">Reason:</p>
-      <p style="font-size:13px;color:#78350f;margin:0;">${note}</p>
+      <p style="font-size:13px;color:#78350f;margin:0;">${escHtml(note)}</p>
     </div>` : ''}
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">
       Unfortunately, we could not verify your proof of payment for order <strong>${order.orderNumber}</strong>.
@@ -745,7 +755,7 @@ async function sendPaymentRejectedEmail(order, note) {
 
 async function sendCorrectedProofEmail(order, note) {
   if (!order?.customer?.email) return;
-  const firstName = (order.customer.name || 'there').split(' ')[0];
+  const firstName = escHtml((order.customer.name || 'there').split(' ')[0]);
   const header    = `<div style="background:linear-gradient(135deg,#d97706,#92400e);padding:32px 40px;text-align:center;">
     <p style="color:#fef3c7;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Proof Correction Required</h1>

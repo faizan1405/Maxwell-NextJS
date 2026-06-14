@@ -1,7 +1,8 @@
 import nodemailer from 'nodemailer';
 
 export function buildOtpHtml(otp, name) {
-  const hi = name ? `Hi ${name.split(' ')[0]},` : 'Hi there,';
+  const escHtml = (v) => String(v || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const hi = name ? `Hi ${escHtml(name.split(' ')[0])},` : 'Hi there,';
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/></head>

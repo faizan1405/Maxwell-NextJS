@@ -119,3 +119,33 @@
   color: $slate-400;
   user-select: none;
 }
+
+.policy-last-updated {
+  margin-top: 0.5rem;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  letter-spacing: 0.5px;
+}
+
+.policy-back-top {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+}
+
+.policy-back-top__btn {
+  background: none;
+  border: 1px solid $slate-200;
+  border-radius: $radius-full;
+  color: $slate-500;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+  transition: color $transition-fast, border-color $transition-fast;
+
+  &:hover {
+    color: $cobalt;
+    border-color: $cobalt;
+  }
+}

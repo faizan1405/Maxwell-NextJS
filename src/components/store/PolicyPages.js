@@ -407,6 +407,7 @@ export function PolicyPage({ type, onGoHome }) {
           <BackBtn onGoHome={onGoHome} />
           <h1 className="faq-hero__title">{title}</h1>
           <p className="faq-hero__subtitle">{subtitle}</p>
+          <p className="policy-last-updated">Last updated: June 2026</p>
         </div>
       </div>
 
@@ -414,6 +415,11 @@ export function PolicyPage({ type, onGoHome }) {
       <div className="policy-body">
         <FadeReveal className="policy-body__inner">
           <Content />
+          <div className="policy-back-top">
+            <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="policy-back-top__btn">
+              ↑ Back to top
+            </button>
+          </div>
         </FadeReveal>
       </div>
     </div>

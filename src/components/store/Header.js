@@ -345,6 +345,26 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
                 )}
               </div>
             </nav>
+            <div className="mobile-menu-policies">
+              <p className="mobile-menu-policies__title">Policies</p>
+              {[
+                { label: 'Delivery Policy',     page: 'delivery-policy'  },
+                { label: 'Returns & Refunds',   page: 'returns-refunds'  },
+                { label: 'Privacy Policy',      page: 'privacy-policy'   },
+                { label: 'Terms & Conditions',  page: 'terms-conditions' },
+              ].map(p => (
+                <button key={p.page} onClick={() => {
+                  setMenu(false);
+                  if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: p.page, url: `/${p.page}` } }));
+                    window.scrollTo(0, 0);
+                  }
+                }} className="mobile-menu-policy-link">
+                  {p.label}
+                </button>
+              ))}
+            </div>
+
             <a href={`tel:${BRAND.phoneRaw}`} className="mobile-menu-phone">
               <Phone size={16} /> {BRAND.phone}
             </a>

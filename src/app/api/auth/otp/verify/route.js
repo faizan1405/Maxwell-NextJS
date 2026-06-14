@@ -67,8 +67,19 @@ export async function POST(req) {
     );
   }
 
-  otpDoc.consumed = true;
-  await otpDoc.save();
+  /* Atomic claim — prevents race-condition double-use of the same OTP.
+   * findOneAndUpdate only succeeds for one concurrent request; the second
+   * will get null (consumed is already true) and receive a safe error. */
+  const claimed = await EmailOtp.findOneAndUpdate(
+    { _id: otpDoc._id, consumed: false },
+    { $set: { consumed: true } }
+  );
+  if (!claimed) {
+    return NextResponse.json(
+      { error: 'This code has already been used. Please request a new one.' },
+      { status: 400 }
+    );
+  }
 
   let customer = await Customer.findOne({ email });
   const isNew  = !customer;

@@ -1,405 +1,154 @@
-# Amahle Blue - Complete Project Documentation
-*Prepared for Non-Technical & Technical Stakeholders*
+# Amahle Blue — Project Notes
+
+**Brand:** Amahle Blue &nbsp;|&nbsp; **Type:** Next.js E-Commerce &nbsp;|&nbsp; **Purpose:** Sell premium cleaning & car care products online
+
+🌐 **Production:** https://www.amahle-blue.co.za
 
 ---
 
-## 1. Project Overview
-**Amahle Blue** is a modern, full-stack e-commerce web application built specifically to sell premium cleaning and car care products. It is designed to be extremely fast, beautiful, and user-friendly. 
+## 🗺️ Project Mind Map
 
-Instead of using an expensive platform like Shopify or WooCommerce, this project is a "custom-built" solution using Next.js. This gives the business 100% control over the design, speed, and database without paying monthly subscription fees to third-party e-commerce platforms.
-
-### Project Statistics
-* **Total Files:** ~140
-* **Total Folders:** ~42
-* **HTML Files:** 0 *(Next.js dynamically generates HTML using JavaScript)*
-* **CSS/SCSS Files:** 40
-* **JavaScript Files:** ~78
-* **TypeScript Files:** 0
-* **React Components:** ~29
-* **Next.js Pages:** 2 main entry points (Storefront and Admin Panel) which dynamically render sub-pages.
-* **API Routes:** 15 (Products, Orders, Carts, Reviews, Settings, Shipping, Categories, FAQs, Coupons, Upload, Proof, Auth, Customer Auth, Customers, Seed-Demo)
-* **Database Models:** 11
-* **Images/Assets:** Stored in `public/assets/` and `public/thumbs/`
-* **Configuration Files:** ~5 (`package.json`, `next.config.js`, `vercel.json`, etc.)
-
----
-
-## 2. PROJECT MIND MAP
-```text
-Amahle Blue E-Commerce
-├── Frontend (Next.js / React)
-│   ├── Storefront (Customer facing)
-│   │   ├── Home / Hero / Features
-│   │   ├── Shop / Product Grid
-│   │   ├── Cart & Checkout
-│   │   ├── Customer Account (Orders, Profile)
-│   │   └── FAQ Page
-│   └── Admin Panel (Business facing)
-│       ├── Dashboard (Stats & Revenue)
-│       ├── Products & Categories Management
-│       ├── Orders & Shipping Management
-│       ├── Customer Database
-│       ├── Reviews & FAQs Management
-│       ├── Reports & Abandoned Carts
-│       └── System Settings & Coupons
-├── Backend (Next.js API Routes)
-│   ├── Products API
-│   ├── Orders API
-│   ├── Carts API (Guest & Logged in)
-│   ├── Customers API
-│   ├── Reviews API
-│   ├── Categories API
-│   ├── Coupons API
-│   ├── FAQs API
-│   ├── Shipping Rates API
-│   ├── Settings API
-│   ├── Image Upload API
-│   ├── Proof of Payment (PoP) Upload API
-│   ├── Admin / Customer Authentication API
-│   └── Seed Demo API (admin/dev utility — upserts demo products on demand)
-├── Database (MongoDB)
-│   ├── Collections: Products, Orders, Customers, Carts
-│   ├── Collections: Categories, Coupons, FAQs, Reviews, Settings, ShippingRates
-│   └── Tracking: StockHistory, Abandoned Carts
-├── Authentication
-│   ├── JWT (JSON Web Tokens)
-│   ├── Admin Login
-│   └── Customer Login/Registration
-├── SEO
-│   ├── robots.js (dynamic robots.txt)
-│   ├── sitemap.js (dynamic XML sitemap)
-│   └── seo.js lib (metadata helpers per page)
-├── Utilities
-│   ├── accounting.js (financial calculations)
-│   ├── currency.js (formatting helpers)
-│   └── invoice.js (invoice generation)
+```
+Amahle Blue Website
+├── Customer Storefront
+│   ├── Home, Shop, Product Details
+│   ├── Cart (guest + logged-in)
+│   └── Checkout / Order Confirmation
+│
+├── Customer Account
+│   ├── Email OTP Login
+│   ├── Session Restore
+│   └── Logout
+│
+├── Admin Panel
+│   ├── Dashboard
+│   ├── Orders (COD + EFT management)
+│   ├── Products & Categories
+│   ├── Inventory & Stock
+│   ├── Customers, Reviews, FAQs
+│   └── Shipping, Coupons, Settings
+│
 ├── Payments
-│   └── Manual EFT / Proof of Payment system
+│   ├── COD — Cash on Delivery
+│   └── EFT — Manual Bank Transfer + proof upload
+│
+├── Backend
+│   ├── MongoDB Atlas (11 models)
+│   ├── API Routes (15 routes)
+│   ├── Admin Auth (JWT)
+│   └── Customer Auth (Email OTP, HTTP-only session cookie)
+│
 └── Deployment
-    ├── Hosting: Vercel
-    └── Storage: Vercel Blob (for image uploads)
+    ├── Vercel (project: maxwell-nextjs)
+    ├── GitHub master branch
+    └── amahle-blue.co.za (+ www)
 ```
 
 ---
 
-## 3. Folder Structure
-The codebase is organized cleanly to separate the frontend visuals from the backend logic.
+## ✅ Phase Status
 
-```text
+| Phase | Status | Focus |
+|-------|--------|-------|
+| Phase 1 | ✅ Complete | Foundation — storefront, admin, DB, basic checkout |
+| Phase 2 | ✅ Complete | Production hardening — OTP auth, COD/EFT, stock, email, invoices |
+| Phase 3A | ✅ Complete | XSS patch, cart low-stock badge restore |
+| Phase 3B | 🔲 Next | Customer polish, business pages, invoice UI, mobile UX, handover |
+
+---
+
+## ✅ Completed Features
+
+- Customer storefront (home, shop, product details, cart)
+- Guest checkout — no forced login
+- Email OTP login + session restore + logout
+- COD payment flow
+- EFT payment flow + proof-of-payment upload
+- Order confirmation page
+- Admin panel (dashboard, orders, products, categories, stock, customers, coupons, FAQs, shipping, settings)
+- Order status management (pending → processing → shipped → delivered)
+- COD cash collected / outstanding tracking
+- EFT manual approval flow
+- Product variants / sizes with per-variant pricing and stock
+- Stock deduction on order, restore on cancel
+- Low-stock warnings (variant-specific)
+- Category management (dynamic from DB)
+- Invoice / print bill
+- MongoDB Atlas connected
+- Vercel production deployment
+
+---
+
+## ⚠️ Important Rules
+
+- **Do not rebuild.** Phase 1, 2, and 3A must not be broken.
+- **Guest checkout must stay working.** Do not force login before placing an order.
+- **COD and EFT are the only payment methods.** No card/gateway.
+- **Admin panel is working.** Preserve all admin logic.
+- **Phase 3 = small safe changes only.** Fix confirmed issues only.
+- Always use `useAuth()` hook for session token in admin modals — never read from `localStorage` directly.
+- Categories are dynamic from DB — never hardcode the category list.
+- Use relative imports — no `@/` path alias configured in this project.
+- MongoDB Atlas must have `0.0.0.0/0` in IP allowlist for Vercel to connect.
+
+---
+
+## 📁 Folder Structure
+
+```
 Maxwell-NextJS/
-├── data/                      # Static seed data bundled with serverless functions via import
-│   └── maxwell-products.json  # 20 demo products across 5 categories
-├── public/                    # Static assets served directly by Next.js
-│   ├── assets/                # Product images and brand assets
-│   └── thumbs/                # Thumbnail variants of product images
-├── scripts/                   # Standalone Node scripts (local use only, not deployed)
-│   └── seed-products.mjs      # Local DB seeder (blocked by Atlas IP allowlist locally)
-├── next.config.js             # Next.js config — SPA path rewrites for storefront pages
-├── vercel.json                # Vercel config — headers and targeted API rewrites
+├── data/maxwell-products.json     # Demo product seed (imported, not read via fs)
+├── public/assets/ & thumbs/       # Static images
+├── scripts/                        # DB index scripts (local use)
 └── src/
-    ├── app/                   # Next.js App Router
-    │   ├── [...store]/        # Catch-all storefront route (page.js)
-    │   ├── admin/             # Admin Panel entry (layout.js + page.js)
-    │   ├── api/               # Backend API routes (15 routes — one file per resource)
-    │   ├── layout.js          # Root HTML shell
-    │   ├── page.js            # Storefront entry point
-    │   ├── robots.js          # Dynamic robots.txt generation
-    │   └── sitemap.js         # Dynamic XML sitemap generation
-    ├── components/            # React UI components
-    │   ├── admin/             # Admin Panel pages
-    │   │   ├── AbandonedPage.js / AdminApp.js / AdminLayout.js / AdminProvider.js
-    │   │   ├── CategoriesPage.js / CouponsPage.js / CustomersPage.js
-    │   │   ├── DashboardPage.js / FaqsPage.js / LoginPage.js
-    │   │   ├── OrdersPage.js / ProductsPage.js / ReportsPage.js
-    │   │   └── ReviewsPage.js / SettingsPage.js / ShippingEditor.js
-    │   ├── store/             # Storefront pages
-    │   │   ├── AccountPage.js / AuthModal.js / CartComponents.js
-    │   │   ├── ContentSections.js / FaqPage.js / Footer.js
-    │   │   ├── Header.js / HeroSection.js / ProductReviews.js
-    │   │   └── ShopPage.js / SwipeCarousel.js
-    │   └── ui/                # Shared micro-components (Icons.js, index.js re-exports)
-    ├── lib/                   # Shared server + client utilities
-    │   ├── auth.js            # JWT helpers — sign and verify admin/customer tokens
-    │   ├── db.js              # Seeding functions (Settings, Categories, Shipping, Products)
-    │   ├── email.js           # Email utility (transactional emails, future use)
-    │   ├── models.js          # Central re-export of all Mongoose models
-    │   ├── mongoose.js        # MongoDB connection with cached pool & lazy seed trigger
-    │   ├── seo.js             # Metadata/SEO helpers for page-level Open Graph & titles
-    │   └── storeContext.js    # Storefront global state — cart, user, active page
-    ├── models/                # Mongoose schemas (11 total)
-    │   ├── Product.js / Order.js / Customer.js / Cart.js
-    │   ├── Category.js / Coupon.js / Faq.js / Review.js
-    │   └── Setting.js / ShippingRate.js / StockHistory.js
-    ├── scripts/               # One-off local data utilities (not deployed, not all tracked)
-    │   ├── _dbCheck.js / _dbCheck2.js   # DB health-check scripts
-    │   ├── _fixStockDeducted.js         # Stock correction utility
-    │   ├── migrateData.js               # Data migration (untracked — local use only)
-    │   ├── resetStock.js                # Stock reset utility
-    │   └── upsertCategories.js          # Category upsert helper (untracked — local use only)
-    ├── styles/                # SCSS design system (40 files)
-    │   ├── _global.scss       # Site-wide base styles
-    │   ├── _mixins.scss       # Reusable SCSS mixins
-    │   ├── _variables.scss    # Design tokens (colors, spacing, fonts)
-    │   ├── main.scss          # SCSS entry point — imports all partials
-    │   ├── admin/             # Admin Panel page styles (14 partials)
-    │   │   └── components/    # Reusable admin UI styles (10 partials — modals, buttons, etc.)
-    │   └── store/             # Storefront page styles (12 partials)
-    └── utils/                 # Pure calculation and formatting helpers
-        ├── accounting.js      # Financial calculations (totals, tax, discounts)
-        ├── currency.js        # Currency formatting (ZAR display helpers)
-        └── invoice.js         # Invoice data assembly for order PDFs/display
+    ├── app/
+    │   ├── [...store]/page.js      # Storefront catch-all route
+    │   ├── admin/                  # Admin SPA entry (layout + page)
+    │   ├── api/                    # 15 API routes
+    │   │   ├── auth/ (logout, me, otp/request, otp/verify, route)
+    │   │   ├── orders, products, categories, carts
+    │   │   ├── customers, shipping, settings, proof
+    │   │   └── coupons, faqs, reviews, newsletter, upload, seed-demo
+    │   ├── layout.js, page.js
+    │   └── robots.js, sitemap.js
+    ├── components/
+    │   ├── admin/                  # 15 admin page components
+    │   ├── store/                  # 11 storefront components
+    │   └── ui/                     # Icons, shared exports
+    ├── lib/
+    │   ├── auth.js                 # Admin JWT helpers
+    │   ├── customerAuth.js         # Customer OTP + session helpers
+    │   ├── db.js                   # MongoDB connection + demo seed
+    │   ├── email.js                # Resend email sender
+    │   ├── models.js               # Mongoose model re-exports
+    │   ├── mongoose.js             # Connection pool
+    │   ├── seo.js                  # Metadata helpers
+    │   └── storeContext.js         # Global store state (cart, user, shipping)
+    ├── models/                     # 11 Mongoose schemas
+    │   └── Product, Order, Customer, Cart, Category, Coupon,
+    │       Faq, Review, Setting, ShippingRate, StockHistory
+    ├── utils/
+    │   ├── accounting.js, currency.js, invoice.js
+    └── scripts/                    # DB health-check + stock fix utilities
 ```
 
 ---
 
-## 4. Website Flow
-**How a user experiences the website from start to finish:**
-1. **Discovery:** The user lands on the Homepage. `storeContext.js` loads the products from the database in the background.
-2. **Browsing:** The user navigates to the Shop page. They filter by "Car Care" or "Household". 
-3. **Selection:** The user clicks "Add to Cart" on a product. The `CartContext` remembers this instantly, updating the little number on the cart icon.
-4. **Checkout:** The user opens the cart and clicks Checkout. They enter their shipping details.
-5. **Payment:** The user is instructed to pay via EFT (Electronic Funds Transfer) and uploads a screenshot of their Proof of Payment (PoP).
-6. **Order Placement:** The system creates an Order in the database, marks it as "pending", and empties the cart.
-7. **Fulfillment (Admin):** The business owner logs into the Admin Panel, sees the new order, verifies the PoP image, packs the box, and marks the order as "Shipped".
+## 🚀 Current Production Info
+
+| | |
+|---|---|
+| **Domains** | https://www.amahle-blue.co.za · https://amahle-blue.co.za |
+| **Platform** | Vercel — project `maxwell-nextjs` |
+| **Database** | MongoDB Atlas — connected |
+| **Master HEAD** | `3a0e94b` — XSS patch on order confirm + cart low-stock badge |
+| **Build status** | ✅ READY |
+| **Admin panel** | ✅ Working |
+
+> Full deployment history and bug fix details → see `memory/` MD files.
 
 ---
 
-## 5. Frontend Architecture
-* **What it does:** Controls everything the user sees and interacts with.
-* **Which files control it:** The `src/components/store/` folder and `src/styles/store/` folder.
-* **How it works:** It uses React to create interactive pieces (like a cart that slides out smoothly without reloading the page) and SCSS to paint those pieces with colors and animations. 
-* **Dependencies involved:** `react`, `react-dom`, `next`.
+## ➡️ Next Step
 
----
-
-## 6. Backend Architecture
-* **What it does:** Acts as the middleman between the frontend website and the database. It enforces security, calculates totals, and saves information.
-* **Which files control it:** The `src/app/api/` folder.
-* **How it works:** When the frontend needs data (e.g., "Give me all products"), it sends a request to the backend. The backend checks if the request is safe, asks the database for the data, and sends it back to the frontend.
-
----
-
-## 7. Database Structure
-* **What it does:** Permanently stores all business data so it isn't lost when the server restarts.
-* **Which files control it:** The `src/models/` folder and `src/lib/mongoose.js`.
-* **How it works:** It uses MongoDB (a NoSQL database) to store "Documents". The database has clear blueprints (Schemas) ensuring that every Order has a total price, and every Product has a name.
-
----
-
-## 8. Authentication System
-* **What it does:** Verifies that a user is who they say they are. Keeps customers out of the admin panel.
-* **Which files control it:** `src/lib/auth.js` and the `api/auth/` and `api/customer-auth/` routes.
-* **How it works:** When someone logs in, they are given a secure, encrypted digital "ticket" (JWT - JSON Web Token). Every time they try to view their orders or change a setting, the system checks if their ticket is valid.
-
----
-
-## 9. Payment System
-* **What it does:** Handles how the business gets paid.
-* **Which files control it:** `Checkout process` in `CartComponents.js` and `api/proof/route.js`.
-* **How it works:** This system does not use automated credit card gateways (like Stripe). Instead, it uses a manual EFT process. The customer uploads an image of their bank transfer receipt. The image is saved to Vercel Blob Storage, and attached to the order for the Admin to verify manually.
-
----
-
-## 10. Cart System
-* **What it does:** Remembers what the user wants to buy.
-* **Which files control it:** `src/lib/storeContext.js` (CartProvider).
-* **How it works:** It stores cart items locally on the user's browser (Local Storage) so if they close the tab and come back, their items are still there. It also automatically syncs "Abandoned Carts" to the backend to track missed sales.
-
----
-
-## 11. Order Management
-* **What it does:** Tracks what was sold, to whom, and where it is in the delivery process.
-* **Which files control it:** `src/components/admin/OrdersPage.js` and `src/app/api/orders/route.js`.
-* **How it works:** An order moves through statuses: `pending` -> `processing` -> `shipped` -> `delivered`. The admin can update these statuses, which updates the customer's account view.
-
----
-
-## 12. Admin Panel
-* **What it does:** The private dashboard for the business owner to run the company.
-* **Which files control it:** The entire `src/components/admin/` folder.
-* **How it works:** It is a fully secured, separate application built inside the same codebase. It allows the owner to create products, upload images, manage stock levels, view financial reports, and handle shipping fees.
-
----
-
-## 13. Product Management
-* **What it does:** Controls the digital inventory.
-* **Which files control it:** `src/components/admin/ProductsPage.js` and `api/products/route.js`.
-* **How it works:** Admins can add products, set prices, define sizes/variants (e.g., 500ml vs 5L), track stock levels, and upload product photos.
-
----
-
-## 14. Customer Flow
-* **What it does:** Allows users to create accounts, save addresses, and view order history.
-* **Which files control it:** `src/components/store/AccountPage.js` and `api/customers/route.js`.
-* **How it works:** Customers can check out as "Guests" or create an account. If they check out as a guest and later create an account with the same email, their past orders are automatically linked.
-
----
-
-## 15. Third-Party Integrations
-* **Vercel:** Hosts the website so it is live on the internet.
-* **Vercel Blob:** Stores all the uploaded images (product photos, proof of payment receipts).
-* **MongoDB Atlas:** Hosts the database in the cloud.
-
----
-
-## 16. Environment Variables
-* **What it does:** Secret keys that act as passwords for the website to talk to third-party services.
-* **Crucial Variables:**
-  * `MONGODB_URI`: The connection string to the database.
-  * `JWT_SECRET`: A complex secret password used to encrypt login tickets.
-  * `BLOB_READ_WRITE_TOKEN`: The password allowing the website to upload images to Vercel.
-
----
-
-## 17. Security Features
-* **Authentication:** Passwords are mathematically scrambled (hashed) before saving.
-* **Route Protection:** Backend APIs reject requests that don't have a valid Admin token.
-* **Sanitization:** The backend cleans user input to prevent hackers from injecting malicious code into the database.
-
----
-
-## 18. Potential Risks
-* **Manual Payments:** Because payments rely on uploaded images, a malicious user could upload fake receipts. Admins must verify the money actually cleared in the bank account.
-* **Database Dependency:** If the MongoDB connection string breaks, the website will lose access to products and orders. *(Note: A fallback mechanism was added to the storefront to show default products if the database fails, ensuring the site never looks broken).*
-
----
-
-## 19. Technical Debt
-* **Shared Styles:** Some SCSS files are very large and complex. If the design needs a complete overhaul in the future, it may take time to untangle the custom CSS.
-* **Manual Routing:** The storefront uses a custom `setPage()` React state system to switch between "Home", "Shop", and "Checkout" without actually changing the Next.js physical page routes. While fast, it makes SEO (Search Engine Optimization) harder for individual product pages.
-
----
-
-## 20. Missing Features
-* Automated Credit Card / PayFast / Yoco integration.
-* Automated Email Notifications (e.g., "Your order has shipped").
-* SEO for individual product pages — foundation (robots.txt, sitemap, Open Graph metadata) is in place; dynamic per-product routes (`/product/[slug]`) are not yet implemented.
-
----
-
-## 21. Recommended Improvements
-1. **Automated Emails:** Integrate a service like Resend or SendGrid so customers get an automated receipt when they order.
-2. **Payment Gateway:** Integrate PayFast or Yoco to eliminate the manual EFT verification step, reducing admin workload.
-3. **Dynamic Routing:** Refactor the frontend to use Next.js dynamic routes (`/product/[id]`) so Google can index every product individually.
-
----
-
-# Maintenance & Operations
-
-## How to Maintain This Project
-* **Content:** All products, pricing, and stock can be changed via the Admin Panel at `/admin`. No coding required.
-* **Code:** Do not update `package.json` dependencies randomly. Test locally before updating major libraries like Next.js or React to avoid breaking changes.
-
-## How to Deploy This Project
-1. Go to Vercel.com and connect your GitHub repository.
-2. In the Vercel dashboard, go to Settings > Environment Variables.
-3. Add your `MONGODB_URI`, `JWT_SECRET`, and `BLOB_READ_WRITE_TOKEN`.
-4. Click Deploy. Vercel will automatically build and publish the site.
-
-## What Will Break If Changed
-* **Database Schemas (`src/models/`):** If you change the spelling of a field (e.g., changing `price` to `amount` in `Product.js`), the entire frontend will crash when trying to read the price.
-* **API Endpoints:** The frontend relies strictly on endpoints like `/api/carts`. Changing the folder name will break the cart system.
-* **Auth Tokens:** Changing the `JWT_SECRET` will immediately log out every single customer and admin.
-
-## Quick Start Guide For New Developers
-1. Clone the repository to your local machine.
-2. Ensure you have Node.js installed.
-3. Run `npm install` to download dependencies.
-4. Create a `.env` file in the root directory and add the necessary environment variables (`MONGODB_URI`, `JWT_SECRET`).
-5. Run `npm run dev` to start the local development server at `http://localhost:3000`.
-6. **Key Files to Know:** Start reading from `src/lib/storeContext.js` to understand how data moves, then look at `src/components/store/ContentSections.js` to see how the UI is built.
-
----
-
-## Session Notes — 2026-06-12: Add 20 Demo Products
-
-### Goal
-Seed 20 demo products across all 5 categories (4 per category): household, industrial, car, car-exterior, sanitiser.
-
-### Files Added / Changed
-* **`data/maxwell-products.json`** (new) — 20 product objects with placeholder images from `placehold.co`. Fields: `id`, `name`, `cat`, `price`, `was`, `size`, `rating`, `reviews`, `badge`, `img`, `desc`, `benefits[]`, `sku`, `stock`, `media[]`, `status`.
-* **`scripts/seed-products.mjs`** (new) — Standalone Node script that parses `.env.local`, connects to MongoDB Atlas, and upserts products by `id`. Run with `node scripts/seed-products.mjs`. Useful for local seeding once MongoDB Atlas IP allowlist permits.
-* **`src/lib/db.js`** (modified) — Seed logic changed from "insert only when DB is empty" to `bulkWrite` with `$setOnInsert` + `upsert: true` keyed on the product `id`. Existing products are never overwritten; only missing demo products get inserted on app boot.
-
-### Architecture Notes
-* Products live in **MongoDB Atlas**, not Vercel. Vercel only runs the Next.js app code that talks to MongoDB.
-* The JSON file is the *seed source*. The actual persistent storage is the `products` collection in MongoDB.
-* The seed runs inside `seedDatabase()` which is called from `dbConnect()` only when a new Mongoose connection is first established (cached connections skip it). On Vercel serverless, this fires on each cold start.
-
-### Issues Encountered (in chronological order)
-
-1. **Local seed script blocked by DNS / MongoDB Atlas IP allowlist.**
-   `node scripts/seed-products.mjs` got `querySrv ECONNREFUSED _mongodb._tcp.cluster0.xxx.mongodb.net`. The local machine could not resolve the MongoDB Atlas SRV record. Worked around by deploying to Vercel and letting the app's `dbConnect()` run the seed.
-
-2. **All API calls returning 500 with `MongooseServerSelectionError` after deploy.**
-   MongoDB Atlas's IP Access List did not include Vercel's dynamic IPs. Cause: Vercel serverless functions hit different IPs on every cold start.
-   **Fix:** MongoDB Atlas → Network Access → Add IP Address → **Allow Access from Anywhere** (`0.0.0.0/0`).
-
-3. **`/shop` returning 404 after deploy.**
-   The previous `vercel.json` had a `/(.*)->index.html` rewrite that was intercepting API calls. A separate cleanup commit (`c5c9889`) removed that and moved SPA path rewrites (`/shop`, `/cart`, `/checkout`, `/account`, `/faq`, `/order-confirmed`) into `next.config.js`.
-   **Lesson:** when `vercel.json` has a `rewrites` array, it runs at CDN level **before** Next.js. A greedy wildcard rewrite there will eat all routes including API calls. Keep route rewrites in `next.config.js` and reserve `vercel.json` for headers + targeted API rewrites only.
-
-4. **Seed not running on git-triggered deployments.**
-   `vercel deploy --prod` from the CLI uploads local files (including untracked ones), but Vercel's GitHub integration only sees what's *committed*. The `data/maxwell-products.json` file was untracked, so git-triggered redeploys had no JSON to seed from — `fs.existsSync(jsonPath)` returned `false` and the seed silently skipped.
-   **Fix:** Committed `data/` and `scripts/` to git (commit `6bde2a4`) and pushed to `master`.
-
-### Verification Steps
-1. Wait for Vercel git-triggered deployment to finish (~1-2 min per push).
-2. Hit `/api/seed-demo?secret=<SEED_SECRET>` once to force-run the upsert (value lives in Vercel env vars; do not commit it).
-3. Refresh `/shop` — products appear (4 per category × 5 categories = 20 demos).
-4. Check MongoDB Atlas → Browse Collections → `products` to confirm documents.
-
-### Issues 5–7 (later in the session)
-
-5. **`fs.readFileSync` silently failed on Vercel.**
-   After committing `data/maxwell-products.json` to git, the seed *still* did not run on Vercel and emitted no logs. Root cause: Next.js serverless functions only package files reachable via static `import` / `require`. The JSON file was in the git repo but was never copied into the deployed function bundle, so `fs.existsSync(jsonPath)` returned `false` and the seed skipped without warning.
-   **Fix:** Replaced `fs.readFileSync` with `import demoProducts from '../../data/maxwell-products.json'`. Webpack/Turbopack then bundles the file with the function.
-
-6. **`dbConnect` cache-once pattern hides seed errors.**
-   `seedDatabase()` runs only when a new Mongoose connection is established. Once the connection is cached in `global.mongoose`, every subsequent request returns early and the seed never re-runs. If the first cold-start seed silently fails, no later request can recover. Hard to debug because errors are caught and only logged — and Vercel logs sometimes do not surface every `console.log`.
-   **Mitigation:** Added an explicit `GET /api/seed-demo?secret=<SEED_SECRET>` endpoint that runs the same upsert on demand and returns the `bulkWrite` result JSON (`upsertedCount`, `matchedCount`, `totalProductsInDB`) or the error/stack. Made debugging instant instead of guessing from missing logs.
-
-7. **Path alias `@/` is not configured in this project.**
-   The new seed-demo route initially used `@/lib/db` imports. Build failed with "Module not found: Can't resolve '@/lib/db'" because there is no `jsconfig.json` / `tsconfig.json` mapping `@/` to `src/`. Other API routes use relative paths.
-   **Fix:** Use relative imports (`../../../lib/db`, `../../../models/Product`) to match the project's existing convention.
-
-### Resolution
-Final commit chain: `75f1dc4` (static import) → `12bbdd8` (one-shot endpoint) → `c173654` (path-alias fix). After the last deployment went READY, hitting `/api/seed-demo?secret=<SEED_SECRET>` returned `{success:true, jsonCount:20, upsertedCount:20, totalProductsInDB:21}`. Shop now shows all 4 products per category across 5 categories.
-
-### Important Operational Reminders (additional)
-* **Static imports for any runtime data on Vercel.** If a serverless function needs to read a file at runtime, `import` it. Do not use `fs.readFileSync` on project files — they will not be in the function bundle.
-* **Build a debug endpoint before chasing silent caches.** When a one-time bootstrap (seed, migration, cache warm) is supposed to run but produces no logs, do not keep redeploying and waiting. Add an explicit endpoint that runs the operation on demand and returns the result. Five extra minutes of code saves an hour of guesswork.
-* **No `@/` path alias here.** Use relative imports in new files.
-
-### Important Operational Reminders
-* **`vercel deploy --prod` vs git push** — CLI deploys upload local working-tree files. Git pushes only deploy committed files. If something works after a CLI deploy but breaks after a git-triggered redeploy, untracked files are the prime suspect.
-* **MongoDB Atlas IP allowlist** must include `0.0.0.0/0` (or Vercel's IP ranges) for serverless functions to connect.
-* **Demo products** are identified by `id` prefix `demo-`. To remove all demo data, run `db.products.deleteMany({ id: /^demo-/ })` in MongoDB.
-
----
-
-## Session Notes — 2026-06-12: Fix Category Dropdown & Database Seeding Regression
-
-### Goal
-Fix the Category dropdown inside the Add/Edit Product modals showing empty state / black strip, and resolve the database categories seeding regression.
-
-### Files Changed
-* **`src/components/admin/AdminProvider.js`** (modified) — Resolved local API base URL resolution to use relative paths (`''`) instead of hardcoding Vercel production URL. Initialized categories state with `DEFAULT_CATEGORIES` fallback list so dropdowns/pages are never left empty if local database fails/is inaccessible.
-* **`src/components/admin/ProductsPage.js`** (modified) — Updated Category select component to dynamically render fallback placeholder option if categories state is empty. Configured new product forms to initialize selection to the first loaded category.
-* **`src/styles/admin/components/_form-field.scss`** (modified) — Explicitly set dark text color and white background on select options to resolve theme/browser styling issues (black strip).
-* **`src/lib/db.js`** (modified) — Exported `seedDatabase()` function. Rename category display names to exact match requested values ("Household", "Industrial", "Car Care", "Car Exterior", "Sanitisers").
-* **`src/lib/mongoose.js`** (modified) — Imported `seedDatabase` and hooked it directly inside `connectToDatabase()` to execute on every successful connection boot.
-* **`src/lib/storeContext.js`** (modified) — Updated storefront category display name fallbacks to match requested values.
-
-### Root Cause
-1. **Unused Database Connection Function:** The project had two database connection files: `mongoose.js` and `db.js`. Almost all Next.js API routes used `connectToDatabase()` from `mongoose.js`. However, the lazy database seeding logic (`seedDatabase()`) was only configured inside `dbConnect()` (in `db.js`), which was never imported or used by API routes.
-2. **Missing Seeding & State Overwrite:** Because seeding was never triggered when API routes ran, if the database was blank, the `/api/categories` endpoint returned an empty array (`[]`). The admin panel received this successful response and overwrote its fallback categories state to `[]`, leaving the dropdown empty.
-3. **CORS / API Base Resolution:** On local host/dev environments, the admin context was querying production API routes directly due to hardcoded Vercel domain values in `API_BASE`, failing to resolve categories locally.
-
-### Verification
-- Both storefront and admin dashboards now display identical, clean category names.
-- Adding or editing products lists all seeded categories correctly with high-contrast text styling.
-- Local database automatically seeds default categories on the first connection call of any API endpoint.
-
----
-*Documentation End.*
+**Phase 3B** — customer UI polish, business/policy pages, invoice design, mobile UX, footer/navigation improvements, and client handover preparation.

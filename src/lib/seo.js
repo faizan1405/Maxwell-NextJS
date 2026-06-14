@@ -1,7 +1,7 @@
 // Central SEO configuration for Amahle Blue (Maxwell NextJS).
 // Keep this file free of secrets, imports from server-only code, and per-customer data.
 
-const FALLBACK_SITE_URL = 'https://maxwell-nextjs.vercel.app';
+const FALLBACK_SITE_URL = 'https://www.amahle-blue.co.za';
 
 function readEnv(name) {
   if (typeof process === 'undefined' || !process.env) return '';

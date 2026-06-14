@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef, createContext, useContext } from 'react';
 import { formatZar } from '../utils/currency';
+import { normalizePurchaseMode } from '../utils/purchaseMode';
 
 /* ── Brand constants ─────────────────────────────────────────────────────────── */
 export const BRAND = {
@@ -343,6 +344,11 @@ export function CartProvider({ children }) {
   };
 
   const add = (product, qty = 1, variation = null) => {
+    if (normalizePurchaseMode(product?.purchaseMode, product?.price) === 'quote') {
+      showToast(`${product.name} is available by WhatsApp quote only`);
+      return;
+    }
+
     const variant = product.variants?.find((v) => v.name === variation);
     const price = variant ? variant.price : (product.price || 0);
     const maxStock = variant ? variant.stock : (product.stock || 0);

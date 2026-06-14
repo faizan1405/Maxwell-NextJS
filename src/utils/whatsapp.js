@@ -2,7 +2,7 @@
  * WhatsApp quote helpers — pure functions, no React.
  *
  * Used by ProductCard and QuickView to render the "Get Quote on WhatsApp" CTA
- * for products whose admin-configured purchaseMode is 'quote' or 'both'.
+ * for products whose admin-configured purchaseMode is 'quote'.
  *
  * Number resolution order (first non-empty wins):
  *   1. product.whatsappNumber
@@ -17,6 +17,7 @@
  */
 
 import { formatZar } from './currency';
+import { normalizePurchaseMode } from './purchaseMode';
 
 const FALLBACK_NUMBER = '27671014345';
 const FALLBACK_MESSAGE = `Hello Amahle Blue, I am interested in this product:
@@ -64,7 +65,7 @@ export function buildWaUrl(product, { variant = null, settings = null } = {}) {
 
   const variantName = variant?.name || variant || product?.size || '';
   const variantPrice = variant?.price ?? product?.price ?? 0;
-  const priceStr = variantPrice > 0 ? formatZar(variantPrice) : 'On request';
+  const priceStr = variantPrice > 0 ? formatZar(variantPrice) : 'Quote request';
 
   const message = renderTemplate(template, {
     productName: product?.name || '',
@@ -78,18 +79,15 @@ export function buildWaUrl(product, { variant = null, settings = null } = {}) {
 }
 
 export function productPurchaseMode(product) {
-  const mode = String(product?.purchaseMode || 'cart').toLowerCase();
-  if (mode === 'quote' || mode === 'both') return mode;
-  return 'cart';
+  return normalizePurchaseMode(product?.purchaseMode, product?.price);
 }
 
 export function showCart(product) {
   const mode = productPurchaseMode(product);
-  return mode === 'cart' || mode === 'both';
+  return mode === 'cart';
 }
 
 export function showWhatsApp(product) {
   const mode = productPurchaseMode(product);
-  if (mode === 'cart') return false;
-  return product?.whatsappEnabled !== false;
+  return mode === 'quote';
 }

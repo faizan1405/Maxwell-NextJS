@@ -7,6 +7,7 @@ import {
   Badge, Btn, Input, Textarea, Select, Modal, ConfirmDialog, 
   Empty, SearchInput, Pagination, AdminToast, Spinner 
 } from '../ui/index';
+import { normalizePurchaseMode } from '../../utils/purchaseMode';
 
 const BADGES  = [null,'Bestseller','New','High Purity','Sale'];
 const STATUSES= ['active','draft','archived'];
@@ -250,7 +251,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
     if (String(form.stock || '') !== String(baselineForm.stock || '')) return true;
     if (String(form.lowStockThreshold || '') !== String(baselineForm.lowStockThreshold || '')) return true;
     if (form.outOfStock !== baselineForm.outOfStock) return true;
-    if ((form.purchaseMode || 'cart') !== (baselineForm.purchaseMode || 'cart')) return true;
+    if ((form.purchaseMode || 'cart') !== normalizePurchaseMode(baselineForm.purchaseMode, baselineForm.price)) return true;
     if (!!form.whatsappEnabled !== !!baselineForm.whatsappEnabled) return true;
     if (String(form.whatsappNumber || '') !== String(baselineForm.whatsappNumber || '')) return true;
     if (String(form.whatsappMessage || '') !== String(baselineForm.whatsappMessage || '')) return true;
@@ -299,8 +300,8 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
             ...blankProduct(),
             ...initial,
             benefits: (initial.benefits||['','','','']).slice(0,4).concat(['','','','']).slice(0,4),
-            purchaseMode: initial.purchaseMode || 'cart',
-            whatsappEnabled: !!initial.whatsappEnabled,
+            purchaseMode: normalizePurchaseMode(initial.purchaseMode, initial.price),
+            whatsappEnabled: normalizePurchaseMode(initial.purchaseMode, initial.price) === 'quote' || !!initial.whatsappEnabled,
             whatsappNumber: initial.whatsappNumber || '',
             whatsappMessage: initial.whatsappMessage || '',
           }
@@ -328,6 +329,15 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
   }, [open, initial, categories]);
 
   const set         = (field, val) => setForm(f => ({...f, [field]: val}));
+  const setPurchaseMode = (mode) => {
+    const nextMode = normalizePurchaseMode(mode, form.price);
+    setForm(f => ({ ...f, purchaseMode: nextMode, whatsappEnabled: nextMode === 'quote' }));
+    setErrors(e => {
+      const next = { ...e };
+      if (nextMode === 'quote') delete next.price;
+      return next;
+    });
+  };
   const setBenefit  = (i, val)     => setForm(f => { const b=[...f.benefits]; b[i]=val; return {...f,benefits:b}; });
   const addVariant  = ()           => setForm(f => ({...f, variants:[...f.variants, {name:'',price:'',stock:0,outOfStock:false}]}));
   const removeVariant = i          => setForm(f => ({...f, variants:f.variants.filter((_,idx)=>idx!==i)}));
@@ -455,8 +465,9 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
   function validate() {
     const e = {};
+    const mode = normalizePurchaseMode(form.purchaseMode, form.price);
     if (!form.name.trim())  e.name  = 'Product name is required.';
-    if (!form.price || isNaN(parseFloat(form.price))) e.price = 'Valid price is required.';
+    if (mode === 'cart' && (!form.price || isNaN(parseFloat(form.price)) || parseFloat(form.price) <= 0)) e.price = 'Valid price is required for cart products.';
     if (!form.sku.trim())   e.sku   = 'SKU is required.';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -478,9 +489,12 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
     const primaryImg = doneMedia.find(m => m.isPrimary && m.type === 'image') || doneMedia.find(m => m.type === 'image');
 
+    const purchaseMode = normalizePurchaseMode(form.purchaseMode, form.price);
     const data = {
       ...form,
-      price:             parseFloat(form.price)||0,
+      purchaseMode,
+      whatsappEnabled:   purchaseMode === 'quote',
+      price:             purchaseMode === 'quote' ? (parseFloat(form.price) || 0) : parseFloat(form.price),
       was:               form.was ? parseFloat(form.was)||null : null,
       stock:             parseInt(form.stock)||0,
       lowStockThreshold: parseInt(form.lowStockThreshold)||10,
@@ -503,6 +517,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
   const uploadingCount = mediaItems.filter(m => m.status === 'uploading').length;
   const isEdit         = !!initial;
+  const isQuoteMode    = normalizePurchaseMode(form.purchaseMode, form.price) === 'quote';
 
   return (
     <>
@@ -533,7 +548,17 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
         </div>
 
         <div className="admin-product-form__grid-4">
-          <Input label="Price (R) *" type="number" min="0" step="0.01" value={form.price} onChange={e=>set('price',e.target.value)} placeholder="0.00" error={errors.price}/>
+          <Input
+            label={`Price (R)${isQuoteMode ? '' : ' *'}`}
+            type="number"
+            min="0"
+            step="0.01"
+            value={form.price}
+            onChange={e=>set('price',e.target.value)}
+            placeholder="0.00"
+            error={errors.price}
+            hint={isQuoteMode ? 'Price is not required for WhatsApp quote products.' : 'Required for cart products.'}
+          />
           <Input label="Compare-at Price" type="number" min="0" step="0.01" value={form.was||''} onChange={e=>set('was',e.target.value)} placeholder="0.00"/>
           <Input label="Size / Unit" value={form.size} onChange={e=>set('size',e.target.value)} placeholder="e.g. 5L"/>
           <Input label="SKU *" value={form.sku} onChange={e=>set('sku',e.target.value)} placeholder="ABC-5L-001" error={errors.sku}/>
@@ -607,43 +632,46 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
             <Select
               label="Purchase Mode"
               value={form.purchaseMode || 'cart'}
-              onChange={e=>set('purchaseMode', e.target.value)}
-              hint="Normal = Add to Cart only · Quote Only = WhatsApp only · Both = Cart + WhatsApp"
+              onChange={e=>setPurchaseMode(e.target.value)}
             >
               <option value="cart">Normal Purchase (Cart only)</option>
               <option value="quote">Quote Only (WhatsApp)</option>
-              <option value="both">Both — Cart + WhatsApp Quote</option>
             </Select>
+            <p className="admin-product-form__oos-check-hint">Normal products use cart checkout. Quote products use WhatsApp only.</p>
             <div className="admin-product-form__oos-check">
               <label className="admin-product-form__oos-check-label">
                 <input
                   type="checkbox"
-                  checked={!!form.whatsappEnabled}
-                  onChange={e=>set('whatsappEnabled', e.target.checked)}
+                  checked={isQuoteMode}
+                  disabled
                   className="admin-product-form__oos-check-input"
                 />
                 <span>Enable WhatsApp Quote</span>
               </label>
-              <p className="admin-product-form__oos-check-hint">Required for Quote Only / Both modes</p>
+              <p className="admin-product-form__oos-check-hint">{isQuoteMode ? 'Enabled automatically for quote products.' : 'Only available in quote mode.'}</p>
             </div>
           </div>
-          <div className="admin-product-form__grid-2">
-            <Input
-              label="WhatsApp Number (override)"
-              value={form.whatsappNumber || ''}
-              onChange={e=>set('whatsappNumber', e.target.value)}
-              placeholder="e.g. 27671014345 — leave blank to use global default"
-              hint="Country code + number, no spaces. Empty = global WhatsApp from Settings."
-            />
-          </div>
-          <Textarea
-            label="WhatsApp Message Template (override)"
-            value={form.whatsappMessage || ''}
-            onChange={e=>set('whatsappMessage', e.target.value)}
-            rows={5}
-            placeholder="Leave blank to use the global default. Supported variables: {{productName}}, {{variant}}, {{price}}, {{productUrl}}, {{sku}}"
-            hint="Variables: {{productName}} {{variant}} {{price}} {{productUrl}} {{sku}}"
-          />
+          {isQuoteMode && (
+            <>
+              <div className="admin-product-form__grid-2">
+                <Input
+                  label="WhatsApp Number (override)"
+                  value={form.whatsappNumber || ''}
+                  onChange={e=>set('whatsappNumber', e.target.value)}
+                  placeholder="e.g. 27671014345 - leave blank to use global default"
+                  hint="Country code + number, no spaces. Empty = global WhatsApp from Settings."
+                />
+              </div>
+              <Textarea
+                label="WhatsApp Message Template (override)"
+                value={form.whatsappMessage || ''}
+                onChange={e=>set('whatsappMessage', e.target.value)}
+                rows={5}
+                placeholder="Leave blank to use the global default. Supported variables: {{productName}}, {{variant}}, {{price}}, {{productUrl}}, {{sku}}"
+                hint="Variables: {{productName}} {{variant}} {{price}} {{productUrl}} {{sku}}"
+              />
+            </>
+          )}
         </div>
       </div>
     </Modal>

@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { connectToDatabase } from '../../../../../lib/mongoose';
 import { EmailOtp, Customer, CustomerSession, Order } from '../../../../../lib/models';
 import { generateSessionToken, hashSessionToken, setSessionCookie } from '../../../../../lib/customerAuth';
+import { saPhoneRegexes, saPhoneVariants } from '../../../../../utils/phone';
 
 const MAX_ATTEMPTS = 5;
 
@@ -101,8 +102,15 @@ export async function POST(req) {
    * here must not block sign-in. */
   try {
     const phone = String(customer.phone || '').trim();
-    const orMatch = [{ 'customer.email': email }];
-    if (phone) orMatch.push({ 'customer.phone': phone });
+    const phoneMatches = [
+      ...saPhoneVariants(phone).map(v => ({ 'customer.phone': v })),
+      ...saPhoneRegexes(phone).map(regex => ({ 'customer.phone': regex })),
+    ];
+    const orMatch = [
+      { 'customer.email': email },
+      { customerEmail: email },
+      ...phoneMatches,
+    ];
 
     await Order.updateMany(
       {

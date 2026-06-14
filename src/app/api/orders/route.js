@@ -19,6 +19,8 @@ import { verifySession } from '../../../lib/auth';
 import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
 import { calculateOrderStats } from '../../../utils/accounting';
+import { normalizePurchaseMode } from '../../../utils/purchaseMode';
+import { saPhoneRegexes, saPhoneVariants } from '../../../utils/phone';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
 /**
@@ -386,6 +388,15 @@ function payLabel(method) {
 function isValidSaMobile(raw) {
   const digits = String(raw || '').replace(/[^\d+]/g, '');
   return /^(\+?27|0)[6-8]\d{8}$/.test(digits);
+}
+
+function phoneMatchQueries(rawPhone) {
+  const variants = saPhoneVariants(rawPhone);
+  const regexes = saPhoneRegexes(rawPhone);
+  return [
+    ...variants.map(phone => ({ 'customer.phone': phone })),
+    ...regexes.map(regex => ({ 'customer.phone': regex })),
+  ];
 }
 
 /* ════════════════════════════════════════════════════════════════════════════════
@@ -850,6 +861,9 @@ export async function POST(req) {
     for (const item of items) {
       const product = productsList.find(p => p.id === item.productId);
       if (!product) return NextResponse.json({ error: 'One or more products are unavailable.' }, { status: 400 });
+      if (normalizePurchaseMode(product.purchaseMode, product.price) === 'quote') {
+        return NextResponse.json({ error: `"${product.name}" is available by WhatsApp quote only and cannot be added to checkout.` }, { status: 400 });
+      }
 
       const qty = parseInt(item.qty, 10);
       if (!qty || qty < 1) return NextResponse.json({ error: `Invalid quantity for "${product.name}".` }, { status: 400 });
@@ -1067,12 +1081,25 @@ export async function GET(req) {
   try {
     await connectToDatabase();
     const adminSession    = verifySession(req);
-    const customerSession = adminSession ? null : await verifyCustomerCookie(req);
+    const customerSession = await verifyCustomerCookie(req);
 
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (adminSession) {
-      const { searchParams } = req.nextUrl;
+    const { searchParams } = req.nextUrl;
+    const wantsAdmin = !!adminSession && (
+      !customerSession ||
+      searchParams.has('stats') ||
+      searchParams.has('page') ||
+      searchParams.has('limit') ||
+      searchParams.has('search') ||
+      searchParams.has('status') ||
+      searchParams.has('payStatus') ||
+      searchParams.has('payMethod') ||
+      searchParams.has('dateRange') ||
+      searchParams.has('sort')
+    );
+
+    if (wantsAdmin) {
       const stats = searchParams.get('stats');
 
       if (stats === '1') {
@@ -1236,13 +1263,14 @@ export async function GET(req) {
       customerPhone = String(custDoc?.phone || '').trim();
     } catch {}
 
+    const phoneQueries = phoneMatchQueries(customerPhone);
     const orQuery = [
       { customerId },
       { 'customer.email': normalizedEmail },
+      { customerEmail: normalizedEmail },
+      { 'customer.id': customerId },
+      ...phoneQueries,
     ];
-    if (customerPhone) {
-      orQuery.push({ 'customer.phone': customerPhone });
-    }
 
     const mine = await Order.find({ $or: orQuery }).sort({ createdAt: -1 }).lean();
 

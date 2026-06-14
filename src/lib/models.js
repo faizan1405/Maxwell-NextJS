@@ -43,7 +43,7 @@ export const PAYMENT_STATUS_VALUES = [
 export const PAYMENT_METHOD_VALUES = ['EFT', 'COD'];
 export const PRODUCT_STATUS_VALUES = ['active', 'inactive', 'draft', 'archived'];
 export const REVIEW_STATUS_VALUES = ['pending', 'approved', 'rejected', 'hidden'];
-export const PURCHASE_MODE_VALUES = ['cart', 'quote', 'both'];
+export const PURCHASE_MODE_VALUES = ['cart', 'quote'];
 
 const VariantSchema = new Schema({
   name: { type: String, required: true },

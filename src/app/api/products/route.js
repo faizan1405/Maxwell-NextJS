@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Product, Category, StockHistory } from '../../../lib/models';
 import { requireAdmin, verifySession } from '../../../lib/auth';
+import { normalizePurchaseMode } from '../../../utils/purchaseMode';
 import { del } from '@vercel/blob';
 
 function isVercelBlob(url) {
@@ -10,7 +11,6 @@ function isVercelBlob(url) {
 
 function sanitize(input) {
   const VALID_STATUS = ['active','draft','archived'];
-  const VALID_PURCHASE_MODE = ['cart','quote','both'];
   const out = {};
   if (input.name      !== undefined) out.name      = String(input.name).trim().slice(0, 120);
   if (input.cat       !== undefined) out.cat       = String(input.cat || '').trim().toLowerCase().slice(0, 60) || 'household';
@@ -53,12 +53,43 @@ function sanitize(input) {
     outOfStock: !!v.outOfStock,
   }));
   if (input.purchaseMode !== undefined) {
-    out.purchaseMode = VALID_PURCHASE_MODE.includes(input.purchaseMode) ? input.purchaseMode : 'cart';
+    out.purchaseMode = normalizePurchaseMode(input.purchaseMode, input.price);
   }
   if (input.whatsappEnabled !== undefined) out.whatsappEnabled = !!input.whatsappEnabled;
   if (input.whatsappNumber  !== undefined) out.whatsappNumber  = String(input.whatsappNumber || '').replace(/[^\d+]/g, '').slice(0, 20);
   if (input.whatsappMessage !== undefined) out.whatsappMessage = String(input.whatsappMessage || '').slice(0, 2000);
   return out;
+}
+
+function normalizeProductForClient(product) {
+  const mode = normalizePurchaseMode(product?.purchaseMode, product?.price);
+  return {
+    ...product,
+    purchaseMode: mode,
+    whatsappEnabled: mode === 'quote' ? true : !!product?.whatsappEnabled,
+  };
+}
+
+async function normalizeLegacyPurchaseModes() {
+  await Promise.all([
+    Product.updateMany({ purchaseMode: 'both', price: { $gt: 0 } }, { $set: { purchaseMode: 'cart', updatedAt: Date.now() } }),
+    Product.updateMany({
+      purchaseMode: 'both',
+      $or: [{ price: { $exists: false } }, { price: null }, { price: { $lte: 0 } }],
+    }, { $set: { purchaseMode: 'quote', whatsappEnabled: true, updatedAt: Date.now() } }),
+  ]);
+}
+
+function validatePurchaseModePayload(clean) {
+  const mode = clean.purchaseMode || 'cart';
+  if (mode === 'cart' && (!('price' in clean) || Number(clean.price) <= 0)) {
+    return 'Price is required for cart products.';
+  }
+  if (mode === 'quote') {
+    clean.price = Math.max(0, Number(clean.price) || 0);
+    clean.whatsappEnabled = true;
+  }
+  return null;
 }
 
 function normalizeSlug(value) {
@@ -94,6 +125,7 @@ export async function GET(req) {
   }
 
   await connectToDatabase();
+  await normalizeLegacyPurchaseModes();
 
   if (all) {
     const { searchParams } = req.nextUrl;
@@ -145,7 +177,8 @@ export async function GET(req) {
       .limit(limit)
       .lean();
 
-    const mapped = data.map(p => {
+    const mapped = data.map(raw => {
+      const p = normalizeProductForClient(raw);
       if (p.media && p.media.length > 0) return p;
       if (!p.img) return { ...p, media: [] };
       return {
@@ -200,7 +233,8 @@ export async function GET(req) {
 
   const products = await Product.find({ status: 'active' }).lean();
   
-  const mapped = products.map(p => {
+  const mapped = products.map(raw => {
+    const p = normalizeProductForClient(raw);
     if (p.media && p.media.length > 0) return p;
     if (!p.img) return { ...p, media: [] };
     return {
@@ -238,9 +272,11 @@ export async function POST(req) {
   }
   
   const clean = sanitize(body);
+  if (!('purchaseMode' in clean)) clean.purchaseMode = 'cart';
   clean.cat = await resolveCategorySlug(clean.cat);
   if (!clean.name)                return NextResponse.json({ error: 'Product name is required.' }, { status: 400 });
-  if (!('price' in clean))        return NextResponse.json({ error: 'Price is required.' }, { status: 400 });
+  const modeError = validatePurchaseModePayload(clean);
+  if (modeError)                  return NextResponse.json({ error: modeError }, { status: 400 });
   if (!clean.sku)                 return NextResponse.json({ error: 'SKU is required.' }, { status: 400 });
   const skuExists = await Product.findOne({ sku: clean.sku }).lean();
   if (skuExists) return NextResponse.json({ error: 'SKU already exists. Please use a unique SKU.' }, { status: 400 });
@@ -337,6 +373,10 @@ export async function PATCH(req) {
     });
   } else {
     const sanitized = sanitize(body);
+    if (sanitized.purchaseMode !== undefined) {
+      const modeError = validatePurchaseModePayload(sanitized);
+      if (modeError) return NextResponse.json({ error: modeError }, { status: 400 });
+    }
     if (sanitized.cat !== undefined) sanitized.cat = await resolveCategorySlug(sanitized.cat);
     if (sanitized.sku) {
       const skuExists = await Product.findOne({ sku: sanitized.sku, id: { $ne: id } }).lean();

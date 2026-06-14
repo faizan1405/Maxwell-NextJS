@@ -116,12 +116,68 @@ export async function GET(req) {
   const session = verifySession(req);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  const { searchParams } = req.nextUrl;
+  const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+  const limit = Math.max(1, parseInt(searchParams.get('limit'), 10) || 20);
+  const search = searchParams.get('search') || '';
+  const sort = searchParams.get('sort') || 'newest';
+
   const now = Date.now();
-  const abandoned = await AbandonedCart.find({
+  const query = {
     converted: false,
     updatedAt: { $lt: now - ABANDONED_THRESHOLD },
     'items.0': { $exists: true }
-  }).sort({ updatedAt: -1 }).lean();
+  };
 
-  return NextResponse.json(abandoned);
+  if (search.trim()) {
+    const sQuery = search.trim();
+    query.$or = [
+      { email: { $regex: sQuery, $options: 'i' } },
+      { guestId: { $regex: sQuery, $options: 'i' } }
+    ];
+  }
+
+  const total = await AbandonedCart.countDocuments(query);
+  const totalPages = Math.ceil(total / limit);
+
+  const sortQuery = {};
+  if (sort === 'oldest') {
+    sortQuery.updatedAt = 1;
+  } else {
+    sortQuery.updatedAt = -1;
+  }
+
+  const data = await AbandonedCart.find(query)
+    .sort(sortQuery)
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean();
+
+  const allCarts = await AbandonedCart.find({
+    converted: false,
+    updatedAt: { $lt: now - ABANDONED_THRESHOLD },
+    'items.0': { $exists: true }
+  }).lean();
+
+  const totalCarts = allCarts.length;
+  const potentialRevenue = allCarts.reduce((s, c) =>
+    s + (c.items || []).reduce((sv, i) => sv + (i.price || 0) * (i.qty || 1), 0), 0);
+  const withEmail = allCarts.filter(c => c.email).length;
+
+  return NextResponse.json({
+    data,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    },
+    summary: {
+      totalCarts,
+      potentialRevenue,
+      withEmail
+    }
+  }, { status: 200 });
 }

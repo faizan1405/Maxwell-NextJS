@@ -59,81 +59,225 @@ export function AdminProvider({ children }) {
   const [faqs, setFaqs] = useState([]);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [shippingRates, setShippingRates] = useState([]);
+
+  // Pagination metadata states
+  const [ordersPagination, setOrdersPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
+  const [productsPagination, setProductsPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1, counts: {} });
+  const [customersPagination, setCustomersPagination] = useState({ page: 1, limit: 10, total: 0, totalPages: 1, summary: {} });
+  const [reviewsPagination, setReviewsPagination] = useState({ page: 1, limit: 15, total: 0, totalPages: 1, counts: {} });
+  const [abandonedCartsPagination, setAbandonedCartsPagination] = useState({ page: 1, limit: 15, total: 0, totalPages: 1, summary: {} });
+  
+  // Dashboard & Reports states
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [reportsOrders, setReportsOrders] = useState([]);
+
+  // Parameters cache for refetches on CRUD failures
+  const [activeOrdersParams, setActiveOrdersParams] = useState({});
+  const [activeProductsParams, setActiveProductsParams] = useState({});
+
   const [loadingStates, setLoadingStates] = useState({
-    products: true,
-    orders: true,
-    customers: true,
+    products: false,
+    orders: false,
+    customers: false,
     coupons: true,
-    reviews: true,
-    carts: true,
+    reviews: false,
+    carts: false,
     faqs: true,
     categories: true,
     shipping: true,
     settings: true,
+    dashboard: true,
+    reports: false,
   });
 
   // ── Data fetchers ─────────────────────────────────────────────────────────
-  const fetchRegisteredCustomers = useCallback(async (token) => {
-    setLoadingStates(prev => ({ ...prev, customers: true }));
+  // ── Data fetchers ─────────────────────────────────────────────────────────
+  const fetchDashboardStats = useCallback(async (token) => {
+    setLoadingStates(prev => ({ ...prev, dashboard: true }));
     try {
-      const res = await fetch(`${API_BASE}/api/customers`, { headers: apiHeaders(token) });
+      const t = token || session?.token;
+      const res = await fetch(`${API_BASE}/api/orders?stats=1`, { headers: apiHeaders(t) });
       if (!res.ok) return;
       const data = await res.json();
-      if (Array.isArray(data)) setRegisteredCustomers(data);
+      setDashboardStats(data);
     } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, dashboard: false }));
+    }
+  }, [session]);
+
+  const fetchOrdersPaginated = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, orders: true }));
+    try {
+      const nextParams = { ...activeOrdersParams, ...params };
+      setActiveOrdersParams(nextParams);
+
+      const q = new URLSearchParams();
+      Object.entries(nextParams).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          q.set(k, v);
+        }
+      });
+      const res = await fetch(`${API_BASE}/api/orders?${q.toString()}`, { headers: apiHeaders() });
+      if (!res.ok) return;
+      const result = await res.json();
+      setOrders(result.data || []);
+      setOrdersPagination(result.pagination || { page: 1, limit: 20, total: 0, totalPages: 1 });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, orders: false }));
+    }
+  }, [activeOrdersParams]);
+
+  const fetchProductsPaginated = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, products: true }));
+    try {
+      const nextParams = { ...activeProductsParams, ...params };
+      setActiveProductsParams(nextParams);
+
+      const q = new URLSearchParams();
+      q.set('all', '1');
+      Object.entries(nextParams).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          q.set(k, v);
+        }
+      });
+      const res = await fetch(`${API_BASE}/api/products?${q.toString()}`, { headers: apiHeaders() });
+      if (!res.ok) return;
+      const result = await res.json();
+      setProducts(result.data || []);
+      setProductsPagination({
+        ...(result.pagination || { page: 1, limit: 20, total: 0, totalPages: 1 }),
+        counts: result.counts || {}
+      });
+      try {
+        if (typeof window !== 'undefined' && nextParams.status === 'active') {
+          localStorage.setItem('ab_products', JSON.stringify((result.data || []).filter(p => p.status === 'active')));
+        }
+      } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, products: false }));
+    }
+  }, [activeProductsParams]);
+
+  const fetchCustomersPaginated = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, customers: true }));
+    try {
+      const q = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          q.set(k, v);
+        }
+      });
+      const res = await fetch(`${API_BASE}/api/customers?${q.toString()}`, { headers: apiHeaders() });
+      if (!res.ok) return;
+      const result = await res.json();
+      setRegisteredCustomers(result.data || []);
+      setCustomersPagination({
+        ...(result.pagination || { page: 1, limit: 10, total: 0, totalPages: 1 }),
+        summary: result.summary || {}
+      });
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoadingStates(prev => ({ ...prev, customers: false }));
     }
   }, []);
 
-  const fetchProducts = useCallback(async (token) => {
-    setLoadingStates(prev => ({ ...prev, products: true }));
+  const fetchReviewsPaginated = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, reviews: true }));
     try {
-      const res = await fetch(`${API_BASE}/api/products?all=1`, { headers: apiHeaders(token) });
+      const q = new URLSearchParams();
+      q.set('all', '1');
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          q.set(k, v);
+        }
+      });
+      const res = await fetch(`${API_BASE}/api/reviews?${q.toString()}`, { headers: apiHeaders() });
       if (!res.ok) return;
-      const data = await res.json();
-      setProducts(data);
-      try {
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('ab_products', JSON.stringify(data.filter(p => p.status === 'active')));
-        }
-      } catch (e) {}
-    } catch (err) {
-      try {
-        if (typeof window !== 'undefined') {
-          const raw = localStorage.getItem('ab_admin_products_v2');
-          if (raw) {
-            const p = JSON.parse(raw);
-            if (Array.isArray(p)) setProducts(p);
-          }
-        }
-      } catch (e) {}
+      const result = await res.json();
+      setReviews(result.data || []);
+      setReviewsPagination({
+        ...(result.pagination || { page: 1, limit: 15, total: 0, totalPages: 1 }),
+        counts: result.counts || {}
+      });
+    } catch (e) {
+      console.error(e);
     } finally {
-      setLoadingStates(prev => ({ ...prev, products: false }));
+      setLoadingStates(prev => ({ ...prev, reviews: false }));
     }
   }, []);
 
-  const fetchOrders = useCallback(async (token) => {
-    setLoadingStates(prev => ({ ...prev, orders: true }));
+  const fetchCartsPaginated = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, carts: true }));
     try {
-      const res = await fetch(`${API_BASE}/api/orders`, { headers: apiHeaders(token) });
-      if (!res.ok) return;
-      const data = await res.json();
-      setOrders(data);
-    } catch (err) {
-      try {
-        if (typeof window !== 'undefined') {
-          const raw = localStorage.getItem('ab_admin_orders_v2');
-          if (raw) {
-            const o = JSON.parse(raw);
-            if (Array.isArray(o)) setOrders(o);
-          }
+      const q = new URLSearchParams();
+      Object.entries(params).forEach(([k, v]) => {
+        if (v !== undefined && v !== null && v !== '') {
+          q.set(k, v);
         }
-      } catch (e) {}
+      });
+      const res = await fetch(`${API_BASE}/api/carts?${q.toString()}`, { headers: apiHeaders() });
+      if (!res.ok) return;
+      const result = await res.json();
+      setAbandonedCarts(result.data || []);
+      setAbandonedCartsPagination({
+        ...(result.pagination || { page: 1, limit: 15, total: 0, totalPages: 1 }),
+        summary: result.summary || {}
+      });
+    } catch (e) {
+      console.error(e);
     } finally {
-      setLoadingStates(prev => ({ ...prev, orders: false }));
+      setLoadingStates(prev => ({ ...prev, carts: false }));
     }
   }, []);
+
+  const fetchReportsOrders = useCallback(async (params = {}) => {
+    setLoadingStates(prev => ({ ...prev, reports: true }));
+    try {
+      const q = new URLSearchParams();
+      q.set('limit', '10000');
+      if (params.range && params.range !== 'all') {
+        q.set('dateRange', params.range);
+      }
+      if (params.customStart) q.set('customStart', params.customStart);
+      if (params.customEnd) q.set('customEnd', params.customEnd);
+      const res = await fetch(`${API_BASE}/api/orders?${q.toString()}`, { headers: apiHeaders() });
+      if (!res.ok) return;
+      const result = await res.json();
+      setReportsOrders(result.data || []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStates(prev => ({ ...prev, reports: false }));
+    }
+  }, []);
+
+  // Backwards compatible fetch hooks mapping to active params
+  const fetchProducts = useCallback(async (params = {}) => {
+    return fetchProductsPaginated(params);
+  }, [fetchProductsPaginated]);
+
+  const fetchOrders = useCallback(async (params = {}) => {
+    return fetchOrdersPaginated(params);
+  }, [fetchOrdersPaginated]);
+
+  const fetchRegisteredCustomers = useCallback(async (params = {}) => {
+    return fetchCustomersPaginated(params);
+  }, [fetchCustomersPaginated]);
+
+  const fetchReviews = useCallback(async (params = {}) => {
+    return fetchReviewsPaginated(params);
+  }, [fetchReviewsPaginated]);
+
+  const fetchAbandonedCarts = useCallback(async (params = {}) => {
+    return fetchCartsPaginated(params);
+  }, [fetchCartsPaginated]);
 
   const fetchCoupons = useCallback(async (token) => {
     setLoadingStates(prev => ({ ...prev, coupons: true }));
@@ -148,19 +292,6 @@ export function AdminProvider({ children }) {
     }
   }, []);
 
-  const fetchReviews = useCallback(async (token) => {
-    setLoadingStates(prev => ({ ...prev, reviews: true }));
-    try {
-      const res = await fetch(`${API_BASE}/api/reviews?all=1`, { headers: apiHeaders(token) });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (Array.isArray(data)) setReviews(data);
-    } catch (e) {
-    } finally {
-      setLoadingStates(prev => ({ ...prev, reviews: false }));
-    }
-  }, []);
-
   const fetchFaqs = useCallback(async (token) => {
     setLoadingStates(prev => ({ ...prev, faqs: true }));
     try {
@@ -171,19 +302,6 @@ export function AdminProvider({ children }) {
     } catch (e) {
     } finally {
       setLoadingStates(prev => ({ ...prev, faqs: false }));
-    }
-  }, []);
-
-  const fetchAbandonedCarts = useCallback(async (token) => {
-    setLoadingStates(prev => ({ ...prev, carts: true }));
-    try {
-      const res = await fetch(`${API_BASE}/api/carts`, { headers: apiHeaders(token) });
-      if (!res.ok) return;
-      const data = await res.json();
-      if (Array.isArray(data)) setAbandonedCarts(data);
-    } catch (e) {
-    } finally {
-      setLoadingStates(prev => ({ ...prev, carts: false }));
     }
   }, []);
 
@@ -251,15 +369,11 @@ export function AdminProvider({ children }) {
       } catch (e) {}
 
       if (sess) {
-        fetchProducts();
-        fetchOrders();
-        fetchRegisteredCustomers();
-        fetchCoupons();
-        fetchReviews();
-        fetchAbandonedCarts();
-        fetchFaqs();
-        fetchCategories();
-        fetchShippingRates();
+        fetchDashboardStats(sess.token);
+        fetchCoupons(sess.token);
+        fetchFaqs(sess.token);
+        fetchCategories(sess.token);
+        fetchShippingRates(sess.token);
         fetchSettings();
       } else {
         setLoadingStates({
@@ -273,11 +387,13 @@ export function AdminProvider({ children }) {
           categories: false,
           shipping: false,
           settings: false,
+          dashboard: false,
+          reports: false
         });
       }
       setReady(true);
     })();
-  }, [fetchProducts, fetchOrders, fetchRegisteredCustomers, fetchCoupons, fetchReviews, fetchAbandonedCarts, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
+  }, [fetchDashboardStats, fetchCoupons, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   const login = useCallback(async (username, password) => {
@@ -294,22 +410,18 @@ export function AdminProvider({ children }) {
       setSession(s);
 
       await Promise.all([
-        fetchProducts(),
-        fetchOrders(),
-        fetchRegisteredCustomers(),
-        fetchCoupons(),
-        fetchReviews(),
-        fetchAbandonedCarts(),
-        fetchFaqs(),
-        fetchCategories(),
-        fetchShippingRates(),
+        fetchDashboardStats(s.token),
+        fetchCoupons(s.token),
+        fetchFaqs(s.token),
+        fetchCategories(s.token),
+        fetchShippingRates(s.token),
         fetchSettings(),
       ]);
       return { ok: true };
     } catch (err) {
       return { ok: false, error: 'Network error — please try again.' };
     }
-  }, [fetchProducts, fetchOrders, fetchRegisteredCustomers, fetchCoupons, fetchReviews, fetchAbandonedCarts, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
+  }, [fetchDashboardStats, fetchCoupons, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
 
   const logout = useCallback(async () => {
     try {
@@ -328,7 +440,9 @@ export function AdminProvider({ children }) {
     setAbandonedCarts([]);
     setFaqs([]);
     setCategories([]);
-  }, [session]);
+    setDashboardStats(null);
+    setReportsOrders([]);
+  }, []);
 
   // ── Product CRUD ──────────────────────────────────────────────────────────
   const addProduct = useCallback(async (p) => {
@@ -734,80 +848,22 @@ export function AdminProvider({ children }) {
   }, [session, fetchReviews]);
 
   // ── Derived ───────────────────────────────────────────────────────────────
-  const customers = useMemo(() => {
-    const map = {};
-    orders.forEach(o => {
-      const c = o.customer;
-      if (!c) return;
-      const key = (c.email || c.id || '').toLowerCase();
-      if (!key) return;
-      if (!map[key]) map[key] = { ...c, orders: [], totalSpent: 0, orderCount: 0, lastOrderAt: 0 };
-      map[key].orders.push(o);
-      map[key].orderCount++;
-      const isPaid = o.payment?.status === 'paid' || o.paymentStatus === 'Paid';
-      if (isPaid) map[key].totalSpent += o.total;
-      if (o.createdAt > map[key].lastOrderAt) map[key].lastOrderAt = o.createdAt;
-    });
-
-    registeredCustomers.forEach(rc => {
-      if (!rc.email) return;
-      const key = rc.email.toLowerCase();
-      if (map[key]) {
-        map[key].hasAccount = true;
-        map[key].accountId = rc.id;
-        map[key].accountSince = rc.createdAt;
-        map[key].savedAddresses = rc.addresses || [];
-        if (rc.name && !map[key].name) map[key].name = rc.name;
-        if (rc.phone && !map[key].phone) map[key].phone = rc.phone;
-      } else {
-        map[key] = {
-          id: rc.id,
-          name: rc.name || '(no name)',
-          email: rc.email,
-          phone: rc.phone || '',
-          orders: [],
-          totalSpent: 0,
-          orderCount: 0,
-          lastOrderAt: rc.createdAt,
-          hasAccount: true,
-          accountId: rc.id,
-          accountSince: rc.createdAt,
-          savedAddresses: rc.addresses || [],
-        };
-      }
-    });
-
-    return Object.values(map).sort((a, b) => b.totalSpent - a.totalSpent);
-  }, [orders, registeredCustomers]);
+  const customers = registeredCustomers;
 
   const stats = useMemo(() => {
-    const acc = calculateOrderStats(orders);
-    const active = products.filter(p => p.status === 'active');
-    const lowStock = products.filter(p => {
-      if (p.status !== 'active') return false;
-      const threshold = p.lowStockThreshold || 0;
-      if (p.variants && p.variants.length > 0) {
-        return p.variants.some(v => v.stock <= threshold);
-      }
-      return p.stock <= threshold;
-    });
-    const recentOrders = [...orders].sort((a, b) => b.createdAt - a.createdAt).slice(0, 5);
-    const byStatus = orders.reduce((a, o) => {
-      a[o.status] = (a[o.status] || 0) + 1;
-      return a;
-    }, {});
+    if (dashboardStats) return dashboardStats;
     return {
-      accounting: acc,
-      revenue: acc.collectedRevenue, // Backwards compatible with existing code
-      totalOrders: acc.totalValidOrders,
-      activeProducts: active.length,
-      totalCustomers: customers.length,
-      lowStockProducts: lowStock,
-      lowStockCount: lowStock.length,
-      recentOrders,
-      byStatus
+      accounting: {},
+      revenue: 0,
+      totalOrders: 0,
+      activeProducts: 0,
+      totalCustomers: 0,
+      lowStockProducts: [],
+      lowStockCount: 0,
+      recentOrders: [],
+      byStatus: {}
     };
-  }, [orders, products, customers]);
+  }, [dashboardStats]);
 
   const authValue = useMemo(() => ({
     session,
@@ -872,6 +928,22 @@ export function AdminProvider({ children }) {
     fmtDate,
     fmtDateTime,
     initials,
+    
+    // Pagination fields & methods
+    ordersPagination,
+    fetchOrdersPaginated,
+    productsPagination,
+    fetchProductsPaginated,
+    customersPagination,
+    fetchCustomersPaginated,
+    reviewsPagination,
+    fetchReviewsPaginated,
+    abandonedCartsPagination,
+    fetchCartsPaginated,
+    dashboardStats,
+    fetchDashboardStats,
+    reportsOrders,
+    fetchReportsOrders
   }), [
     products,
     fetchProducts,
@@ -916,6 +988,21 @@ export function AdminProvider({ children }) {
     updateShippingRate,
     deleteShippingRate,
     loadingStates,
+    
+    ordersPagination,
+    fetchOrdersPaginated,
+    productsPagination,
+    fetchProductsPaginated,
+    customersPagination,
+    fetchCustomersPaginated,
+    reviewsPagination,
+    fetchReviewsPaginated,
+    abandonedCartsPagination,
+    fetchCartsPaginated,
+    dashboardStats,
+    fetchDashboardStats,
+    reportsOrders,
+    fetchReportsOrders
   ]);
 
   if (!ready) {

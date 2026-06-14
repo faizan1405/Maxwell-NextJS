@@ -14,10 +14,11 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Order, Product, Settings, Coupon, ShippingRate, StockHistory } from '../../../lib/models';
+import { Order, Product, Settings, Coupon, ShippingRate, StockHistory, Customer } from '../../../lib/models';
 import { verifySession } from '../../../lib/auth';
 import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
+import { calculateOrderStats } from '../../../utils/accounting';
 
 /* ── Next invoice + order number ─────────────────────────────────────────────── */
 /**
@@ -987,22 +988,168 @@ export async function GET(req) {
 
     if (!adminSession && !customerSession) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const orders = await Order.find({}).lean();
-    if (adminSession) return NextResponse.json(orders, { status: 200 });
-    
-    const { customerId, email } = customerSession;
-    const mine = orders
-      .filter(o =>
-        o.customerId === customerId ||
-        (o.customer?.email && o.customer.email.toLowerCase() === email.toLowerCase())
-      )
-      .map(({ internalNotes, idempotencyKey, eftBankDetails: _b, ...safe }) => {
-        if (safe.paymentMethod === 'EFT' || safe.payment?.method === 'EFT') {
-          safe.eftBankDetails = _b;
+    if (adminSession) {
+      const { searchParams } = req.nextUrl;
+      const stats = searchParams.get('stats');
+
+      if (stats === '1') {
+        const activeProducts = await Product.countDocuments({ status: 'active' });
+        const allOrders = await Order.find({}).select('total status paymentStatus paymentMethod createdAt customer payment').lean();
+        
+        const acc = calculateOrderStats(allOrders);
+        
+        const byStatus = allOrders.reduce((a, o) => {
+          a[o.status] = (a[o.status] || 0) + 1;
+          return a;
+        }, {});
+        
+        const recentOrders = [...allOrders]
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .slice(0, 5);
+
+        const customerMap = {};
+        allOrders.forEach(o => {
+          const c = o.customer;
+          if (!c) return;
+          const key = (c.email || c.id || '').toLowerCase();
+          if (key) customerMap[key] = true;
+        });
+        
+        const registeredEmails = await Customer.find({}).select('email').lean();
+        registeredEmails.forEach(rc => {
+          if (rc.email) {
+            customerMap[rc.email.toLowerCase()] = true;
+          }
+        });
+        const finalCustomerCount = Object.keys(customerMap).length;
+
+        const activeProductsList = await Product.find({ status: 'active' }).select('id name img variants stock lowStockThreshold').lean();
+        const lowStockProducts = activeProductsList.filter(p => {
+          const threshold = p.lowStockThreshold || 0;
+          if (p.variants && p.variants.length > 0) {
+            return p.variants.some(v => v.stock <= threshold);
+          }
+          return p.stock <= threshold;
+        });
+
+        const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+        const last7DaysOrders = allOrders.filter(o => o.createdAt >= sevenDaysAgo);
+        const attentionCount = allOrders.filter(o =>
+          o.paymentStatus === 'Proof of Payment Submitted' ||
+          o.paymentStatus === 'Payment Verification Required'
+        ).length;
+
+        return NextResponse.json({
+          accounting: acc,
+          collectedRevenue: acc.collectedRevenue,
+          totalOrders: acc.totalValidOrders,
+          activeProducts,
+          totalCustomers: finalCustomerCount,
+          lowStockProducts,
+          lowStockCount: lowStockProducts.length,
+          recentOrders,
+          byStatus,
+          orders: last7DaysOrders,
+          attentionCount
+        }, { status: 200 });
+      }
+
+      const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+      const limit = Math.max(1, parseInt(searchParams.get('limit'), 10) || 20);
+      const search = searchParams.get('search') || '';
+      const status = searchParams.get('status') || '';
+      const payStatus = searchParams.get('payStatus') || '';
+      const payMethod = searchParams.get('payMethod') || '';
+      const dateRange = searchParams.get('dateRange') || '';
+      const customStart = searchParams.get('customStart') || '';
+      const customEnd = searchParams.get('customEnd') || '';
+      const sort = searchParams.get('sort') || 'newest';
+
+      const query = {};
+
+      if (status && status !== 'all') {
+        query.status = status;
+      }
+      if (payStatus && payStatus !== 'all') {
+        query.paymentStatus = payStatus;
+      }
+      if (payMethod && payMethod !== 'all') {
+        query.paymentMethod = payMethod;
+      }
+      
+      if (dateRange && dateRange !== 'all') {
+        const now = new Date();
+        let start = new Date(0);
+        let end = new Date();
+        if (dateRange === 'today') {
+          start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        } else if (dateRange === '7d') {
+          start = new Date(now); start.setDate(now.getDate() - 6); start.setHours(0,0,0,0);
+        } else if (dateRange === '30d') {
+          start = new Date(now); start.setDate(now.getDate() - 29); start.setHours(0,0,0,0);
+        } else if (dateRange === 'custom') {
+          start = customStart ? new Date(customStart) : new Date(0);
+          end = customEnd ? new Date(customEnd) : new Date();
+          if (customEnd) end.setHours(23, 59, 59, 999);
         }
-        return safe;
-      });
-    return NextResponse.json(mine, { status: 200 });
+        query.createdAt = { $gte: start.getTime(), $lte: end.getTime() };
+      }
+
+      if (search.trim()) {
+        const sQuery = search.trim();
+        query.$or = [
+          { orderNumber: { $regex: sQuery, $options: 'i' } },
+          { 'customer.name': { $regex: sQuery, $options: 'i' } },
+          { 'customer.email': { $regex: sQuery, $options: 'i' } },
+          { 'customer.phone': { $regex: sQuery, $options: 'i' } }
+        ];
+      }
+
+      const total = await Order.countDocuments(query);
+      const totalPages = Math.ceil(total / limit);
+
+      const sortQuery = {};
+      if (sort === 'oldest') {
+        sortQuery.createdAt = 1;
+      } else {
+        sortQuery.createdAt = -1;
+      }
+
+      const data = await Order.find(query)
+        .sort(sortQuery)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean();
+
+      return NextResponse.json({
+        data,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
+      }, { status: 200 });
+    }
+
+    const { customerId, email } = customerSession;
+    const mine = await Order.find({
+      $or: [
+        { customerId: customerId },
+        { 'customer.email': email.toLowerCase() }
+      ]
+    }).lean();
+
+    const safeMine = mine.map(({ internalNotes, idempotencyKey, eftBankDetails: _b, ...safe }) => {
+      if (safe.paymentMethod === 'EFT' || safe.payment?.method === 'EFT') {
+        safe.eftBankDetails = _b;
+      }
+      return safe;
+    });
+
+    return NextResponse.json(safeMine, { status: 200 });
   } catch (error) {
     console.error('GET /api/orders error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

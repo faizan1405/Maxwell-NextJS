@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth, useAdmin, fmtMoney, fmtDate, fmtDateTime, initials } from './AdminProvider';
 import * as Icon from '../ui/Icons';
-import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast } from '../ui/index';
+import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast, Spinner } from '../ui/index';
 import { formatZar } from '../../utils/currency';
 import { printInvoice } from '../../utils/invoice';
 
-const ORDERS_PER_PAGE = 10;
+const ORDERS_PER_PAGE = 20;
 
 const ORDER_STATUS_OPTIONS = [
   { value:'all',              label:'All Orders' },
@@ -373,7 +373,6 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
   }
 
   async function handleConfirm(noteVal) {
-    // Guard against double-clicks: if a save is already in flight, ignore.
     if (saving) return;
     const dlg = confirmDlg;
     if (!dlg) return;
@@ -472,9 +471,6 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     disabled={saving}
                     className="admin-order-detail__status-select"
                   >
-                    {/* Pin the current value as an option so non-writable / legacy values
-                        ('Cancelled', 'Order Placed', 'Awaiting Payment', or lowercase legacy)
-                        still display correctly even if not a normal transition target. */}
                     {!['Order Placed','Awaiting Payment','Confirmed','Processing','Dispatched','Delivered','Cancelled'].includes(orderStatus) && orderStatus && (
                       <option value={orderStatus}>{orderStatus}</option>
                     )}
@@ -620,7 +616,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
 
             <div className="admin-order-detail__section">
               <p className="admin-order-detail__section-title">Payment Details & Actions</p>
-              
+
               {isEFT && (
                 <div className="admin-order-detail__form-space">
                   <div className="admin-order-detail__payment-row">
@@ -631,14 +627,14 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <span className="admin-order-detail__payment-row-label">EFT Reference</span>
                     <span className="admin-order-detail__payment-ref">{order.eftReference || order.orderNumber}</span>
                   </div>
-                  
+
                   {order.proofOfPaymentUrl && (
                     <div className="admin-order-detail__proof-section">
                       <p className="admin-order-detail__section-title">Uploaded Proof</p>
                       <ProofViewer order={order}/>
                     </div>
                   )}
-                  
+
                   <div className="admin-order-detail__actions-section">
                     <EftActions order={order} onAction={handleEftAction} disabled={saving}/>
                   </div>
@@ -651,7 +647,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <span className="admin-order-detail__payment-row-label">Payment Status</span>
                     <PayStatusBadge status={payStatus}/>
                   </div>
-                  
+
                   {isCashPaid ? (
                     <div className="admin-order-detail__cod-box admin-order-detail__cod-box--paid">
                       <p className="admin-order-detail__cod-amount">Amount collected: <span className="admin-order-detail__cod-grand">{fmtMoney(order.total)}</span></p>
@@ -663,7 +659,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                       {codFee > 0 && <p className="admin-order-detail__cod-fee">Includes COD fee: {fmtMoney(codFee)}</p>}
                     </div>
                   )}
-                  
+
                   <div className="admin-order-detail__actions-section">
                     <CodActions order={order} onAction={handleCodAction} disabled={saving}/>
                   </div>
@@ -730,7 +726,19 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
 }
 
 export default function OrdersPage() {
-  const { orders = [], updateOrderNote, updatePaymentStatus, updateTracking, replaceOrder, fmtMoney, fmtDate } = useAdmin();
+  const {
+    orders = [],
+    ordersPagination = { page: 1, limit: 20, total: 0, totalPages: 1 },
+    fetchOrdersPaginated,
+    stats,
+    updateOrderNote,
+    updatePaymentStatus,
+    updateTracking,
+    replaceOrder,
+    fmtMoney,
+    fmtDate,
+    loadingStates
+  } = useAdmin();
   const { isAdmin, session } = useAuth();
 
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
@@ -762,48 +770,26 @@ export default function OrdersPage() {
     return o.paymentMethod || o.payment?.method || '';
   }
 
-  const filtered = useMemo(() => {
-    let list = [...orders];
+  // Fetch paginated data from API
+  useEffect(() => {
+    fetchOrdersPaginated({
+      page,
+      limit: ORDERS_PER_PAGE,
+      status: orderStatusFilter,
+      payStatus: payStatusFilter,
+      payMethod: payMethodFilter,
+      dateRange: dateRangeFilter,
+      customStart,
+      customEnd,
+      search: search.trim(),
+      sort
+    });
+  }, [page, orderStatusFilter, payStatusFilter, payMethodFilter, dateRangeFilter, customStart, customEnd, search, sort, fetchOrdersPaginated]);
 
-    if (dateRangeFilter !== 'all') {
-      const now = new Date();
-      let start = new Date(0);
-      let end = new Date();
-      if (dateRangeFilter === 'today') {
-        start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      } else if (dateRangeFilter === '7d') {
-        start = new Date(now); start.setDate(now.getDate() - 6); start.setHours(0,0,0,0);
-      } else if (dateRangeFilter === '30d') {
-        start = new Date(now); start.setDate(now.getDate() - 29); start.setHours(0,0,0,0);
-      } else if (dateRangeFilter === 'custom') {
-        start = customStart ? new Date(customStart) : new Date(0);
-        end = customEnd ? new Date(customEnd) : new Date();
-        if (customEnd) end.setHours(23, 59, 59, 999);
-      }
-      list = list.filter(o => {
-        const d = new Date(o.createdAt);
-        return d >= start && d <= end;
-      });
-    }
-
-    if (orderStatusFilter !== 'all') list = list.filter(o => effectiveOrderStatus(o) === orderStatusFilter);
-    if (payStatusFilter   !== 'all') list = list.filter(o => effectivePayStatus(o)   === payStatusFilter);
-    if (payMethodFilter   !== 'all') list = list.filter(o => effectivePayMethod(o).toUpperCase() === payMethodFilter.toUpperCase());
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(o =>
-        (o.orderNumber || '').toLowerCase().includes(q) ||
-        (o.customer?.name  || '').toLowerCase().includes(q) ||
-        (o.customer?.email || '').toLowerCase().includes(q) ||
-        (o.customer?.phone || '').toLowerCase().includes(q)
-      );
-    }
-    list.sort((a, b) => sort === 'oldest' ? new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime() : new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return list;
-  }, [orders, orderStatusFilter, payStatusFilter, payMethodFilter, dateRangeFilter, customStart, customEnd, search, sort]);
-
-  const paged = filtered.slice((page - 1) * ORDERS_PER_PAGE, page * ORDERS_PER_PAGE);
-  useEffect(() => setPage(1), [orderStatusFilter, payStatusFilter, payMethodFilter, search, sort]);
+  // Reset page to 1 on filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [orderStatusFilter, payStatusFilter, payMethodFilter, dateRangeFilter, customStart, customEnd, search, sort]);
 
   function needsAttention(o) {
     const ps = effectivePayStatus(o);
@@ -928,59 +914,35 @@ export default function OrdersPage() {
     }
   }
 
-  const orderStatusCounts = useMemo(() => {
-    const c = { all: orders.length };
-    orders.forEach(o => {
-      const s = effectiveOrderStatus(o);
-      c[s] = (c[s] || 0) + 1;
-    });
-    return c;
-  }, [orders]);
+  const attentionCount = stats?.attentionCount || 0;
 
-  const payStatusCounts = useMemo(() => {
-    const c = { all: orders.length };
-    orders.forEach(o => {
-      const s = effectivePayStatus(o);
-      c[s] = (c[s] || 0) + 1;
-    });
-    return c;
-  }, [orders]);
-
-  const attentionCount = useMemo(() => orders.filter(needsAttention).length, [orders]);
-
-  const getExportData = useCallback(() => {
-    return filtered.map(o => {
-      const items = o.items || [];
-      const itemNames = items.map(i => i.name).join('\n');
-      const itemQtys = items.map(i => i.qty).join('\n');
-      const itemVars = items.map(i => i.variation || '—').join('\n');
-      return [
-        o.orderNumber,
-        new Date(o.createdAt).toLocaleString('en-ZA'),
-        o.customer?.name || '—',
-        o.customer?.phone || '—',
-        o.customer?.email || '—',
-        o.address || '—',
-        itemNames,
-        itemQtys,
-        itemVars,
-        o.subtotal || 0,
-        o.couponDiscount || 0,
-        o.delivery || 0,
-        o.total || 0,
-        effectivePayMethod(o),
-        effectivePayStatus(o),
-        effectiveOrderStatus(o)
-      ];
-    });
-  }, [filtered]);
+  async function fetchAllMatchingOrdersForExport() {
+    const q = new URLSearchParams();
+    q.set('limit', '10000');
+    if (orderStatusFilter && orderStatusFilter !== 'all') q.set('status', orderStatusFilter);
+    if (payStatusFilter && payStatusFilter !== 'all') q.set('payStatus', payStatusFilter);
+    if (payMethodFilter && payMethodFilter !== 'all') q.set('payMethod', payMethodFilter);
+    if (search.trim()) q.set('search', search.trim());
+    if (sort) q.set('sort', sort);
+    if (dateRangeFilter && dateRangeFilter !== 'all') {
+      q.set('dateRange', dateRangeFilter);
+      if (dateRangeFilter === 'custom') {
+        if (customStart) q.set('customStart', customStart);
+        if (customEnd) q.set('customEnd', customEnd);
+      }
+    }
+    const res = await fetch(`/api/orders?${q.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch orders for export');
+    const result = await res.json();
+    return result.data || [];
+  }
 
   async function handleExportCSV() {
     if (!isAdmin) return showToast('Unauthorized', 'error');
     setIsExporting(true);
     try {
+      const allMatching = await fetchAllMatchingOrdersForExport();
       const headers = ['Order ID', 'Order Date', 'Customer Name', 'Phone', 'Email', 'Delivery Address', 'Products', 'Quantities', 'Variations', 'Subtotal', 'Discount', 'Delivery', 'Total', 'Payment Method', 'Payment Status', 'Order Status'];
-      const data = getExportData();
       const escapeCell = (cell) => {
         if (cell == null) return '""';
         const str = String(cell);
@@ -989,9 +951,33 @@ export default function OrdersPage() {
         }
         return str;
       };
+      
       const csvContent = [
         headers.map(escapeCell).join(','),
-        ...data.map(row => row.map(escapeCell).join(','))
+        ...allMatching.map(o => {
+          const items = o.items || [];
+          const itemNames = items.map(i => i.name).join('\n');
+          const itemQtys = items.map(i => i.qty).join('\n');
+          const itemVars = items.map(i => i.variation || '—').join('\n');
+          return [
+            o.orderNumber,
+            new Date(o.createdAt).toLocaleString('en-ZA'),
+            o.customer?.name || '—',
+            o.customer?.phone || '—',
+            o.customer?.email || '—',
+            o.address || '—',
+            itemNames,
+            itemQtys,
+            itemVars,
+            o.subtotal || 0,
+            o.couponDiscount || 0,
+            o.delivery || 0,
+            o.total || 0,
+            effectivePayMethod(o),
+            effectivePayStatus(o),
+            effectiveOrderStatus(o)
+          ].map(escapeCell).join(',');
+        })
       ].join('\n');
       
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1017,16 +1003,17 @@ export default function OrdersPage() {
     if (isExporting) return;
     setIsExporting(true);
     try {
+      const allMatching = await fetchAllMatchingOrdersForExport();
       const [{ jsPDF }, { default: autoTable }] = await Promise.all([
         import('jspdf'),
         import('jspdf-autotable'),
       ]);
       const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
-      const safe = (v) => (v == null ? '—' : String(v).replace(/[ -]/g, ' '));
+      const safe = (v) => (v == null ? '—' : String(v).replace(/[ -  ]/g, ' '));
 
       const headers = [['Order #', 'Date', 'Customer', 'Phone', 'Email', 'Status', 'Pay Method', 'Pay Status', 'Total']];
-      const data = filtered.map(o => [
+      const data = allMatching.map(o => [
         safe(o.orderNumber),
         safe(new Date(o.createdAt).toLocaleString('en-ZA')),
         safe(o.customer?.name),
@@ -1041,7 +1028,7 @@ export default function OrdersPage() {
       doc.setFontSize(14);
       doc.text('Orders Export', 40, 30);
       doc.setFontSize(9);
-      doc.text(`${filtered.length} orders · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
+      doc.text(`${allMatching.length} orders · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
 
       autoTable(doc, {
         startY: 60,
@@ -1055,7 +1042,7 @@ export default function OrdersPage() {
 
       const dateStr = new Date().toISOString().split('T')[0];
       doc.save(`orders-export-${dateStr}.pdf`);
-      showToast(`PDF exported (${filtered.length} orders)`);
+      showToast(`PDF exported (${allMatching.length} orders)`);
     } catch (e) {
       console.error('PDF export failed', e);
       showToast(`Export failed: ${e?.message || 'unknown error'}`, 'error');
@@ -1071,7 +1058,7 @@ export default function OrdersPage() {
       <div className="admin-orders__header">
         <div>
           <h2 className="admin-orders__title">Orders</h2>
-          <p className="admin-orders__subtitle">{orders.length} total · {filtered.length} shown</p>
+          <p className="admin-orders__subtitle">{ordersPagination.total} total</p>
         </div>
         <div className="admin-orders__actions">
           {attentionCount > 0 && (
@@ -1080,11 +1067,11 @@ export default function OrdersPage() {
               <span className="admin-orders__attention-text">⚠ {attentionCount} proof{attentionCount !== 1 ? 's' : ''} need review</span>
             </div>
           )}
-          <Btn variant="secondary" size="sm" disabled={isExporting || filtered.length === 0} onClick={handleExportCSV}>
+          <Btn variant="secondary" size="sm" disabled={isExporting || ordersPagination.total === 0} onClick={handleExportCSV}>
             {isExporting ? <span className="admin-orders__export-spin">⭘</span> : null}
             Export CSV
           </Btn>
-          <Btn variant="secondary" size="sm" disabled={isExporting || filtered.length === 0} onClick={handleExportPDF}>
+          <Btn variant="secondary" size="sm" disabled={isExporting || ordersPagination.total === 0} onClick={handleExportPDF}>
             {isExporting ? <span className="admin-orders__export-spin">⭘</span> : null}
             Export PDF
           </Btn>
@@ -1116,15 +1103,14 @@ export default function OrdersPage() {
           className="admin-orders__filter-select">
           {ORDER_STATUS_OPTIONS
             .filter(o => isAdmin || !['Cancelled', 'cancelled'].includes(o.value))
-            .filter(o => o.value === 'all' || orderStatusCounts[o.value] > 0)
             .map(o => (
-            <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && orderStatusCounts[o.value] ? ` (${orderStatusCounts[o.value]})` : ''}</option>
+            <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && stats?.byStatus?.[o.value] ? ` (${stats.byStatus[o.value]})` : ''}</option>
           ))}
         </select>
         <select value={payStatusFilter} onChange={e => setPayStatusFilter(e.target.value)}
           className="admin-orders__filter-select">
-          {PAY_STATUS_OPTIONS.filter(o => o.value === 'all' || payStatusCounts[o.value] > 0 || o.value === payStatusFilter).map(o => (
-            <option key={o.value} value={o.value}>{o.label}{o.value !== 'all' && payStatusCounts[o.value] ? ` (${payStatusCounts[o.value]})` : ''}</option>
+          {PAY_STATUS_OPTIONS.map(o => (
+            <option key={o.value} value={o.value}>{o.label}</option>
           ))}
         </select>
         <select value={sort} onChange={e => setSort(e.target.value)}
@@ -1139,7 +1125,12 @@ export default function OrdersPage() {
       </div>
 
       <div className="admin-orders__table-container">
-        {filtered.length === 0 ? (
+        {loadingStates?.orders ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '64px', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner size={32} />
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading orders…</span>
+          </div>
+        ) : orders.length === 0 ? (
           <Empty icon="📦" title="No orders found" description="Try adjusting your search or filters."/>
         ) : (
           <>
@@ -1159,7 +1150,7 @@ export default function OrdersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.map(o => {
+                  {orders.map(o => {
                     const os = effectiveOrderStatus(o);
                     const ps = effectivePayStatus(o);
                     const pm = effectivePayMethod(o);
@@ -1203,7 +1194,7 @@ export default function OrdersPage() {
               </table>
             </div>
             <div className="admin-orders__pagination-wrap">
-              <Pagination page={page} total={filtered.length} pageSize={ORDERS_PER_PAGE} onChange={setPage}/>
+              <Pagination page={page} total={ordersPagination.total} pageSize={ORDERS_PER_PAGE} onChange={setPage}/>
             </div>
           </>
         )}

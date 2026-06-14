@@ -89,6 +89,9 @@ const ProductSchema = new Schema({
   updatedAt: { type: Number },
 }, { timestamps: true });
 
+ProductSchema.index({ name: 1 });
+ProductSchema.index({ createdAt: -1 });
+
 const OrderItemSchema = new Schema({
   productId: { type: String, required: true },
   name: { type: String, required: true },
@@ -173,6 +176,12 @@ const OrderSchema = new Schema({
   updatedAt: { type: Number },
 }, { timestamps: true });
 
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ status: 1 });
+OrderSchema.index({ paymentStatus: 1 });
+OrderSchema.index({ paymentMethod: 1 });
+OrderSchema.index({ 'customer.phone': 1 });
+
 const AddressSchema = new Schema({
   id: { type: String, required: true },
   label: { type: String, default: 'Home' },
@@ -197,6 +206,9 @@ const CustomerSchema = new Schema({
   createdAt: { type: Number },
   updatedAt: { type: Number },
 }, { timestamps: true });
+
+CustomerSchema.index({ phone: 1 });
+CustomerSchema.index({ createdAt: -1 });
 
 const CouponSchema = new Schema({
   id: { type: String, required: true, unique: true, index: true },
@@ -234,6 +246,9 @@ const ReviewSchema = new Schema({
   createdAt: { type: Number },
   updatedAt: { type: Number },
 }, { timestamps: true });
+
+ReviewSchema.index({ status: 1 });
+ReviewSchema.index({ createdAt: -1 });
 
 const FaqSchema = new Schema({
   id: { type: String, required: true, unique: true, index: true },
@@ -289,6 +304,8 @@ const ShippingRateSchema = new Schema({
 
 const AbandonedCartSchema = new Schema({
   id: { type: String, required: true, unique: true },
+  guestId: { type: String, default: null, index: true },
+  customerId: { type: String, default: null, index: true },
   customerName: { type: String, default: '' },
   email: { type: String, default: '', index: true, lowercase: true },
   items: [{ type: Schema.Types.Mixed }],
@@ -298,6 +315,9 @@ const AbandonedCartSchema = new Schema({
   converted: { type: Boolean, default: false },
   updatedAt: { type: Number },
 }, { timestamps: true });
+
+AbandonedCartSchema.index({ updatedAt: -1 });
+AbandonedCartSchema.index({ createdAt: -1 });
 
 const CartItemSchema = new Schema({
   id: { type: String, required: true },

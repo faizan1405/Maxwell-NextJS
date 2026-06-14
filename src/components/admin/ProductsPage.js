@@ -10,7 +10,7 @@ import {
 
 const BADGES  = [null,'Bestseller','New','High Purity','Sale'];
 const STATUSES= ['active','draft','archived'];
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 20;
 
 const MEDIA_LIMITS   = { maxItems: 12, maxImageBytes: 5*1024*1024, maxVideoBytes: 50*1024*1024 };
 const _ALLOWED_IMGS  = new Set(['image/jpeg','image/png','image/webp']);
@@ -745,7 +745,18 @@ function StockHistoryModal({ open, onClose }) {
 }
 
 export default function ProductsPage() {
-  const { products, addProduct, updateProduct, deleteProduct, fmtMoney, categories, setProducts } = useAdmin();
+  const {
+    products = [],
+    productsPagination = { page: 1, limit: 20, total: 0, totalPages: 1, counts: {} },
+    fetchProductsPaginated,
+    addProduct,
+    updateProduct,
+    deleteProduct,
+    fmtMoney,
+    categories,
+    setProducts,
+    loadingStates
+  } = useAdmin();
   const { isAdmin } = useAuth();
 
   const [search,    setSearch]    = useState('');
@@ -762,6 +773,9 @@ export default function ProductsPage() {
   const [adjustmentOpen, setAdjustmentOpen] = useState(false);
   const [adjustmentProd, setAdjustmentProd] = useState(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [rowBusy, setRowBusy] = useState({});
+  const [confirmBusy, setConfirmBusy] = useState(false);
 
   function handleAdjustmentSave(updatedProduct) {
     setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
@@ -774,33 +788,29 @@ export default function ProductsPage() {
     setTimeout(() => setToast(t=>({...t,visible:false})), 3000);
   }
 
-  const filtered = useMemo(() => {
-    let list = [...products];
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(p => p.name.toLowerCase().includes(q)||p.sku?.toLowerCase().includes(q)||(p.sub||'').toLowerCase().includes(q));
-    }
-    if (catFilter !== 'all') list = list.filter(p => p.cat === catFilter);
-    if (statusFilter !== 'all') list = list.filter(p => p.status === statusFilter);
-    list.sort((a,b) => {
-      if (sort==='name')       return a.name.localeCompare(b.name);
-      if (sort==='price_asc')  return a.price - b.price;
-      if (sort==='price_desc') return b.price - a.price;
-      if (sort==='stock_asc')  return a.stock - b.stock;
-      if (sort==='stock_desc') return b.stock - a.stock;
-      if (sort==='newest')     return (b.createdAt||0)-(a.createdAt||0);
-      return 0;
+  // Fetch paginated products from API
+  useEffect(() => {
+    fetchProductsPaginated({
+      page,
+      limit: PAGE_SIZE,
+      search: search.trim(),
+      cat: catFilter,
+      status: statusFilter,
+      sort
     });
-    return list;
-  }, [products, search, catFilter, statusFilter, sort]);
+  }, [page, search, catFilter, statusFilter, sort, fetchProductsPaginated]);
 
-  const paged = filtered.slice((page-1)*PAGE_SIZE, page*PAGE_SIZE);
-  useEffect(() => setPage(1), [search, catFilter, statusFilter, sort]);
+  // Reset page to 1 on filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, catFilter, statusFilter, sort]);
 
-  const activeCount   = products.filter(p=>p.status==='active').length;
-  const draftCount    = products.filter(p=>p.status==='draft').length;
-  const archivedCount = products.filter(p=>p.status==='archived').length;
-  const lowCount      = products.filter(p=>p.status==='active'&&p.stock<=p.lowStockThreshold).length;
+  const paged = products;
+
+  const activeCount   = productsPagination.counts?.active || 0;
+  const draftCount    = productsPagination.counts?.draft || 0;
+  const archivedCount = productsPagination.counts?.archived || 0;
+  const lowCount      = productsPagination.counts?.lowStock || 0;
 
   function toggleSelect(id) {
     setSelected(s => { const n=new Set(s); n.has(id)?n.delete(id):n.add(id); return n; });
@@ -838,7 +848,7 @@ export default function ProductsPage() {
       <div className="admin-products__header">
         <div>
           <h2 className="admin-products__header-title">Products</h2>
-          <p className="admin-products__header-subtitle">{products.length} total products</p>
+          <p className="admin-products__header-subtitle">{productsPagination.total} total products</p>
         </div>
         <div className="admin-products__header-actions">
           <Btn variant="secondary" onClick={() => setHistoryOpen(true)}>
@@ -890,7 +900,12 @@ export default function ProductsPage() {
       </div>
 
       <div className="admin-products__table-wrapper">
-        {filtered.length === 0 ? (
+        {loadingStates?.products ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '64px', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner size={32} />
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading products…</span>
+          </div>
+        ) : products.length === 0 ? (
           <Empty icon={<Icon.Box/>} title="No products found" description="Try adjusting your filters or add a new product."
             action={<Btn onClick={()=>{ setEditing(null); setFormOpen(true); }}><Icon.Plus/> Add Product</Btn>}/>
         ) : (
@@ -963,7 +978,7 @@ export default function ProductsPage() {
               </table>
             </div>
             <div className="admin-products__pagination">
-              <Pagination page={page} total={filtered.length} pageSize={PAGE_SIZE} onChange={setPage}/>
+              <Pagination page={page} total={productsPagination.total} pageSize={PAGE_SIZE} onChange={setPage}/>
             </div>
           </>
         )}

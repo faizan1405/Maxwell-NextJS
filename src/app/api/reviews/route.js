@@ -22,9 +22,73 @@ async function resolveProductSlug(input) {
 export async function GET(req) {
   await connectToDatabase();
   
-  const reviews = await Review.find().lean();
   const admin = verifySession(req);
-  if (admin) return NextResponse.json(reviews);
+  if (admin) {
+    const { searchParams } = req.nextUrl;
+    const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+    const limit = Math.max(1, parseInt(searchParams.get('limit'), 10) || 20);
+    const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || '';
+    const sort = searchParams.get('sort') || 'newest';
+
+    const query = {};
+
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+    if (search.trim()) {
+      const sQuery = search.trim();
+      query.$or = [
+        { customerName: { $regex: sQuery, $options: 'i' } },
+        { email: { $regex: sQuery, $options: 'i' } },
+        { text: { $regex: sQuery, $options: 'i' } },
+        { productId: { $regex: sQuery, $options: 'i' } }
+      ];
+    }
+
+    const total = await Review.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    const sortQuery = {};
+    if (sort === 'oldest') {
+      sortQuery.createdAt = 1;
+    } else {
+      sortQuery.createdAt = -1;
+    }
+
+    const data = await Review.find(query)
+      .sort(sortQuery)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const allCount = await Review.countDocuments({});
+    const pending = await Review.countDocuments({ status: 'pending' });
+    const approved = await Review.countDocuments({ status: 'approved' });
+    const rejected = await Review.countDocuments({ status: 'rejected' });
+    const hidden = await Review.countDocuments({ status: 'hidden' });
+
+    return NextResponse.json({
+      data,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      },
+      counts: {
+        all: allCount,
+        pending,
+        approved,
+        rejected,
+        hidden
+      }
+    }, { status: 200 });
+  }
+
+  const reviews = await Review.find().lean();
 
   const stripPii = r => ({
     id: r.id, productId: r.productId, customerName: r.customerName,

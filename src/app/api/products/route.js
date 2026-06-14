@@ -87,15 +87,112 @@ export async function GET(req) {
   }
 
   await connectToDatabase();
-  
-  let filter = {};
-  if (!all) {
-    filter.status = 'active';
+
+  if (all) {
+    const { searchParams } = req.nextUrl;
+    const page = Math.max(1, parseInt(searchParams.get('page'), 10) || 1);
+    const limit = Math.max(1, parseInt(searchParams.get('limit'), 10) || 20);
+    const search = searchParams.get('search') || '';
+    const cat = searchParams.get('cat') || '';
+    const status = searchParams.get('status') || '';
+    const sort = searchParams.get('sort') || 'name';
+
+    const query = {};
+
+    if (cat && cat !== 'all') {
+      query.cat = cat;
+    }
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+    if (search.trim()) {
+      const sQuery = search.trim();
+      query.$or = [
+        { name: { $regex: sQuery, $options: 'i' } },
+        { sku: { $regex: sQuery, $options: 'i' } },
+        { sub: { $regex: sQuery, $options: 'i' } }
+      ];
+    }
+
+    const total = await Product.countDocuments(query);
+    const totalPages = Math.ceil(total / limit);
+
+    const sortQuery = {};
+    if (sort === 'price_asc') {
+      sortQuery.price = 1;
+    } else if (sort === 'price_desc') {
+      sortQuery.price = -1;
+    } else if (sort === 'stock_asc') {
+      sortQuery.stock = 1;
+    } else if (sort === 'stock_desc') {
+      sortQuery.stock = -1;
+    } else if (sort === 'newest') {
+      sortQuery.createdAt = -1;
+    } else {
+      sortQuery.name = 1;
+    }
+
+    const data = await Product.find(query)
+      .sort(sortQuery)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    const mapped = data.map(p => {
+      if (p.media && p.media.length > 0) return p;
+      if (!p.img) return { ...p, media: [] };
+      return {
+        ...p,
+        media: [{
+          id:         p.id + '-img',
+          type:       'image',
+          url:        p.img,
+          storageKey: null,
+          altText:    p.name || '',
+          sortOrder:  0,
+          isPrimary:  true,
+          fileName:   p.img.split('/').pop(),
+          mimeType:   p.img.endsWith('.png') ? 'image/png' : 'image/jpeg',
+          fileSize:   0,
+          createdAt:  p.createdAt || Date.now(),
+        }],
+      };
+    });
+
+    const active = await Product.countDocuments({ status: 'active' });
+    const draft = await Product.countDocuments({ status: 'draft' });
+    const archived = await Product.countDocuments({ status: 'archived' });
+    
+    const activeList = await Product.find({ status: 'active' }).select('stock lowStockThreshold variants').lean();
+    const lowStock = activeList.filter(p => {
+      const threshold = p.lowStockThreshold || 0;
+      if (p.variants && p.variants.length > 0) {
+        return p.variants.some(v => v.stock <= threshold);
+      }
+      return p.stock <= threshold;
+    }).length;
+
+    return NextResponse.json({
+      data: mapped,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      },
+      counts: {
+        active,
+        draft,
+        archived,
+        lowStock
+      }
+    }, { status: 200 });
   }
+
+  const products = await Product.find({ status: 'active' }).lean();
   
-  const products = await Product.find(filter).lean();
-  
-  // Apply virtual media migration mapping
   const mapped = products.map(p => {
     if (p.media && p.media.length > 0) return p;
     if (!p.img) return { ...p, media: [] };

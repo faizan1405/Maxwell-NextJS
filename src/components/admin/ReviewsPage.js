@@ -9,7 +9,6 @@ import {
 import '../../styles/admin/_reviews.scss';
 
 const REVIEW_PAGE_SIZE = 15;
-const REVIEW_STATUSES = ['pending', 'approved', 'rejected', 'hidden'];
 
 function StarsMini({ value }) {
   return (
@@ -81,7 +80,15 @@ function ReviewCard({ review, onUpdate, onDelete, fmtDate }) {
 }
 
 export default function ReviewsPage() {
-  const { reviews, updateReview, deleteReview, fmtDate } = useAdmin();
+  const {
+    reviews = [],
+    reviewsPagination = { page: 1, limit: 15, total: 0, totalPages: 1, counts: {} },
+    fetchReviewsPaginated,
+    updateReview,
+    deleteReview,
+    fmtDate,
+    loadingStates
+  } = useAdmin();
   const [tab,      setTab]     = useState('pending');
   const [search,   setSearch]  = useState('');
   const [page,     setPage]    = useState(1);
@@ -93,33 +100,30 @@ export default function ReviewsPage() {
     setTimeout(() => setToast(t => ({ ...t, visible: false })), 3000);
   }
 
-  const allReviews = reviews || [];
+  // Fetch paginated reviews
+  useEffect(() => {
+    fetchReviewsPaginated({
+      page,
+      limit: REVIEW_PAGE_SIZE,
+      search: search.trim(),
+      status: tab === 'all' ? '' : tab
+    });
+  }, [page, search, tab, fetchReviewsPaginated]);
 
-  const tabCounts = useMemo(() => {
-    const c = { all: allReviews.length };
-    REVIEW_STATUSES.forEach(s => { c[s] = allReviews.filter(r => r.status === s).length; });
-    return c;
-  }, [allReviews]);
-
-  const filtered = useMemo(() => {
-    let list = tab === 'all' ? allReviews : allReviews.filter(r => r.status === tab);
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(r =>
-        (r.customerName || '').toLowerCase().includes(q) ||
-        (r.email || '').toLowerCase().includes(q) ||
-        (r.text || '').toLowerCase().includes(q) ||
-        (r.productId || '').toLowerCase().includes(q)
-      );
-    }
-    return [...list].sort((a, b) => b.createdAt - a.createdAt);
-  }, [allReviews, tab, search]);
-
-  const paged = filtered.slice((page - 1) * REVIEW_PAGE_SIZE, page * REVIEW_PAGE_SIZE);
-  
+  // Reset page to 1 on filter changes
   useEffect(() => {
     setPage(1);
-  }, [tab, search]);
+  }, [search, tab]);
+
+  const tabCounts = useMemo(() => {
+    return {
+      pending: reviewsPagination.counts?.pending || 0,
+      approved: reviewsPagination.counts?.approved || 0,
+      rejected: reviewsPagination.counts?.rejected || 0,
+      hidden: reviewsPagination.counts?.hidden || 0,
+      all: reviewsPagination.counts?.all || 0
+    };
+  }, [reviewsPagination.counts]);
 
   async function handleUpdate(id, patch) {
     await updateReview(id, patch);
@@ -165,18 +169,23 @@ export default function ReviewsPage() {
 
       <SearchInput value={search} onChange={setSearch} placeholder="Search by name, email, product or text…" />
 
-      {filtered.length === 0 ? (
+      {loadingStates?.reviews ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '64px', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner size={32} />
+          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading reviews…</span>
+        </div>
+      ) : reviews.length === 0 ? (
         <div className="reviews-page__empty-card">
           <Empty icon="⭐" title={`No ${tab === 'all' ? '' : tab + ' '}reviews`} description="Nothing to moderate here." />
         </div>
       ) : (
         <>
           <div className="reviews-page__list">
-            {paged.map(r => (
+            {reviews.map(r => (
               <ReviewCard key={r.id} review={r} onUpdate={handleUpdate} onDelete={id => setDeleting(id)} fmtDate={fmtDate} />
             ))}
           </div>
-          <Pagination page={page} total={filtered.length} pageSize={REVIEW_PAGE_SIZE} onChange={setPage} />
+          <Pagination page={page} total={reviewsPagination.total} pageSize={REVIEW_PAGE_SIZE} onChange={setPage} />
         </>
       )}
 

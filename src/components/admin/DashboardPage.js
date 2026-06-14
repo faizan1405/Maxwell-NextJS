@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAdmin } from './AdminProvider';
 import { StatCard, Btn, Avatar, Badge, Spinner } from '../ui/index';
 import { Icon } from '../ui/Icons';
@@ -84,11 +84,13 @@ function OrderStatusChart({ byStatus }) {
 }
 
 export default function DashboardPage({ setPage }) {
-  const { stats, orders, fmtMoney, fmtDate, loadingStates } = useAdmin();
+  const { stats, fetchDashboardStats, fmtMoney, fmtDate, loadingStates } = useAdmin();
 
-  const isOrdersLoading = loadingStates?.orders;
-  const isProductsLoading = loadingStates?.products;
-  const isCustomersLoading = loadingStates?.customers;
+  useEffect(() => {
+    fetchDashboardStats();
+  }, [fetchDashboardStats]);
+
+  const isDashboardLoading = loadingStates?.dashboard;
   const accounting = stats.accounting || {};
 
   return (
@@ -101,7 +103,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.grossSales || 0)}
           color="cobalt"
           sub="Valid orders"
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="💰"
@@ -109,7 +111,7 @@ export default function DashboardPage({ setPage }) {
           value={formatZarCompact(accounting.collectedRevenue || 0)}
           color="cobalt"
           sub="Confirmed & paid"
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="?"
@@ -117,7 +119,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.pendingPayments || 0)}
           color="amber"
           sub="COD pending + EFT unapproved"
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="COD"
@@ -125,7 +127,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.outstandingCOD || 0)}
           color="amber"
           sub="Delivered, cash not collected"
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="EFT"
@@ -133,7 +135,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.eftAwaitingApproval || 0)}
           color="purple"
           sub="Proof uploaded"
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="📦"
@@ -142,7 +144,7 @@ export default function DashboardPage({ setPage }) {
           color="purple"
           sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`}
           onClick={() => setPage('orders')}
-          loading={isOrdersLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="🛒"
@@ -151,7 +153,7 @@ export default function DashboardPage({ setPage }) {
           color="green"
           sub={stats.lowStockCount>0?`${stats.lowStockCount} low stock`:null}
           onClick={() => setPage('products')}
-          loading={isProductsLoading}
+          loading={isDashboardLoading}
         />
         <StatCard
           icon="👥"
@@ -160,13 +162,13 @@ export default function DashboardPage({ setPage }) {
           color="amber"
           sub="Unique buyers"
           onClick={() => setPage('customers')}
-          loading={isCustomersLoading || isOrdersLoading}
+          loading={isDashboardLoading}
         />
       </div>
 
       {/* Charts */}
       <div className="dashboard-page__charts">
-        {isOrdersLoading ? (
+        {isDashboardLoading ? (
           <div className="revenue-chart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '220px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
               <Spinner size={24} />
@@ -174,10 +176,10 @@ export default function DashboardPage({ setPage }) {
             </div>
           </div>
         ) : (
-          <RevenueChart orders={orders}/>
+          <RevenueChart orders={stats.orders || []}/>
         )}
 
-        {isOrdersLoading ? (
+        {isDashboardLoading ? (
           <div className="status-chart" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '220px' }}>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
               <Spinner size={24} />
@@ -190,7 +192,7 @@ export default function DashboardPage({ setPage }) {
       </div>
 
       {/* Low stock alerts */}
-      {stats.lowStockCount > 0 && !isProductsLoading && (
+      {stats.lowStockCount > 0 && !isDashboardLoading && (
         <div className="dashboard-page__alerts">
           <div className="dashboard-page__alerts-header">
             <Icon.Warning/>
@@ -218,7 +220,7 @@ export default function DashboardPage({ setPage }) {
           <Btn variant="ghost" size="sm" onClick={() => setPage('orders')}>View all →</Btn>
         </div>
         <div className="dashboard-page__table-wrapper">
-          {isOrdersLoading ? (
+          {isDashboardLoading ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '32px', alignItems: 'center', justifyContent: 'center' }}>
               <Spinner size={24} />
               <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading recent orders…</span>
@@ -235,7 +237,7 @@ export default function DashboardPage({ setPage }) {
                 </tr>
               </thead>
               <tbody className="dashboard-page__table-body">
-                {stats.recentOrders.map(o => (
+                {(stats.recentOrders || []).map(o => (
                   <tr key={o.id}>
                     <td className="dashboard-page__cell dashboard-page__cell--order">{o.orderNumber}</td>
                     <td className="dashboard-page__cell">

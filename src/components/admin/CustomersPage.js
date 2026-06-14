@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth, useAdmin, fmtMoney, fmtDate } from './AdminProvider';
 import * as Icon from '../ui/Icons';
-import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast, Badge, StatCard } from '../ui/index';
+import { Avatar, Btn, Modal, SearchInput, Empty, Pagination, AdminToast, Badge, StatCard, Spinner } from '../ui/index';
 import { formatZarCompact } from '../../utils/currency';
 
 const CUST_PER_PAGE = 10;
@@ -42,12 +42,7 @@ function CustomerDetail({ customer, onClose }) {
           </div>
           <div className="admin-customer-detail__stat-box admin-customer-detail__stat-box--avg">
             <div className="admin-customer-detail__stat-val admin-customer-detail__stat-val--avg">
-              {(() => {
-                const paidOrders = (customer.orders || []).filter(o =>
-                  o.payment?.status === 'paid' || o.paymentStatus === 'Paid'
-                );
-                return paidOrders.length > 0 ? fmtMoney(customer.totalSpent / paidOrders.length) : fmtMoney(0);
-              })()}
+              {customer.orderCount > 0 ? fmtMoney(customer.totalSpent / customer.orderCount) : fmtMoney(0)}
             </div>
             <div className="admin-customer-detail__stat-label">Avg. Order</div>
           </div>
@@ -124,11 +119,11 @@ function CustomerDetail({ customer, onClose }) {
                         <span className="admin-customer-detail__order-num">{o.orderNumber}</span>
                         <Badge label={o.status} variant={o.status}/>
                       </div>
-                      <p className="admin-customer-detail__order-meta">{o.items?.length} item{o.items?.length!==1?'s':''} · {fmtDate(o.createdAt)}</p>
+                      <p className="admin-customer-detail__order-meta">{o.itemsCount || 0} item{(o.itemsCount || 0)!==1?'s':''} · {fmtDate(o.createdAt)}</p>
                     </div>
                     <div className="admin-customer-detail__order-totals">
                       <p className="admin-customer-detail__order-total">{fmtMoney(o.total)}</p>
-                      <p className={`admin-customer-detail__order-payment ${o.payment?.status==='paid' ? 'admin-customer-detail__order-payment--paid' : 'admin-customer-detail__order-payment--unpaid'}`}>{o.payment?.method}</p>
+                      <p className={`admin-customer-detail__order-payment ${o.paymentStatus==='Paid' || o.payment?.status==='paid' ? 'admin-customer-detail__order-payment--paid' : 'admin-customer-detail__order-payment--unpaid'}`}>{o.paymentMethod || o.payment?.method}</p>
                     </div>
                   </div>
                 ))}
@@ -142,7 +137,14 @@ function CustomerDetail({ customer, onClose }) {
 }
 
 export default function CustomersPage() {
-  const { customers = [], fmtMoney, fmtDate } = useAdmin();
+  const {
+    customers = [],
+    customersPagination = { page: 1, limit: 10, total: 0, totalPages: 1, summary: {} },
+    fetchCustomersPaginated,
+    fmtMoney,
+    fmtDate,
+    loadingStates
+  } = useAdmin();
   const { isAdmin } = useAuth();
 
   const [search,  setSearch]  = useState('');
@@ -158,59 +160,44 @@ export default function CustomersPage() {
     setTimeout(() => setToast(t => ({ ...t, visible:false })), 3500);
   }
 
-  const filtered = useMemo(() => {
-    let list = [...customers];
-
-    if (filter === 'account') list = list.filter(c => c.hasAccount);
-    if (filter === 'guest')   list = list.filter(c => !c.hasAccount);
-
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(c =>
-        (c.name||'').toLowerCase().includes(q) ||
-        (c.email||'').toLowerCase().includes(q) ||
-        (c.phone||'').includes(q)
-      );
-    }
-    list.sort((a,b) => {
-      if (sort==='name')        return (a.name||'').localeCompare(b.name||'');
-      if (sort==='spent_asc')   return a.totalSpent - b.totalSpent;
-      if (sort==='spent_desc')  return b.totalSpent - a.totalSpent;
-      if (sort==='orders_desc') return b.orderCount - a.orderCount;
-      if (sort==='recent')      return new Date(b.lastOrderAt).getTime() - new Date(a.lastOrderAt).getTime();
-      return 0;
+  // Fetch paginated customer records
+  useEffect(() => {
+    fetchCustomersPaginated({
+      page,
+      limit: CUST_PER_PAGE,
+      search: search.trim(),
+      filter,
+      sort
     });
-    return list;
-  }, [customers, search, sort, filter]);
+  }, [page, search, filter, sort, fetchCustomersPaginated]);
 
-  const paged = filtered.slice((page-1)*CUST_PER_PAGE, page*CUST_PER_PAGE);
-  useEffect(() => setPage(1), [search, sort, filter]);
+  // Reset page to 1 on filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [search, filter, sort]);
 
-  const totalRevenue  = customers.reduce((s,c) => s+c.totalSpent, 0);
-  const avgSpend      = customers.length ? totalRevenue / customers.length : 0;
-  const accountCount  = customers.filter(c => c.hasAccount).length;
+  const totalRevenue  = customersPagination.summary?.totalRevenue || 0;
+  const avgSpend      = customersPagination.summary?.avgSpend || 0;
+  const accountCount  = customersPagination.summary?.accountCount || 0;
 
-  const getExportData = useCallback(() => {
-    return filtered.map(c => {
-      return [
-        c.name || '—',
-        c.phone || '—',
-        c.email || '—',
-        c.orders?.[0]?.address || '—',
-        c.hasAccount ? new Date(c.accountSince).toLocaleString('en-ZA') : '—',
-        c.orderCount || 0,
-        fmtMoney(c.totalSpent || 0),
-        c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleString('en-ZA') : '—'
-      ];
-    });
-  }, [filtered]);
+  async function fetchAllMatchingCustomersForExport() {
+    const q = new URLSearchParams();
+    q.set('limit', '10000');
+    if (search.trim()) q.set('search', search.trim());
+    if (filter && filter !== 'all') q.set('filter', filter);
+    if (sort) q.set('sort', sort);
+    const res = await fetch(`/api/customers?${q.toString()}`);
+    if (!res.ok) throw new Error('Failed to fetch customers for export');
+    const result = await res.json();
+    return result.data || [];
+  }
 
   async function handleExportCSV() {
     if (!isAdmin) return showToast('Unauthorized', 'error');
     setIsExporting(true);
     try {
+      const allMatching = await fetchAllMatchingCustomersForExport();
       const headers = ['Customer Name', 'Phone', 'Email', 'Address', 'Registration Date', 'Total Orders', 'Total Spent', 'Last Order Date'];
-      const data = getExportData();
       const escapeCell = (cell) => {
         if (cell == null) return '""';
         const str = String(cell);
@@ -221,7 +208,16 @@ export default function CustomersPage() {
       };
       const csvContent = [
         headers.map(escapeCell).join(','),
-        ...data.map(row => row.map(escapeCell).join(','))
+        ...allMatching.map(c => [
+          c.name || '—',
+          c.phone || '—',
+          c.email || '—',
+          c.orders?.[0]?.address || '—',
+          c.hasAccount ? new Date(c.accountSince).toLocaleString('en-ZA') : '—',
+          c.orderCount || 0,
+          fmtMoney(c.totalSpent || 0),
+          c.lastOrderAt ? new Date(c.lastOrderAt).toLocaleString('en-ZA') : '—'
+        ].map(escapeCell).join(','))
       ].join('\n');
       
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -247,6 +243,7 @@ export default function CustomersPage() {
     if (isExporting) return;
     setIsExporting(true);
     try {
+      const allMatching = await fetchAllMatchingCustomersForExport();
       const [{ jsPDF }, { default: autoTable }] = await Promise.all([
         import('jspdf'),
         import('jspdf-autotable'),
@@ -256,7 +253,7 @@ export default function CustomersPage() {
       const safe = (v) => (v == null ? '—' : String(v).replace(/[\x00-\x1F\x7F]/g, ' '));
 
       const headers = [['Name', 'Email', 'Phone', 'Type', 'Orders', 'Total Spent', 'Last Order']];
-      const data = filtered.map(c => [
+      const data = allMatching.map(c => [
         safe(c.name),
         safe(c.email),
         safe(c.phone),
@@ -269,7 +266,7 @@ export default function CustomersPage() {
       doc.setFontSize(14);
       doc.text('Customers Export', 40, 30);
       doc.setFontSize(9);
-      doc.text(`${filtered.length} customers · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
+      doc.text(`${allMatching.length} customers · Generated ${new Date().toLocaleString('en-ZA')}`, 40, 46);
 
       autoTable(doc, {
         startY: 60,
@@ -283,7 +280,7 @@ export default function CustomersPage() {
 
       const dateStr = new Date().toISOString().split('T')[0];
       doc.save(`customers-export-${dateStr}.pdf`);
-      showToast(`PDF exported (${filtered.length} customers)`);
+      showToast(`PDF exported (${allMatching.length} customers)`);
     } catch (e) {
       console.error('PDF export failed', e);
       showToast(`Export failed: ${e?.message || 'unknown error'}`, 'error');
@@ -299,14 +296,14 @@ export default function CustomersPage() {
       <div className="admin-customers__header">
         <div>
           <h2 className="admin-customers__title">Customers</h2>
-          <p className="admin-customers__subtitle">{customers.length} customers · {accountCount} registered accounts</p>
+          <p className="admin-customers__subtitle">{customersPagination.total} customers · {accountCount} registered accounts</p>
         </div>
         <div className="admin-customers__actions">
-          <Btn variant="secondary" size="sm" disabled={isExporting || filtered.length === 0} onClick={handleExportCSV}>
+          <Btn variant="secondary" size="sm" disabled={isExporting || customersPagination.total === 0} onClick={handleExportCSV}>
             {isExporting ? <span className="admin-customers__export-spin">⭘</span> : null}
             Export CSV
           </Btn>
-          <Btn variant="secondary" size="sm" disabled={isExporting || filtered.length === 0} onClick={handleExportPDF}>
+          <Btn variant="secondary" size="sm" disabled={isExporting || customersPagination.total === 0} onClick={handleExportPDF}>
             {isExporting ? <span className="admin-customers__export-spin">⭘</span> : null}
             Export PDF
           </Btn>
@@ -314,7 +311,7 @@ export default function CustomersPage() {
       </div>
 
       <div className="admin-customers__stats">
-        <StatCard icon="👥" label="Total Customers"     value={customers.length}      color="cobalt"/>
+        <StatCard icon="👥" label="Total Customers"     value={customersPagination.total}      color="cobalt"/>
         <StatCard icon="🔑" label="Registered Accounts" value={accountCount}          color="cobalt"/>
         <StatCard icon="💰" label="Collected Revenue"       value={formatZarCompact(totalRevenue)} color="green"/>
         <StatCard icon="🧾" label="Avg. Order Value"    value={fmtMoney(avgSpend)}   color="amber"/>
@@ -322,7 +319,7 @@ export default function CustomersPage() {
 
       <div className="admin-customers__filters">
         <SearchInput value={search} onChange={setSearch} placeholder="Search customers…"/>
-        <div className="admin-customers__tabs">
+        <div className="admin-customers__filters-tabs">
           {[['all','All'],['account','Has Account'],['guest','Guest']].map(([v,l]) => (
             <button key={v} onClick={()=>setFilter(v)}
               className={`admin-customers__tab ${filter===v ? 'admin-customers__tab--active' : ''}`}>
@@ -341,7 +338,12 @@ export default function CustomersPage() {
       </div>
 
       <div className="admin-customers__table-container">
-        {filtered.length === 0 ? (
+        {loadingStates?.customers ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '64px', alignItems: 'center', justifyContent: 'center' }}>
+            <Spinner size={32} />
+            <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading customers…</span>
+          </div>
+        ) : customers.length === 0 ? (
           <Empty icon="👥" title="No customers found" description="No customers match your search."/>
         ) : (
           <>
@@ -359,7 +361,7 @@ export default function CustomersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {paged.map(c => (
+                  {customers.map(c => (
                     <tr key={c.accountId || c.id || c.email} onClick={()=>setViewing(c)}>
                       <td>
                         <div className="admin-customers__avatar-group">
@@ -398,7 +400,7 @@ export default function CustomersPage() {
               </table>
             </div>
             <div className="admin-customers__pagination-wrap">
-              <Pagination page={page} total={filtered.length} pageSize={CUST_PER_PAGE} onChange={setPage}/>
+              <Pagination page={page} total={customersPagination.total} pageSize={CUST_PER_PAGE} onChange={setPage}/>
             </div>
           </>
         )}

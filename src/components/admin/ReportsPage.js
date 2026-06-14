@@ -1,45 +1,28 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useAdmin } from './AdminProvider';
 import { calculateOrderStats } from '../../utils/accounting';
-import { StatCard, Btn } from '../ui/index';
+import { StatCard, Btn, Spinner } from '../ui/index';
 import { Icon } from '../ui/Icons';
 import '../../styles/admin/_reports.scss';
 
 export default function ReportsPage() {
-  const { orders, stats, fmtMoney } = useAdmin();
+  const { reportsOrders, stats, fmtMoney, fetchReportsOrders, loadingStates } = useAdmin();
   const [range, setRange] = useState('30d'); // today, 7d, 30d, all, custom
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
 
-  // ── Date Filtering ────────────────────────────────────────────────────────
-  const filteredOrders = useMemo(() => {
-    const now = new Date();
-    let start = new Date(0);
-    let end = new Date();
-    
-    if (range === 'today') {
-      start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    } else if (range === '7d') {
-      start = new Date(now);
-      start.setDate(now.getDate() - 6);
-      start.setHours(0,0,0,0);
-    } else if (range === '30d') {
-      start = new Date(now);
-      start.setDate(now.getDate() - 29);
-      start.setHours(0,0,0,0);
-    } else if (range === 'custom') {
-      start = customStart ? new Date(customStart) : new Date(0);
-      end = customEnd ? new Date(customEnd) : new Date();
-      if (customEnd) end.setHours(23, 59, 59, 999);
-    }
-
-    return (orders || []).filter(o => {
-      const d = new Date(o.createdAt);
-      return d >= start && d <= end;
+  // Fetch reports orders on-demand based on range selection
+  useEffect(() => {
+    fetchReportsOrders({
+      range,
+      customStart,
+      customEnd
     });
-  }, [orders, range, customStart, customEnd]);
+  }, [range, customStart, customEnd, fetchReportsOrders]);
+
+  const filteredOrders = reportsOrders || [];
 
   // ── Aggregation ───────────────────────────────────────────────────────────
   const {
@@ -73,17 +56,17 @@ export default function ReportsPage() {
   }, [filteredOrders]);
 
   const {
-    grossSales,
-    collectedRevenue,
-    outstandingCOD,
-    pendingPayments,
-    totalValidOrders,
-    codSales,
-    eftSales,
-    codCount,
-    eftCount,
-    pendingOrdersCount
-  } = accountingStats;
+    grossSales = 0,
+    collectedRevenue = 0,
+    outstandingCOD = 0,
+    pendingPayments = 0,
+    totalValidOrders = 0,
+    codSales = 0,
+    eftSales = 0,
+    codCount = 0,
+    eftCount = 0,
+    pendingOrdersCount = 0
+  } = accountingStats || {};
 
   // ── Exports ───────────────────────────────────────────────────────────────
   const downloadCSV = (csvContent, fileName) => {
@@ -156,104 +139,113 @@ export default function ReportsPage() {
           )}
         </div>
         <div className="reports-page__actions">
-          <Btn variant="secondary" size="sm" onClick={exportOrders}><Icon.Download /> Orders CSV</Btn>
-          <Btn variant="secondary" size="sm" onClick={exportSales}><Icon.Download /> Sales CSV</Btn>
+          <Btn variant="secondary" size="sm" disabled={loadingStates?.reports || filteredOrders.length === 0} onClick={exportOrders}><Icon.Download /> Orders CSV</Btn>
+          <Btn variant="secondary" size="sm" disabled={loadingStates?.reports || productSales.length === 0} onClick={exportSales}><Icon.Download /> Sales CSV</Btn>
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="reports-page__stats">
-        <StatCard icon="📊" label="Gross Sales" value={fmtMoney(grossSales)} color="cobalt" sub="All valid orders" />
-        <StatCard icon="💰" label="Collected Revenue" value={fmtMoney(collectedRevenue)} color="green" sub="Paid orders only" />
-        <StatCard icon="📦" label="Valid Orders" value={totalValidOrders} color="purple" sub="Excludes cancelled" />
-        <StatCard icon="⏳" label="Outstanding COD" value={fmtMoney(outstandingCOD)} color="amber" sub="Delivered, unpaid" />
-      </div>
-
-      {/* Charts & Split Views */}
-      <div className="reports-page__split">
-        
-        {/* Payment Methods Split */}
-        <div className="reports-page__card">
-          <div className="reports-page__card-header">
-            <h3 className="reports-page__card-title">Revenue by Payment Method</h3>
-          </div>
-          <div className="reports-page__payment-boxes">
-            <div className="reports-page__payment-box">
-              <p className="reports-page__payment-label">Cash on Delivery</p>
-              <p className="reports-page__payment-value reports-page__payment-value--cod">{fmtMoney(codSales)}</p>
-              <p className="reports-page__payment-sub">{codCount} orders</p>
-            </div>
-            <div className="reports-page__payment-box">
-              <p className="reports-page__payment-label">EFT / Transfer</p>
-              <p className="reports-page__payment-value reports-page__payment-value--eft">{fmtMoney(eftSales)}</p>
-              <p className="reports-page__payment-sub">{eftCount} orders</p>
-            </div>
-          </div>
-          {/* Simple progress bar representation */}
-          <div className="reports-page__payment-bar">
-            <div style={{ width: `${grossSales > 0 ? (codSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--cod"/>
-            <div style={{ width: `${grossSales > 0 ? (eftSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--eft"/>
-          </div>
-          <div className="reports-page__payment-legend">
-            <span>{grossSales > 0 ? Math.round((codSales/grossSales)*100) : 0}% COD</span>
-            <span>{grossSales > 0 ? Math.round((eftSales/grossSales)*100) : 0}% EFT</span>
-          </div>
+      {loadingStates?.reports ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '128px', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner size={32} />
+          <span style={{ fontSize: '0.85rem', color: '#64748b' }}>Loading report data…</span>
         </div>
-
-        {/* Low Stock Alerts */}
-        <div className="reports-page__card">
-          <div className="reports-page__card-header">
-            <h3 className="reports-page__card-title">Low Stock Products</h3>
-            <span className="reports-page__card-badge">{stats.lowStockCount} items</span>
+      ) : (
+        <>
+          {/* Summary Cards */}
+          <div className="reports-page__stats">
+            <StatCard icon="📊" label="Gross Sales" value={fmtMoney(grossSales)} color="cobalt" sub="All valid orders" />
+            <StatCard icon="💰" label="Collected Revenue" value={fmtMoney(collectedRevenue)} color="green" sub="Paid orders only" />
+            <StatCard icon="📦" label="Valid Orders" value={totalValidOrders} color="purple" sub="Excludes cancelled" />
+            <StatCard icon="⏳" label="Outstanding COD" value={fmtMoney(outstandingCOD)} color="amber" sub="Delivered, unpaid" />
           </div>
-          <div className="reports-page__low-stock">
-            {stats.lowStockProducts.length === 0 ? (
-              <p className="reports-page__low-stock-empty">Inventory levels are healthy.</p>
-            ) : (
-              stats.lowStockProducts.map(p => (
-                <div key={p.id} className="reports-page__low-stock-item">
-                  <div className="reports-page__low-stock-info">
-                    <img src={p.img} alt={p.name} className="reports-page__low-stock-img"/>
-                    <p className="reports-page__low-stock-name">{p.name}</p>
-                  </div>
-                  <span className={`reports-page__low-stock-count ${p.stock === 0 ? 'reports-page__low-stock-count--out' : 'reports-page__low-stock-count--low'}`}>{p.stock} left</span>
+
+          {/* Charts & Split Views */}
+          <div className="reports-page__split">
+            
+            {/* Payment Methods Split */}
+            <div className="reports-page__card">
+              <div className="reports-page__card-header">
+                <h3 className="reports-page__card-title">Revenue by Payment Method</h3>
+              </div>
+              <div className="reports-page__payment-boxes">
+                <div className="reports-page__payment-box">
+                  <p className="reports-page__payment-label">Cash on Delivery</p>
+                  <p className="reports-page__payment-value reports-page__payment-value--cod">{fmtMoney(codSales)}</p>
+                  <p className="reports-page__payment-sub">{codCount} orders</p>
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
+                <div className="reports-page__payment-box">
+                  <p className="reports-page__payment-label">EFT / Transfer</p>
+                  <p className="reports-page__payment-value reports-page__payment-value--eft">{fmtMoney(eftSales)}</p>
+                  <p className="reports-page__payment-sub">{eftCount} orders</p>
+                </div>
+              </div>
+              {/* Simple progress bar representation */}
+              <div className="reports-page__payment-bar">
+                <div style={{ width: `${grossSales > 0 ? (codSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--cod"/>
+                <div style={{ width: `${grossSales > 0 ? (eftSales/grossSales)*100 : 50}%` }} className="reports-page__payment-bar-fill reports-page__payment-bar-fill--eft"/>
+              </div>
+              <div className="reports-page__payment-legend">
+                <span>{grossSales > 0 ? Math.round((codSales/grossSales)*100) : 0}% COD</span>
+                <span>{grossSales > 0 ? Math.round((eftSales/grossSales)*100) : 0}% EFT</span>
+              </div>
+            </div>
 
-      {/* Best Selling Products */}
-      <div className="reports-page__card">
-        <div className="reports-page__card-header">
-          <h3 className="reports-page__card-title">Best-Selling Products (in range)</h3>
-        </div>
-        <div className="reports-page__table-wrapper">
-          <table className="reports-page__table">
-            <thead className="reports-page__table-head">
-              <tr>
-                <th>Product</th>
-                <th className="text-right">Units Sold</th>
-                <th className="text-right">Revenue</th>
-              </tr>
-            </thead>
-            <tbody className="reports-page__table-body">
-              {productSales.length === 0 ? (
-                <tr><td colSpan="3" className="reports-page__table-empty">No sales data in this range.</td></tr>
-              ) : (
-                productSales.map((p, i) => (
-                  <tr key={i}>
-                    <td className="reports-page__cell reports-page__cell--name">{p.name}</td>
-                    <td className="reports-page__cell reports-page__cell--units text-right">{p.units}</td>
-                    <td className="reports-page__cell reports-page__cell--revenue text-right">{fmtMoney(p.revenue)}</td>
+            {/* Low Stock Alerts */}
+            <div className="reports-page__card">
+              <div className="reports-page__card-header">
+                <h3 className="reports-page__card-title">Low Stock Products</h3>
+                <span className="reports-page__card-badge">{(stats?.lowStockProducts || []).length} items</span>
+              </div>
+              <div className="reports-page__low-stock">
+                {!(stats?.lowStockProducts && stats.lowStockProducts.length) ? (
+                  <p className="reports-page__low-stock-empty">Inventory levels are healthy.</p>
+                ) : (
+                  stats.lowStockProducts.map(p => (
+                    <div key={p.id} className="reports-page__low-stock-item">
+                      <div className="reports-page__low-stock-info">
+                        <img src={p.img} alt={p.name} className="reports-page__low-stock-img"/>
+                        <p className="reports-page__low-stock-name">{p.name}</p>
+                      </div>
+                      <span className={`reports-page__low-stock-count ${p.stock === 0 ? 'reports-page__low-stock-count--out' : 'reports-page__low-stock-count--low'}`}>{p.stock} left</span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Best Selling Products */}
+          <div className="reports-page__card">
+            <div className="reports-page__card-header">
+              <h3 className="reports-page__card-title">Best-Selling Products (in range)</h3>
+            </div>
+            <div className="reports-page__table-wrapper">
+              <table className="reports-page__table">
+                <thead className="reports-page__table-head">
+                  <tr>
+                    <th>Product</th>
+                    <th className="text-right">Units Sold</th>
+                    <th className="text-right">Revenue</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                </thead>
+                <tbody className="reports-page__table-body">
+                  {productSales.length === 0 ? (
+                    <tr><td colSpan="3" className="reports-page__table-empty">No sales data in this range.</td></tr>
+                  ) : (
+                    productSales.map((p, i) => (
+                      <tr key={i}>
+                        <td className="reports-page__cell reports-page__cell--name">{p.name}</td>
+                        <td className="reports-page__cell reports-page__cell--units text-right">{p.units}</td>
+                        <td className="reports-page__cell reports-page__cell--revenue text-right">{fmtMoney(p.revenue)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
 
     </div>
   );

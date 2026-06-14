@@ -174,7 +174,39 @@ export const Contact = () => (
 );
 
 export const Newsletter = () => {
-  const [done, setDone] = useState(false);
+  const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
+    setErrorMsg('');
+    setSuccessMsg('');
+
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'footer' }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErrorMsg(data.error || 'Something went wrong. Please try again.');
+      } else {
+        setSuccessMsg(data.message || 'Thanks for subscribing!');
+        setEmail('');
+      }
+    } catch (err) {
+      setErrorMsg('Network error. Please try again later.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <section id="newsletter" className="content-section newsletter-wrapper">
       <Reveal>
@@ -182,15 +214,30 @@ export const Newsletter = () => {
           <div className="newsletter__pattern" />
           <div className="newsletter__inner">
             <span className="newsletter__badge"><Mail size={14} /> Join the list</span>
-            <h2 className="newsletter__title">Be the first to hear about deals</h2>
-            <p className="newsletter__desc">Subscribe for cleaning tips, new product drops and subscriber-only deals.</p>
-            {done ? (
-              <div className="newsletter__success"><CheckCircle size={18} /> Thanks for subscribing!</div>
+            <h2 className="newsletter__title">Get Amahle Blue product updates</h2>
+            <p className="newsletter__desc">Subscribe for product updates, availability, and business announcements.</p>
+            {successMsg ? (
+              <div className="newsletter__success"><CheckCircle size={18} /> {successMsg}</div>
             ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setDone(true); }} className="newsletter-form">
-                <input type="email" required placeholder="you@email.co.za" className="newsletter-form__input" />
-                <button type="submit" className="newsletter-form__btn">Subscribe <ArrowRight size={17} /></button>
+              <form onSubmit={handleSubmit} className="newsletter-form">
+                <input
+                  type="email"
+                  required
+                  placeholder="you@email.co.za"
+                  className="newsletter-form__input"
+                  value={email}
+                  onChange={e => { setEmail(e.target.value); setErrorMsg(''); }}
+                  disabled={submitting}
+                />
+                <button type="submit" disabled={submitting || !email.trim()} className="newsletter-form__btn">
+                  {submitting ? 'Subscribing...' : <>Subscribe <ArrowRight size={17} /></>}
+                </button>
               </form>
+            )}
+            {errorMsg && (
+              <p style={{ color: '#fca5a5', fontSize: '13px', marginTop: '0.75rem', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.25rem' }}>
+                ⚠️ {errorMsg}
+              </p>
             )}
             <p className="newsletter__note">No spam. Unsubscribe anytime.</p>
           </div>

@@ -77,5 +77,5 @@ export const Filter = (p) => (<SIcon {...p}><polygon points="22 3 2 3 10 12.46 1
 export const Help = (p) => (<SIcon {...p}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></SIcon>);
 
 export const Icon = {
-  Download, Chart, List, Dashboard, Box, ShoppingBag, Users, Settings, Plus, Edit: Pencil, Trash, Archive, Eye, ChevronDown, Bell, Logout: LogOut, Menu, Close, Warning, Check, Truck, Search, Filter, Tag, Star, Cart, Help
+  Download, Chart, List, Dashboard, Box, ShoppingBag, Users, Settings, Plus, Edit: Pencil, Trash, Archive, Eye, ChevronDown, Bell, Logout: LogOut, Menu, Close, Warning, Check, Truck, Search, Filter, Tag, Star, Cart, Help, Mail
 };

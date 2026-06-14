@@ -376,6 +376,23 @@ const CustomerSessionSchema = new Schema({
   createdAt: { type: Number, required: true },
 });
 
+const NewsletterSubscriberSchema = new Schema({
+  id: { type: String, required: true, unique: true, index: true },
+  email: { type: String, required: true, unique: true, index: true, lowercase: true, trim: true },
+  name: { type: String, default: '' },
+  phone: { type: String, default: '' },
+  source: { type: String, default: '' },
+  status: { type: String, enum: ['subscribed', 'unsubscribed'], default: 'subscribed', index: true },
+  subscribedAt: { type: Number, default: () => Date.now() },
+  unsubscribedAt: { type: Number, default: null },
+  lastUpdatedAt: { type: Number, default: () => Date.now() },
+  notes: { type: String, default: '' },
+  createdAt: { type: Number },
+  updatedAt: { type: Number },
+}, { timestamps: true });
+
+NewsletterSubscriberSchema.index({ createdAt: -1 });
+
 export const Product = models.Product || model('Product', ProductSchema);
 export const Order = models.Order || model('Order', OrderSchema);
 export const Customer = models.Customer || model('Customer', CustomerSchema);
@@ -391,3 +408,4 @@ export const Setting = Settings;
 export const StockHistory = models.StockHistory || model('StockHistory', StockHistorySchema);
 export const EmailOtp = models.EmailOtp || model('EmailOtp', EmailOtpSchema);
 export const CustomerSession = models.CustomerSession || model('CustomerSession', CustomerSessionSchema);
+export const NewsletterSubscriber = models.NewsletterSubscriber || model('NewsletterSubscriber', NewsletterSubscriberSchema);

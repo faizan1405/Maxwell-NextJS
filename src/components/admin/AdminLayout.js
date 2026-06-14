@@ -20,6 +20,7 @@ const NAV_ADMIN = [
   { id: 'reviews',    label: 'Reviews',        icon: 'Star',        badge: 'reviews' },
   { id: 'faqs',       label: 'FAQs',           icon: 'Help',        badge: null },
   { id: 'abandoned',  label: 'Abandoned Carts', icon: 'Cart',        badge: null },
+  { id: 'newsletter', label: 'Newsletter',     icon: 'Mail',        badge: null },
   { id: 'settings',   label: 'Settings',       icon: 'Settings',    badge: null },
 ];
 

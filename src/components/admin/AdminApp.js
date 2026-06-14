@@ -16,6 +16,7 @@ import ReviewsPage from './ReviewsPage';
 import FaqsPage from './FaqsPage';
 import AbandonedPage from './AbandonedPage';
 import SettingsPage from './SettingsPage';
+import NewsletterPage from './NewsletterPage';
 
 function AdminRouter() {
   const { session } = useAuth();
@@ -37,6 +38,7 @@ function AdminRouter() {
     reviews:   <ReviewsPage />,
     faqs:      <FaqsPage />,
     abandoned: <AbandonedPage />,
+    newsletter:<NewsletterPage />,
   };
 
   return (

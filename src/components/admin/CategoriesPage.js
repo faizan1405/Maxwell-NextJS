@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAdmin } from './AdminProvider';
 import * as Icon from '../ui/Icons';
-import { Badge, Btn, Input, Modal, AdminToast } from '../ui/index';
+import { Badge, Btn, Input, Modal, AdminToast, ConfirmDialog } from '../ui/index';
 
 export default function CategoriesPage({ setUnsavedChanges }) {
   const { categories, products, addCategory, updateCategory, deleteCategory, updateProduct } = useAdmin();

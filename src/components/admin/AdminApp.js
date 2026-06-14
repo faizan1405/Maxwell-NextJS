@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { AdminProvider, useAuth, useAdmin } from './AdminProvider';
 import AdminLayout from './AdminLayout';
 import LoginPage from './LoginPage';
@@ -23,40 +23,53 @@ function AdminRouter() {
   const { session } = useAuth();
   const { stats } = useAdmin();
   const [page, setPage] = useState('dashboard');
-  
+
   // Dashboard shortcuts filter states
   const [initialFilters, setInitialFilters] = useState(null);
 
-  // Unsaved changes warnings
+  // Unsaved changes warnings. Mirror to ref so handlers can read the latest value
+  // without needing to be recreated each render — that would break child effects
+  // that depend on the handler identity (e.g. OrdersPage's clearInitialFilters effect).
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [pendingPage, setPendingPage] = useState(null);
+  const unsavedRef = useRef(false);
+  const pendingPageRef = useRef(null);
+  unsavedRef.current = unsavedChanges;
+  pendingPageRef.current = pendingPage;
+
+  const handlePageChange = useCallback((nextPage) => {
+    setPage(prev => {
+      if (nextPage === prev) return prev;
+      if (unsavedRef.current) {
+        setPendingPage(nextPage);
+        return prev;
+      }
+      return nextPage;
+    });
+  }, []);
+
+  const handleConfirmDiscard = useCallback(() => {
+    setUnsavedChanges(false);
+    const target = pendingPageRef.current;
+    if (target) setPage(target);
+    setPendingPage(null);
+  }, []);
+
+  const handleCancelDiscard = useCallback(() => {
+    setPendingPage(null);
+  }, []);
+
+  const clearInitialFilters = useCallback(() => {
+    setInitialFilters(null);
+  }, []);
 
   if (!session) return <LoginPage />;
-
-  function handlePageChange(nextPage) {
-    if (nextPage === page) return;
-    if (unsavedChanges) {
-      setPendingPage(nextPage);
-    } else {
-      setPage(nextPage);
-    }
-  }
-
-  function handleConfirmDiscard() {
-    setUnsavedChanges(false);
-    setPage(pendingPage);
-    setPendingPage(null);
-  }
-
-  function handleCancelDiscard() {
-    setPendingPage(null);
-  }
 
   const pages = {
     dashboard: <DashboardPage setPage={handlePageChange} setInitialFilters={setInitialFilters} />,
     reports:   <ReportsPage />,
     products:  <ProductsPage />,
-    orders:    <OrdersPage initialFilters={initialFilters} clearInitialFilters={() => setInitialFilters(null)} />,
+    orders:    <OrdersPage initialFilters={initialFilters} clearInitialFilters={clearInitialFilters} />,
     customers: <CustomersPage />,
     settings:  <SettingsPage />,
     categories:<CategoriesPage />,

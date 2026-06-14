@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useContext, useCallback, useMemo, createContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback, useMemo, createContext } from 'react';
 import { calculateOrderStats } from '../../utils/accounting';
 import { formatZar } from '../../utils/currency';
 
@@ -71,9 +71,14 @@ export function AdminProvider({ children }) {
   const [dashboardStats, setDashboardStats] = useState(null);
   const [reportsOrders, setReportsOrders] = useState([]);
 
-  // Parameters cache for refetches on CRUD failures
-  const [activeOrdersParams, setActiveOrdersParams] = useState({});
-  const [activeProductsParams, setActiveProductsParams] = useState({});
+  // Parameters cache for refetches on CRUD failures.
+  // Stored as refs (not state) so the fetcher callbacks stay referentially stable
+  // and don't retrigger the effects that depend on them — which would loop.
+  const activeOrdersParamsRef = useRef({});
+  const activeProductsParamsRef = useRef({});
+
+  // Session ref mirrors session state for use inside stable callbacks.
+  const sessionRef = useRef(null);
 
   const [loadingStates, setLoadingStates] = useState({
     products: false,
@@ -95,7 +100,7 @@ export function AdminProvider({ children }) {
   const fetchDashboardStats = useCallback(async (token) => {
     setLoadingStates(prev => ({ ...prev, dashboard: true }));
     try {
-      const t = token || session?.token;
+      const t = token || sessionRef.current?.token;
       const res = await fetch(`${API_BASE}/api/orders?stats=1`, { headers: apiHeaders(t) });
       if (!res.ok) return;
       const data = await res.json();
@@ -105,13 +110,13 @@ export function AdminProvider({ children }) {
     } finally {
       setLoadingStates(prev => ({ ...prev, dashboard: false }));
     }
-  }, [session]);
+  }, []);
 
   const fetchOrdersPaginated = useCallback(async (params = {}) => {
     setLoadingStates(prev => ({ ...prev, orders: true }));
     try {
-      const nextParams = { ...activeOrdersParams, ...params };
-      setActiveOrdersParams(nextParams);
+      const nextParams = { ...activeOrdersParamsRef.current, ...params };
+      activeOrdersParamsRef.current = nextParams;
 
       const q = new URLSearchParams();
       Object.entries(nextParams).forEach(([k, v]) => {
@@ -129,13 +134,13 @@ export function AdminProvider({ children }) {
     } finally {
       setLoadingStates(prev => ({ ...prev, orders: false }));
     }
-  }, [activeOrdersParams]);
+  }, []);
 
   const fetchProductsPaginated = useCallback(async (params = {}) => {
     setLoadingStates(prev => ({ ...prev, products: true }));
     try {
-      const nextParams = { ...activeProductsParams, ...params };
-      setActiveProductsParams(nextParams);
+      const nextParams = { ...activeProductsParamsRef.current, ...params };
+      activeProductsParamsRef.current = nextParams;
 
       const q = new URLSearchParams();
       q.set('all', '1');
@@ -162,7 +167,7 @@ export function AdminProvider({ children }) {
     } finally {
       setLoadingStates(prev => ({ ...prev, products: false }));
     }
-  }, [activeProductsParams]);
+  }, []);
 
   const fetchCustomersPaginated = useCallback(async (params = {}) => {
     setLoadingStates(prev => ({ ...prev, customers: true }));
@@ -353,7 +358,14 @@ export function AdminProvider({ children }) {
     }
   }, []);
 
+  // Keep sessionRef in sync so stable callbacks can read latest token without re-binding.
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
   // Init: restore session from the HTTP-only admin cookie, then fetch data.
+  // Runs ONCE on mount. The fetch callbacks are now stable, so we can safely
+  // use an empty dep array — adding them as deps caused an infinite re-init loop.
   useEffect(() => {
     (async () => {
       let sess = null;
@@ -393,7 +405,8 @@ export function AdminProvider({ children }) {
       }
       setReady(true);
     })();
-  }, [fetchDashboardStats, fetchCoupons, fetchFaqs, fetchCategories, fetchShippingRates, fetchSettings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── Auth ──────────────────────────────────────────────────────────────────
   const login = useCallback(async (username, password) => {

@@ -167,14 +167,14 @@ export function printInvoice(order, customSettings) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice ${safe.invoiceNumber}</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
   @page {
     size: A4;
     margin: 15mm;
   }
   * { box-sizing: border-box; }
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     color: #1e293b;
     margin: 0;
     padding: 0;

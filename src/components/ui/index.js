@@ -95,7 +95,7 @@ export const PageEnter = ({ children, className = "" }) => (
 /* ── Spinner ─────────────────────────────────────────────────────────────────── */
 export function Spinner({ size = 20 }) {
   return (
-    <div className="animate-spin" style={{ width: size, height: size, border: '2.5px solid rgba(30,80,224,0.2)', borderTopColor: '#1E50E0', borderRadius: '50%', flexShrink: 0 }} />
+    <div className="animate-spin" style={{ width: size, height: size, border: '2.5px solid rgba(38,76,255,0.2)', borderTopColor: '#264CFF', borderRadius: '50%', flexShrink: 0 }} />
   );
 }
 
@@ -114,8 +114,8 @@ const BADGE_STYLES = {
   household:     { bg: '#eff6ff', color: '#1d4ed8' },
   sanitiser:     { bg: '#f0fdf4', color: '#15803d' },
   car:           { bg: '#f1f5f9', color: '#475569' },
-  Bestseller:    { bg: 'rgba(30,80,224,0.1)', color: '#1E50E0' },
-  New:           { bg: 'rgba(21,154,76,0.1)', color: '#159A4C' },
+  Bestseller:    { bg: 'rgba(38,76,255,0.1)', color: '#264CFF' },
+  New:           { bg: 'rgba(54,247,0,0.1)', color: '#36F700' },
   'High Purity': { bg: '#f3e8ff', color: '#7e22ce' },
 };
 export function Badge({ label, variant }) {
@@ -160,7 +160,7 @@ export function Stars({ value, size = 16, className = "" }) {
 }
 
 /* ── Avatar ──────────────────────────────────────────────────────────────────── */
-const AVATAR_COLORS = ['#1E50E0', '#0B2545', '#159A4C', '#7C3AED', '#0E7490', '#B45309'];
+const AVATAR_COLORS = ['#264CFF', '#111111', '#36F700', '#7C3AED', '#0E7490', '#B45309'];
 export function Avatar({ name, size = 32 }) {
   const idx = (name || '?').charCodeAt(0) % AVATAR_COLORS.length;
   const bg = AVATAR_COLORS[idx];

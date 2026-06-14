@@ -35,7 +35,7 @@ export default function CategoriesPage() {
   }, [categories, search, filterStatus]);
 
   function handleAdd() {
-    setActiveItem({ name: '', id: '', short: '', icon: 'Box', image: '', blurb: '', accent: '#0B2545', status: 'active', displayOrder: 99 });
+    setActiveItem({ name: '', id: '', short: '', icon: 'Box', image: '', blurb: '', accent: '#111111', status: 'active', displayOrder: 99 });
     setModalMode('add');
   }
 

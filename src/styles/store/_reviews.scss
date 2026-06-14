@@ -109,22 +109,22 @@
   width: 100%;
   
   &--primary {
-    border: 2px dashed rgba(30, 80, 224, 0.4);
+    border: 2px dashed rgba(38, 76, 255, 0.4);
     color: $cobalt;
     font-weight: 700;
     
     &:hover {
-      background-color: rgba(30, 80, 224, 0.05);
+      background-color: rgba(38, 76, 255, 0.05);
     }
   }
   
   &--secondary {
-    border: 1px solid rgba(30, 80, 224, 0.3);
+    border: 1px solid rgba(38, 76, 255, 0.3);
     color: $cobalt;
     font-weight: 600;
     
     &:hover {
-      background-color: rgba(30, 80, 224, 0.05);
+      background-color: rgba(38, 76, 255, 0.05);
     }
   }
   
@@ -149,9 +149,9 @@
 
 /* Review Form */
 .review-form {
-  background-color: rgba(30, 80, 224, 0.03); // cobalt/3
+  background-color: rgba(38, 76, 255, 0.03); // cobalt/3
   border-radius: $radius-2xl;
-  border: 1px solid rgba(30, 80, 224, 0.15); // cobalt/15
+  border: 1px solid rgba(38, 76, 255, 0.15); // cobalt/15
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -184,7 +184,7 @@
   
   &:focus {
     border-color: $cobalt;
-    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+    box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.1);
   }
 }
 

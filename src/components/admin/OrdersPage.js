@@ -137,7 +137,7 @@ function OrderConfirmDialog({ open, title, message, note, noteLabel, noteRequire
               onChange={e=>setVal(e.target.value)}
               rows={3}
               style={{ width: '100%', padding: '0.5rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', fontSize: '0.875rem', outline: 'none', resize: 'none' }}
-              onFocus={(e) => { e.target.style.borderColor = '#1E50E0'; e.target.style.boxShadow = '0 0 0 2px rgba(30,80,224,0.2)'; }}
+              onFocus={(e) => { e.target.style.borderColor = '#264CFF'; e.target.style.boxShadow = '0 0 0 2px rgba(38,76,255,0.2)'; }}
               onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
             />
           </div>

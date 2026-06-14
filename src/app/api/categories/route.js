@@ -23,7 +23,7 @@ function cleanCategory(input = {}) {
     icon: String(input.icon || 'Box').trim().slice(0, 40),
     image: input.image ? String(input.image).trim().slice(0, 1024) : null,
     blurb: String(input.blurb || '').trim().slice(0, 500),
-    accent: /^#[0-9a-f]{6}$/i.test(String(input.accent || '')) ? input.accent : '#0B2545',
+    accent: /^#[0-9a-f]{6}$/i.test(String(input.accent || '')) ? input.accent : '#111111',
     status: input.status === 'inactive' ? 'inactive' : 'active',
     displayOrder: Number.isFinite(Number(input.displayOrder)) ? Number(input.displayOrder) : 99,
   };

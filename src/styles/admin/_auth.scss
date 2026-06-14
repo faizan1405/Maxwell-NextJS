@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, $ink 0%, #1a3a6a 50%, $cobalt 100%);
+  background: linear-gradient(135deg, $ink 0%, $cobalt-700 50%, $cobalt 100%);
   padding: 0 1rem;
   overflow: hidden;
 }
@@ -29,7 +29,7 @@
     right: -10%;
     width: 600px;
     height: 600px;
-    background: rgba(30, 80, 224, 0.12);
+    background: rgba(38, 76, 255, 0.12);
   }
 
   .bg-glow-bottom {
@@ -37,7 +37,7 @@
     left: -10%;
     width: 500px;
     height: 500px;
-    background: rgba(21, 154, 76, 0.08);
+    background: rgba(54, 247, 0, 0.08);
   }
 }
 
@@ -120,7 +120,7 @@
 
   &:focus {
     border-color: $cobalt;
-    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.2);
+    box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.2);
   }
 }
 

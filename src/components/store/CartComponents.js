@@ -96,7 +96,7 @@ export function CartPage({ onGoHome, onCheckout }) {
               {remaining > 0 ? (
                 <p className="cart-progress__text">
                   Add <span className="cart-progress__amount">{money(remaining)}</span> more for{' '}
-                  <span style={{ fontWeight: 600, color: '#0B2545' }}>free delivery</span>
+                  <span style={{ fontWeight: 600, color: '#111111' }}>free delivery</span>
                 </p>
               ) : (
                 <p className="cart-progress__text cart-progress__text--success">
@@ -177,11 +177,11 @@ export function CartPage({ onGoHome, onCheckout }) {
             <div className="order-summary__totals">
               <div className="order-summary__row">
                 <span>Subtotal</span>
-                <span className="order-summary__row-val" style={{ color: '#0B2545' }}>{money(subtotal)}</span>
+                <span className="order-summary__row-val" style={{ color: '#111111' }}>{money(subtotal)}</span>
               </div>
               <div className="order-summary__row">
                 <span>Delivery</span>
-                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#159A4C' : '#0B2545' }}>
+                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#36F700' : '#111111' }}>
                   {delivery === 0 ? 'FREE' : money(delivery)}
                 </span>
               </div>
@@ -613,17 +613,17 @@ export function CheckoutPage({ onBack, onSuccess }) {
             <div className="order-summary__totals">
               <div className="order-summary__row">
                 <span>Subtotal</span>
-                <span className="order-summary__row-val" style={{ color: '#0B2545' }}>{money(subtotal)}</span>
+                <span className="order-summary__row-val" style={{ color: '#111111' }}>{money(subtotal)}</span>
               </div>
               {coupon && (
-                <div className="order-summary__row" style={{ color: '#159A4C' }}>
+                <div className="order-summary__row" style={{ color: '#36F700' }}>
                   <span>Coupon discount</span>
                   <span className="order-summary__row-val">−{money(couponDiscount)}</span>
                 </div>
               )}
               <div className="order-summary__row">
                 <span>Delivery to {form.addrProvince || 'SA'}</span>
-                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#159A4C' : '#0B2545' }}>
+                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#36F700' : '#111111' }}>
                   {delivery === 0 ? 'FREE' : money(delivery)}
                 </span>
               </div>
@@ -760,7 +760,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                 <span style={{ color: '#64748b' }}>Order Date & Time</span>
-                <span style={{ fontWeight: 600, color: '#0B2545' }}>
+                <span style={{ fontWeight: 600, color: '#111111' }}>
                   {order.createdAt ? new Date(order.createdAt).toLocaleString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                 </span>
               </div>
@@ -776,13 +776,13 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                   {getPaymentStatusLabel()}
                 </span>
               </div>
-              <div style={{ borderTop: '1px dashed #e2e8f0', marginTop: '0.5rem', paddingTop: '0.5rem', fontSize: '13px', color: '#1E50E0', fontWeight: 600 }}>
+              <div style={{ borderTop: '1px dashed #e2e8f0', marginTop: '0.5rem', paddingTop: '0.5rem', fontSize: '13px', color: '#264CFF', fontWeight: 600 }}>
                 {isCOD ? (
                   <span>Next Steps: Payment will be collected during delivery.</span>
                 ) : (
                   <span>
                     {upOk || order.proofOfPaymentUrl ? (
-                      <span style={{ color: '#159A4C' }}>Next Steps: Payment proof has been uploaded. Administrative approval is pending.</span>
+                      <span style={{ color: '#36F700' }}>Next Steps: Payment proof has been uploaded. Administrative approval is pending.</span>
                     ) : (
                       <span>Next Steps: Payment proof is pending upload. Please transfer the funds using the details below and upload proof to activate processing.</span>
                     )}
@@ -827,12 +827,12 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
             {showEFTInfo && (
               <div style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0B2545', marginTop: 0, marginBottom: '0.75rem' }}>
+                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#111111', marginTop: 0, marginBottom: '0.75rem' }}>
                   Upload Proof of Payment
                 </h3>
                 {upOk ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                    <CheckCircle size={16} style={{ color: '#159A4C', flexShrink: 0 }} />
+                    <CheckCircle size={16} style={{ color: '#36F700', flexShrink: 0 }} />
                     <p style={{ fontSize: '13px', color: '#15803d', margin: 0 }}>Proof uploaded! We'll verify and confirm your order shortly.</p>
                   </div>
                 ) : isLoggedIn ? (
@@ -851,7 +851,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                       type="button"
                       onClick={() => fileRef.current?.click()}
                       disabled={uploading}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: uploading ? '#94a3b8' : '#1E50E0', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: uploading ? 'not-allowed' : 'pointer', width: '100%' }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: uploading ? '#94a3b8' : '#264CFF', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: uploading ? 'not-allowed' : 'pointer', width: '100%' }}
                     >
                       {uploading ? 'Uploading…' : (proof ? `Uploading: ${proof.name.slice(0, 28)}…` : 'Select & Upload Proof')}
                     </button>
@@ -865,7 +865,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                   </>
                 ) : (
                   <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-                    <button type="button" onClick={onGoOrders} style={{ color: '#1E50E0', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0, fontSize: '13px' }}>Sign in &amp; go to My Orders</button>{' '}to upload your proof of payment.
+                    <button type="button" onClick={onGoOrders} style={{ color: '#264CFF', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0, fontSize: '13px' }}>Sign in &amp; go to My Orders</button>{' '}to upload your proof of payment.
                   </p>
                 )}
               </div>
@@ -873,7 +873,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
             {/* Detailed Order Summary Section */}
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#0B2545', margin: '0 0 1rem 0' }}>Order Summary</h3>
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#111111', margin: '0 0 1rem 0' }}>Order Summary</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {(order.items || []).map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -886,7 +886,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                       />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <p style={{ fontSize: '14px', fontWeight: 600, color: '#0B2545', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      <p style={{ fontSize: '14px', fontWeight: 600, color: '#111111', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {item.name}
                       </p>
                       {item.variation && (
@@ -898,7 +898,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                         Qty: {item.qty} × {money(item.price)}
                       </p>
                     </div>
-                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#0B2545', flexShrink: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#111111', flexShrink: 0 }}>
                       {money(item.price * item.qty)}
                     </div>
                   </div>
@@ -926,18 +926,18 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
                 <span>Subtotal</span>
-                <span style={{ fontWeight: 600, color: '#0B2545' }}>{money(order.subtotal)}</span>
+                <span style={{ fontWeight: 600, color: '#111111' }}>{money(order.subtotal)}</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
                 <span>Delivery</span>
-                <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#159A4C' : '#0B2545' }}>
+                <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#36F700' : '#111111' }}>
                   {order.delivery === 0 ? 'FREE' : money(order.delivery)}
                 </span>
               </div>
 
               {(order.couponDiscount || 0) > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#159A4C' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#36F700' }}>
                   <span>Coupon Deduction {order.couponCode ? `(${order.couponCode})` : ''}</span>
                   <span style={{ fontWeight: 700 }}>−{money(order.couponDiscount)}</span>
                 </div>
@@ -952,7 +952,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
                 <span>Payment Method</span>
-                <span style={{ fontWeight: 600, color: '#0B2545' }}>
+                <span style={{ fontWeight: 600, color: '#111111' }}>
                   {order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod === 'EFT' ? 'EFT / Bank Transfer' : (order.paymentMethod || '')}
                 </span>
               </div>
@@ -976,10 +976,10 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginTop: '0.25rem' }}>
                 <span style={{ color: '#64748b' }}>Amount Paid</span>
-                <span style={{ fontWeight: 600, color: '#0B2545' }}>{money(amountPaid)}</span>
+                <span style={{ fontWeight: 600, color: '#111111' }}>{money(amountPaid)}</span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, color: balanceDue > 0 ? '#b45309' : '#159A4C' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, color: balanceDue > 0 ? '#b45309' : '#36F700' }}>
                 <span>Amount Due / Balance</span>
                 <span>{money(balanceDue)}</span>
               </div>

@@ -26,7 +26,7 @@ function StarPicker({ value, onChange, size = 28 }) {
 
 function ReviewCard({ review }) {
   const initials = (review.customerName || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
-  const COLORS   = ['#1E50E0', '#0B2545', '#159A4C', '#7C3AED', '#0E7490'];
+  const COLORS   = ['#264CFF', '#111111', '#36F700', '#7C3AED', '#0E7490'];
   const bg       = COLORS[(review.customerName || '?').charCodeAt(0) % COLORS.length];
   const date     = review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
 
@@ -228,7 +228,7 @@ export function ProductReviews({ productId }) {
       {/* Review list */}
       {reviews === null && (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-          <span style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid rgba(30,80,224,.2)', borderTopColor: '#1E50E0', animation: 'spin .7s linear infinite', display: 'inline-block' }} />
+          <span style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid rgba(38,76,255,.2)', borderTopColor: '#264CFF', animation: 'spin .7s linear infinite', display: 'inline-block' }} />
         </div>
       )}
 

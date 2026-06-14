@@ -43,7 +43,7 @@
     outline: none;
 
     &:focus {
-      border-color: #1e50e0; /* cobalt */
+      border-color: #264CFF; /* cobalt */
     }
   }
 
@@ -154,7 +154,7 @@
       margin-top: 0.25rem;
 
       &--cod {
-        color: #1e50e0;
+        color: #264CFF;
       }
 
       &--eft {
@@ -181,7 +181,7 @@
         transition: all 0.3s ease-in-out;
 
         &--cod {
-          background-color: #1e50e0;
+          background-color: #264CFF;
         }
 
         &--eft {
@@ -320,7 +320,7 @@
     }
 
     &--units {
-      color: #1e50e0;
+      color: #264CFF;
     }
 
     &--revenue {

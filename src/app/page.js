@@ -21,8 +21,8 @@ function Toast() {
   return (
     <div className="ab-fade-in" style={{
       position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-      zIndex: 100, background: '#0B2545', color: 'white', padding: '12px 24px',
-      borderRadius: 12, fontSize: 14, fontWeight: 600, boxShadow: '0 8px 30px rgba(11,37,69,0.3)',
+      zIndex: 100, background: '#111111', color: 'white', padding: '12px 24px',
+      borderRadius: 12, fontSize: 14, fontWeight: 600, boxShadow: '0 8px 30px rgba(17,17,17,0.3)',
     }}>
       {toast}
     </div>

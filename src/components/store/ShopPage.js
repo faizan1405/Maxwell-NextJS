@@ -578,7 +578,7 @@ export const QuickView = () => {
                       aria-pressed={i === mediaIdx}
                       className="quickview-thumb-btn"
                       style={{
-                        border: i === mediaIdx ? '2px solid #1E50E0' : '2px solid transparent',
+                        border: i === mediaIdx ? '2px solid #264CFF' : '2px solid transparent',
                         opacity: i === mediaIdx ? 1 : 0.6,
                       }}
                     >

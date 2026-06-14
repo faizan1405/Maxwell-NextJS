@@ -34,13 +34,13 @@ function RevenueChart({ orders }) {
       <svg viewBox={`0 0 100 ${H+16}`} preserveAspectRatio="none" className="revenue-chart__svg">
         <defs>
           <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1E50E0" stopOpacity="0.15"/>
-            <stop offset="100%" stopColor="#1E50E0" stopOpacity="0"/>
+            <stop offset="0%" stopColor="#264CFF" stopOpacity="0.15"/>
+            <stop offset="100%" stopColor="#264CFF" stopOpacity="0"/>
           </linearGradient>
         </defs>
         <path d={areaD} fill="url(#chartGrad)"/>
-        <path d={pathD} fill="none" stroke="#1E50E0" strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/>
-        {pts.map((p,i) => <circle key={i} cx={p[0]} cy={p[1]} r="2.5" fill="#1E50E0" vectorEffect="non-scaling-stroke"/>)}
+        <path d={pathD} fill="none" stroke="#264CFF" strokeWidth="1.5" vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round"/>
+        {pts.map((p,i) => <circle key={i} cx={p[0]} cy={p[1]} r="2.5" fill="#264CFF" vectorEffect="non-scaling-stroke"/>)}
       </svg>
       <div className="revenue-chart__labels">
         {days.map((d,i) => <span key={i} className="revenue-chart__label">{d.label}</span>)}

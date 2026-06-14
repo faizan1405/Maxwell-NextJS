@@ -439,14 +439,14 @@ function buildItemRows(order) {
     `<tr>
       <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#334155;">${i.name}</td>
       <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:center;font-size:13px;color:#64748b;">${i.qty}</td>
-      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:14px;font-weight:700;color:#0B2545;">${formatZar(i.price * i.qty)}</td>
+      <td style="padding:10px 16px;border-bottom:1px solid #f1f5f9;text-align:right;font-size:14px;font-weight:700;color:#111111;">${formatZar(i.price * i.qty)}</td>
     </tr>`
   ).join('');
 }
 
 function buildTotalsTable(order) {
   const couponRow = (order.couponDiscount || 0) > 0
-    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${order.couponCode})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#159A4C;">−${formatZar(order.couponDiscount)}</td></tr>`
+    ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Coupon (${order.couponCode})</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;color:#36F700;">−${formatZar(order.couponDiscount)}</td></tr>`
     : '';
   const codFeeRow = (order.codFee || 0) > 0
     ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">COD Fee</td><td></td><td style="padding:8px 16px;text-align:right;font-size:13px;font-weight:600;">${formatZar(order.codFee)}</td></tr>`
@@ -454,9 +454,9 @@ function buildTotalsTable(order) {
   return `
     <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Subtotal</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;">${formatZar(order.subtotal)}</td></tr>
     ${couponRow}
-    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Delivery</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;color:${order.delivery===0?'#159A4C':'#0B2545'}">${order.delivery===0?'FREE':formatZar(order.delivery)}</td></tr>
+    <tr><td style="padding:10px 16px;font-size:14px;color:#64748b;">Delivery</td><td></td><td style="padding:10px 16px;font-size:14px;font-weight:600;text-align:right;color:${order.delivery===0?'#36F700':'#111111'}">${order.delivery===0?'FREE':formatZar(order.delivery)}</td></tr>
     ${codFeeRow}
-    <tr style="border-top:2px solid #e2e8f0;"><td style="padding:14px 16px;font-size:16px;font-weight:800;color:#0B2545;">Total</td><td></td><td style="padding:14px 16px;font-size:16px;font-weight:800;text-align:right;color:#1E50E0;">${formatZar(order.total)}</td></tr>
+    <tr style="border-top:2px solid #e2e8f0;"><td style="padding:14px 16px;font-size:16px;font-weight:800;color:#111111;">Total</td><td></td><td style="padding:14px 16px;font-size:16px;font-weight:800;text-align:right;color:#264CFF;">${formatZar(order.total)}</td></tr>
   `;
 }
 
@@ -464,11 +464,11 @@ function emailWrapper(headerHtml, bodyHtml) {
   return `<!DOCTYPE html>
 <html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:Helvetica,Arial,sans-serif;">
-<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(11,37,69,.10);">
+<div style="max-width:560px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(17,17,17,.10);">
   ${headerHtml}
   <div style="padding:32px 40px;">${bodyHtml}</div>
   <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 40px;text-align:center;">
-    <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">Questions? Email us at <a href="mailto:info@amahle-blue.co.za" style="color:#1E50E0;">info@amahle-blue.co.za</a></p>
+    <p style="color:#94a3b8;font-size:12px;margin:0 0 4px;">Questions? Email us at <a href="mailto:info@amahle-blue.co.za" style="color:#264CFF;">info@amahle-blue.co.za</a></p>
     <p style="color:#cbd5e1;font-size:11px;margin:0;">&copy; ${new Date().getFullYear()} Amahle Blue Cleaning Solutions &middot; Made in &#x1F1FF;&#x1F1E6;</p>
   </div>
 </div>
@@ -478,7 +478,7 @@ function emailWrapper(headerHtml, bodyHtml) {
 async function sendCODEmail(order) {
   if (!order?.customer?.email) return;
   const firstName = (order.customer.name || 'there').split(' ')[0];
-  const header = `<div style="background:linear-gradient(135deg,#159A4C,#047857);padding:32px 40px;text-align:center;">
+  const header = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Order Placed!</h1>
     <p style="color:#d1fae5;font-size:14px;margin:0;">Hi ${firstName}, your order has been placed successfully.</p>
@@ -489,7 +489,7 @@ async function sendCODEmail(order) {
       <p style="font-size:13px;color:#78350f;margin:0;line-height:1.5;">Please keep the required cash amount ready when your order is delivered. Our delivery team will collect payment on arrival.</p>
     </div>
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:24px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
+      <p style="font-size:13px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Payment: Cash on Delivery · <span style="color:#d97706;font-weight:600;">Cash Payment Pending</span></p>
     </div>
     <table style="width:100%;border-collapse:collapse;margin-bottom:16px;border:1px solid #f1f5f9;border-radius:8px;overflow:hidden;">
@@ -519,34 +519,34 @@ async function sendEFTEmail(order) {
   const ref       = order.eftReference   || order.orderNumber;
 
   const bankRows = [
-    bank.accountHolder && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:50%;">Account Holder</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;">${bank.accountHolder}</td></tr>`,
-    bank.bankName      && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Bank</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;">${bank.bankName}</td></tr>`,
-    bank.accountNumber && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Number</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;font-family:monospace;">${bank.accountNumber}</td></tr>`,
-    bank.branchCode    && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Branch Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;font-family:monospace;">${bank.branchCode}</td></tr>`,
-    bank.accountType   && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Type</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;">${bank.accountType}</td></tr>`,
-    bank.swiftCode     && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">SWIFT Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#0B2545;font-family:monospace;">${bank.swiftCode}</td></tr>`,
+    bank.accountHolder && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:50%;">Account Holder</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.accountHolder}</td></tr>`,
+    bank.bankName      && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Bank</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.bankName}</td></tr>`,
+    bank.accountNumber && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Number</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.accountNumber}</td></tr>`,
+    bank.branchCode    && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Branch Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.branchCode}</td></tr>`,
+    bank.accountType   && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">Account Type</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;">${bank.accountType}</td></tr>`,
+    bank.swiftCode     && `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b;">SWIFT Code</td><td style="padding:8px 16px;font-size:13px;font-weight:700;color:#111111;font-family:monospace;">${bank.swiftCode}</td></tr>`,
   ].filter(Boolean).join('');
 
-  const header = `<div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:32px 40px;text-align:center;">
+  const header = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 40px;text-align:center;">
     <p style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Order Received!</h1>
     <p style="color:#bfdbfe;font-size:14px;margin:0;">Hi ${firstName}, please complete your EFT payment to confirm your order.</p>
   </div>`;
   const body = `
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:24px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
+      <p style="font-size:13px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Payment: EFT / Bank Transfer · <span style="color:#d97706;font-weight:600;">Awaiting EFT Payment</span></p>
     </div>
     <div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:16px;text-align:center;">
       <p style="font-size:11px;font-weight:700;color:#92400e;text-transform:uppercase;letter-spacing:1px;margin:0 0 6px;">Your Payment Reference</p>
-      <p style="font-size:22px;font-weight:800;color:#1E50E0;margin:0 0 4px;font-family:monospace;">${ref}</p>
+      <p style="font-size:22px;font-weight:800;color:#264CFF;margin:0 0 4px;font-family:monospace;">${ref}</p>
       <p style="font-size:12px;color:#78350f;margin:0;">Use this reference when making your EFT payment.</p>
     </div>
     ${bankRows ? `
     <div style="margin-bottom:24px;">
       <p style="font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">Bank Details</p>
       <table style="width:100%;border-collapse:collapse;background:#f8fafc;border-radius:8px;overflow:hidden;"><tbody>${bankRows}</tbody></table>
-      <div style="background:#1E50E0;color:#fff;padding:12px 16px;border-radius:8px;margin-top:8px;text-align:center;">
+      <div style="background:#264CFF;color:#fff;padding:12px 16px;border-radius:8px;margin-top:8px;text-align:center;">
         <p style="font-size:13px;font-weight:700;margin:0;">Amount Payable: ${formatZar(order.total)}</p>
       </div>
     </div>` : ''}
@@ -576,13 +576,13 @@ async function sendEFTEmail(order) {
 async function sendAdminEmail(order) {
   const to = process.env.ADMIN_EMAIL || process.env.FROM_EMAIL;
   if (!to) return;
-  const header = `<div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:28px 40px;text-align:center;">
+  const header = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:28px 40px;text-align:center;">
     <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">&#x1F6CD; New Order Received</h1>
     <p style="color:#bfdbfe;font-size:13px;margin:4px 0 0;">From ${order.customer?.name || 'a customer'}</p>
   </div>`;
   const body = `
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:14px;font-weight:700;color:#1E50E0;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
+      <p style="font-size:14px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber} · ${order.invoiceNumber || ''}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">${order.customer?.name} · ${order.customer?.email}${order.customer?.phone ? ` · ${order.customer.phone}` : ''}</p>
       <p style="font-size:12px;color:#64748b;margin:4px 0 0;">Payment: <strong>${payLabel(order.paymentMethod || order.payment?.method)}</strong> · <strong>${order.paymentStatus || order.payment?.status}</strong></p>
     </div>
@@ -594,7 +594,7 @@ async function sendAdminEmail(order) {
       </tr></thead>
       <tbody>${buildItemRows(order)}</tbody>
     </table>
-    <p style="font-size:15px;font-weight:800;color:#1E50E0;text-align:right;margin:0 0 12px;">Order Total: ${formatZar(order.total)}</p>
+    <p style="font-size:15px;font-weight:800;color:#264CFF;text-align:right;margin:0 0 12px;">Order Total: ${formatZar(order.total)}</p>
     <div style="background:#f8fafc;border-radius:8px;padding:12px 16px;">
       <p style="font-size:12px;color:#64748b;margin:0;">Delivery to: ${order.address}</p>
     </div>
@@ -606,14 +606,14 @@ async function sendOrderConfirmedEmail(order) {
   if (!order?.customer?.email) return;
   const firstName = (order.customer.name || 'there').split(' ')[0];
   const isCOD     = (order.paymentMethod || order.payment?.method) === 'COD';
-  const header    = `<div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:32px 40px;text-align:center;">
+  const header    = `<div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 40px;text-align:center;">
     <p style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Order Confirmed!</h1>
     <p style="color:#bfdbfe;font-size:14px;margin:0;">Hi ${firstName}, your order has been confirmed and is being prepared.</p>
   </div>`;
   const body = `
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 3px;">${order.orderNumber}</p>
+      <p style="font-size:13px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Status: <span style="color:#2563eb;font-weight:600;">Confirmed</span> · Payment: <span style="color:#16a34a;font-weight:600;">${order.paymentStatus || 'Paid'}</span></p>
     </div>
     ${isCOD ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
@@ -658,15 +658,15 @@ async function sendOrderDeliveredEmail(order) {
   if (!order?.customer?.email) return;
   const firstName = (order.customer.name || 'there').split(' ')[0];
   const isCOD     = (order.paymentMethod || order.payment?.method) === 'COD';
-  const header    = `<div style="background:linear-gradient(135deg,#159A4C,#047857);padding:32px 40px;text-align:center;">
+  const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">&#x2705; Order Delivered!</h1>
     <p style="color:#d1fae5;font-size:14px;margin:0;">Hi ${firstName}, your order has been delivered.</p>
   </div>`;
   const body = `
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber}</p>
-      <p style="font-size:12px;color:#64748b;margin:0;">Status: <span style="color:#159A4C;font-weight:600;">Delivered</span></p>
+      <p style="font-size:13px;font-weight:700;color:#36F700;margin:0 0 3px;">${order.orderNumber}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Status: <span style="color:#36F700;font-weight:600;">Delivered</span></p>
     </div>
     ${isCOD ? `<div style="background:#fef3c7;border:1px solid #fde68a;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
       <p style="font-size:13px;font-weight:700;color:#92400e;margin:0 0 4px;">&#128181; Cash Payment Due</p>
@@ -680,15 +680,15 @@ async function sendOrderDeliveredEmail(order) {
 async function sendCashCollectedEmail(order) {
   if (!order?.customer?.email) return;
   const firstName = (order.customer.name || 'there').split(' ')[0];
-  const header    = `<div style="background:linear-gradient(135deg,#159A4C,#047857);padding:32px 40px;text-align:center;">
+  const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">&#x2705; Payment Received!</h1>
     <p style="color:#d1fae5;font-size:14px;margin:0;">Hi ${firstName}, your cash payment has been collected.</p>
   </div>`;
   const body = `
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
-      <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#159A4C;font-weight:700;">Paid (Cash Collected)</span></p>
+      <p style="font-size:13px;font-weight:700;color:#36F700;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#36F700;font-weight:700;">Paid (Cash Collected)</span></p>
     </div>
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">Thank you for your payment of <strong>${formatZar(order.total)}</strong>. Your transaction is now complete.</p>
   `;
@@ -698,15 +698,15 @@ async function sendCashCollectedEmail(order) {
 async function sendPaymentVerifiedEmail(order) {
   if (!order?.customer?.email) return;
   const firstName = (order.customer.name || 'there').split(' ')[0];
-  const header    = `<div style="background:linear-gradient(135deg,#159A4C,#047857);padding:32px 40px;text-align:center;">
+  const header    = `<div style="background:linear-gradient(135deg,#36F700,#047857);padding:32px 40px;text-align:center;">
     <p style="color:#bbf7d0;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">&#x2705; Payment Verified!</h1>
     <p style="color:#d1fae5;font-size:14px;margin:0;">Hi ${firstName}, your EFT payment has been verified.</p>
   </div>`;
   const body = `
     <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#159A4C;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
-      <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#159A4C;font-weight:700;">Paid · Verified</span></p>
+      <p style="font-size:13px;font-weight:700;color:#36F700;margin:0 0 3px;">${order.orderNumber} — ${formatZar(order.total)}</p>
+      <p style="font-size:12px;color:#64748b;margin:0;">Payment: <span style="color:#36F700;font-weight:700;">Paid · Verified</span></p>
     </div>
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 20px;">
       We have verified your EFT payment of <strong>${formatZar(order.total)}</strong>. Your order has been confirmed and is being prepared for dispatch.

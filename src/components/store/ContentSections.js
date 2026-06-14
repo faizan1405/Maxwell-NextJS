@@ -10,7 +10,7 @@ import { BRAND } from '../../lib/storeContext';
 const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
   { icon: Sparkles, title: "Powerful, fresh results", body: "High-active formulations that cut grease, lift stains and leave a clean, fresh finish.", color: "#0EA5E9" },
-  { icon: Shield, title: "Tested & trusted", body: "Every batch is quality-checked for consistent performance you can rely on.", color: "#159A4C" },
+  { icon: Shield, title: "Tested & trusted", body: "Every batch is quality-checked for consistent performance you can rely on.", color: "#36F700" },
   { icon: Leaf, title: "Eco-conscious", body: "Responsible raw materials and biodegradable options — strong on dirt, kinder to the planet.", color: "#0B2E6B" },
 ];
 

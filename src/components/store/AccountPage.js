@@ -73,7 +73,7 @@ function PayStatusBadge({ payStatus }) {
 }
 
 function CustomerAvatar({ name, size = 48 }) {
-  const COLORS = ['#1E50E0','#0B2545','#159A4C','#7C3AED','#0E7490','#B45309'];
+  const COLORS = ['#264CFF','#111111','#36F700','#7C3AED','#0E7490','#B45309'];
   const bg  = COLORS[(name || '?').charCodeAt(0) % COLORS.length];
   const txt = (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   return (
@@ -160,16 +160,16 @@ function ProofUploadWidget({ order, apiBase, onProofUploaded }) {
         <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp,application/pdf" onChange={onFileChange} style={{ display: 'none' }} />
         {file ? (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <CheckCircle size={18} style={{ color: '#159A4C', flexShrink: 0 }} />
+            <CheckCircle size={18} style={{ color: '#36F700', flexShrink: 0 }} />
             <div style={{ textAlign: 'left' }}>
-              <p style={{ fontSize: '13px', fontWeight: 700, color: '#159A4C', margin: 0 }}>{file.name}</p>
+              <p style={{ fontSize: '13px', fontWeight: 700, color: '#36F700', margin: 0 }}>{file.name}</p>
               <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>{(file.size / 1024).toFixed(0)} KB · {file.type.split('/')[1].toUpperCase()}</p>
             </div>
           </div>
         ) : (
           <Fragment>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1.5" style={{ margin: '0 auto 0.5rem auto' }}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            <p style={{ fontSize: '13px', fontWeight: 600, color: '#475569', margin: 0 }}>Drop your proof here or <span style={{ color: '#1E50E0' }}>browse</span></p>
+            <p style={{ fontSize: '13px', fontWeight: 600, color: '#475569', margin: 0 }}>Drop your proof here or <span style={{ color: '#264CFF' }}>browse</span></p>
             <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '0.25rem', marginBottom: 0 }}>PDF, JPG, PNG, WEBP · max 5 MB</p>
           </Fragment>
         )}
@@ -233,7 +233,7 @@ function OrderTracker({ orderStatus, status }) {
               <div className={`order-tracker__circle ${circleClass}`}>
                 {done ? <Check size={13} /> : <span style={{ fontSize: '10px', fontWeight: 700 }}>{i+1}</span>}
               </div>
-              <span style={{ fontSize: '9px', fontWeight: 600, textAlign: 'center', lineHeight: 1.2, color: (done || current) ? '#1E50E0' : '#94a3b8', maxWidth: '48px' }}>
+              <span style={{ fontSize: '9px', fontWeight: 600, textAlign: 'center', lineHeight: 1.2, color: (done || current) ? '#264CFF' : '#94a3b8', maxWidth: '48px' }}>
                 {s}
               </span>
             </div>
@@ -335,7 +335,7 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
                   <p className="acc-modal__section-title" style={{ marginBottom: 0 }}>EFT Reference</p>
                   <PayStatusBadge payStatus={payStatus} />
                 </div>
-                <p style={{ fontFamily: 'monospace', fontSize: '20px', fontWeight: 800, color: '#1E50E0', margin: 0 }}>
+                <p style={{ fontFamily: 'monospace', fontSize: '20px', fontWeight: 800, color: '#264CFF', margin: 0 }}>
                   {order.eftReference || order.orderNumber}
                 </p>
                 {!isPaid && (
@@ -374,7 +374,7 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
               )}
               {isPaid && (
                 <div className="acc-panel acc-panel--green acc-panel-flex">
-                  <CheckCircle size={16} className="acc-panel-icon" style={{ color: '#159A4C' }} />
+                  <CheckCircle size={16} className="acc-panel-icon" style={{ color: '#36F700' }} />
                   <p className="acc-panel-title acc-panel-title--green">EFT Payment Verified — Thank you!</p>
                 </div>
               )}
@@ -417,36 +417,36 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
               {order.items?.map((item, i) => (
                 <div key={i} className="acc-panel acc-panel--slate" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem' }}>
                   <div>
-                    <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#0B2545', margin: 0 }}>{item.name}</p>
+                    <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111111', margin: 0 }}>{item.name}</p>
                     <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Qty: {item.qty} × {money(item.price)}</p>
                   </div>
-                  <span style={{ fontWeight: 700, color: '#0B2545', fontSize: '14px' }}>{money(item.price * item.qty)}</span>
+                  <span style={{ fontWeight: 700, color: '#111111', fontSize: '14px' }}>{money(item.price * item.qty)}</span>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="acc-panel acc-panel--slate" style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', padding: '0.75rem 1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>Subtotal</span><span style={{ fontWeight: 600, color: '#0B2545' }}>{money(order.subtotal)}</span></div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>Subtotal</span><span style={{ fontWeight: 600, color: '#111111' }}>{money(order.subtotal)}</span></div>
             {(order.couponDiscount || 0) > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#159A4C', fontWeight: 600 }}>Coupon ({order.couponCode})</span><span style={{ fontWeight: 700, color: '#159A4C' }}>−{money(order.couponDiscount)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#36F700', fontWeight: 600 }}>Coupon ({order.couponCode})</span><span style={{ fontWeight: 700, color: '#36F700' }}>−{money(order.couponDiscount)}</span></div>
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
               <span style={{ color: '#64748b' }}>Delivery</span>
-              <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#159A4C' : '#0B2545' }}>{order.delivery === 0 ? 'FREE' : money(order.delivery)}</span>
+              <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#36F700' : '#111111' }}>{order.delivery === 0 ? 'FREE' : money(order.delivery)}</span>
             </div>
             {(order.codFee || 0) > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>COD Fee</span><span style={{ fontWeight: 600, color: '#0B2545' }}>{money(order.codFee)}</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>COD Fee</span><span style={{ fontWeight: 600, color: '#111111' }}>{money(order.codFee)}</span></div>
             )}
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-              <span style={{ fontWeight: 700, color: '#0B2545' }}>Total</span>
-              <span style={{ fontWeight: 800, color: '#0B2545' }}>{money(order.total)}</span>
+              <span style={{ fontWeight: 700, color: '#111111' }}>Total</span>
+              <span style={{ fontWeight: 800, color: '#111111' }}>{money(order.total)}</span>
             </div>
           </div>
 
           {order.address && (
             <div className="acc-panel-flex">
-              <MapPin size={16} className="acc-panel-icon" style={{ color: '#1E50E0' }} />
+              <MapPin size={16} className="acc-panel-icon" style={{ color: '#264CFF' }} />
               <div>
                 <p className="acc-modal__section-title" style={{ marginBottom: '0.125rem' }}>Delivery Address</p>
                 <p style={{ fontSize: '13px', color: '#475569', margin: 0 }}>{order.address}</p>
@@ -456,7 +456,7 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
 
           {order.trackingNumber && (
             <div className="acc-panel-flex">
-              <Truck size={16} className="acc-panel-icon" style={{ color: '#1E50E0' }} />
+              <Truck size={16} className="acc-panel-icon" style={{ color: '#264CFF' }} />
               <div>
                 <p className="acc-modal__section-title" style={{ marginBottom: '0.125rem' }}>Tracking</p>
                 <p style={{ fontSize: '13px', color: '#475569', margin: 0 }}>{order.carrier ? `${order.carrier} · ` : ''}{order.trackingNumber}</p>
@@ -535,7 +535,7 @@ function OrdersTab({ apiBase, onReorder }) {
 
   if (orders === null) return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem 0' }}>
-      <span style={{ width: '2rem', height: '2rem', borderRadius: '50%', border: '3px solid rgba(30, 80, 224, 0.2)', borderTopColor: '#1E50E0', animation: 'spin .7s linear infinite' }}/>
+      <span style={{ width: '2rem', height: '2rem', borderRadius: '50%', border: '3px solid rgba(38, 76, 255, 0.2)', borderTopColor: '#264CFF', animation: 'spin .7s linear infinite' }}/>
     </div>
   );
 
@@ -573,7 +573,7 @@ function OrdersTab({ apiBase, onReorder }) {
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 700, color: '#0B2545', fontSize: '14px' }}>{order.orderNumber}</span>
+                  <span style={{ fontWeight: 700, color: '#111111', fontSize: '14px' }}>{order.orderNumber}</span>
                   <StatusBadge status={ordStatus} />
                   <PayStatusBadge payStatus={payStatus} />
                 </div>
@@ -585,7 +585,7 @@ function OrdersTab({ apiBase, onReorder }) {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 800, color: '#0B2545', fontSize: '15px', margin: 0 }}>{money(order.total)}</p>
+              <p style={{ fontWeight: 800, color: '#111111', fontSize: '15px', margin: 0 }}>{money(order.total)}</p>
               <ChevronRight size={16} style={{ color: '#cbd5e1', marginLeft: 'auto', marginTop: '0.25rem' }} />
             </div>
           </div>
@@ -633,7 +633,7 @@ function ProfileTab({ customer, apiBase, onUpdate }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', height: '2.75rem', borderRadius: '0.75rem', border: '1px solid #e2e8f0', backgroundColor: '#f8fafc', padding: '0 1rem' }}>
           <Mail size={15} style={{ color: '#94a3b8', flexShrink: 0 }} />
           <span style={{ fontSize: '13.5px', color: '#64748b' }}>{customer?.email}</span>
-          <span className="acc-badge-pill acc-badge-pill--green" style={{ marginLeft: 'auto', color: '#159A4C', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>Verified</span>
+          <span className="acc-badge-pill acc-badge-pill--green" style={{ marginLeft: 'auto', color: '#36F700', backgroundColor: '#f0fdf4', border: '1px solid #bbf7d0' }}>Verified</span>
         </div>
       </div>
       <div>
@@ -645,7 +645,7 @@ function ProfileTab({ customer, apiBase, onUpdate }) {
         <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} placeholder="e.g. 067 101 4345" className="acc-field__input" />
       </div>
       {error   && <p key={error} style={{ fontSize: '12.5px', color: '#ef4444', margin: 0 }}>{error}</p>}
-      {success && <p style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '12.5px', color: '#159A4C', fontWeight: 600, margin: 0 }}><Check size={14}/> Changes saved!</p>}
+      {success && <p style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '12.5px', color: '#36F700', fontWeight: 600, margin: 0 }}><Check size={14}/> Changes saved!</p>}
       <button type="submit" disabled={saving} className="acc-btn" style={{ width: 'fit-content' }}>
         {saving ? <Fragment><AccSpinner />Saving…</Fragment> : 'Save changes'}
       </button>
@@ -730,12 +730,12 @@ function AddressesTab({ customer, apiBase, onUpdate }) {
         <div key={addr.id} className={`acc-address-card ${addr.isDefault ? 'acc-address-card--default' : ''}`}>
           <div className="acc-flex-between">
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
-              <div style={{ display: 'grid', height: '2.25rem', width: '2.25rem', placeItems: 'center', borderRadius: '0.75rem', backgroundColor: addr.isDefault ? 'rgba(30, 80, 224, 0.1)' : '#f1f5f9', color: addr.isDefault ? '#1E50E0' : '#94a3b8' }}>
+              <div style={{ display: 'grid', height: '2.25rem', width: '2.25rem', placeItems: 'center', borderRadius: '0.75rem', backgroundColor: addr.isDefault ? 'rgba(38, 76, 255, 0.1)' : '#f1f5f9', color: addr.isDefault ? '#264CFF' : '#94a3b8' }}>
                 <MapPin size={16} />
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: 700, fontSize: '13.5px', color: '#0B2545' }}>{addr.label || 'Address'}</span>
+                  <span style={{ fontWeight: 700, fontSize: '13.5px', color: '#111111' }}>{addr.label || 'Address'}</span>
                   {addr.isDefault && <span className="acc-badge-pill acc-badge-pill--cobalt">Default</span>}
                 </div>
                 <p style={{ fontSize: '12.5px', color: '#64748b', marginTop: '0.125rem', lineHeight: 1.6, margin: 0 }}>
@@ -745,7 +745,7 @@ function AddressesTab({ customer, apiBase, onUpdate }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
               {!addr.isDefault && (
-                <button onClick={() => setDefault(addr.id)} style={{ fontSize: '11px', color: '#1E50E0', fontWeight: 600, padding: '0.25rem 0.5rem', borderRadius: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>Set default</button>
+                <button onClick={() => setDefault(addr.id)} style={{ fontSize: '11px', color: '#264CFF', fontWeight: 600, padding: '0.25rem 0.5rem', borderRadius: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>Set default</button>
               )}
               <button onClick={() => startEdit(addr)} className="acc-icon-btn acc-icon-btn--edit"><Pencil size={14}/></button>
               <button onClick={() => deleteAddress(addr.id)} className="acc-icon-btn acc-icon-btn--delete"><Trash size={14}/></button>
@@ -755,14 +755,14 @@ function AddressesTab({ customer, apiBase, onUpdate }) {
       ))}
 
       {!adding && (
-        <button onClick={startAdd} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', height: '2.75rem', padding: '0 1.25rem', borderRadius: '0.75rem', border: '2px dashed rgba(30, 80, 224, 0.4)', color: '#1E50E0', fontWeight: 700, fontSize: '13.5px', background: 'none', cursor: 'pointer', width: '100%' }}>
+        <button onClick={startAdd} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', height: '2.75rem', padding: '0 1.25rem', borderRadius: '0.75rem', border: '2px dashed rgba(38, 76, 255, 0.4)', color: '#264CFF', fontWeight: 700, fontSize: '13.5px', background: 'none', cursor: 'pointer', width: '100%' }}>
           <Plus size={18} /> Add address
         </button>
       )}
 
       {adding && (
         <form onSubmit={submitForm} className="acc-address-form">
-          <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#0B2545', margin: 0 }}>{editing ? 'Edit Address' : 'New Address'}</h4>
+          <h4 style={{ fontWeight: 700, fontSize: '14px', color: '#111111', margin: 0 }}>{editing ? 'Edit Address' : 'New Address'}</h4>
           <div className="acc-address-form__grid">
             <div className="acc-address-form__col-full">
               <label className="acc-field__label">Label</label>
@@ -872,7 +872,7 @@ function ReviewsTab({ customer, apiBase }) {
                 <img src={getPrimaryImg(product)} alt={product?.name || item.name} style={{ width: '3.5rem', height: '3.5rem', borderRadius: '0.75rem', objectFit: 'cover', border: '1px solid #f1f5f9', backgroundColor: '#f8fafc' }} onError={e=>{e.target.onerror=null;e.target.src='/assets/products/placeholder.svg'}} />
               )}
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontWeight: 700, fontSize: '14px', color: '#0B2545', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product?.name || item.name}</p>
+                <p style={{ fontWeight: 700, fontSize: '14px', color: '#111111', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{product?.name || item.name}</p>
                 <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>{product?.size || ''}</p>
                 {myReview && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.25rem' }}>

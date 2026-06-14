@@ -6,17 +6,17 @@ export function buildOtpHtml(otp, name) {
 <html>
 <head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:Helvetica,Arial,sans-serif;">
-<div style="max-width:500px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(11,37,69,.10);">
-  <div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:32px 40px;text-align:center;">
+<div style="max-width:500px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(17,17,17,.10);">
+  <div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 40px;text-align:center;">
     <p style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">Your sign-in code</h1>
   </div>
   <div style="padding:36px 40px;">
-    <p style="color:#0B2545;font-size:15px;font-weight:600;margin:0 0 6px;">${hi}</p>
+    <p style="color:#111111;font-size:15px;font-weight:600;margin:0 0 6px;">${hi}</p>
     <p style="color:#64748b;font-size:14px;line-height:1.6;margin:0 0 28px;">Use the code below to sign in to your Amahle Blue account. It expires in <strong>10 minutes</strong>.</p>
     <div style="background:#f1f5f9;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
       <p style="color:#64748b;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 10px;">Sign-in code</p>
-      <div style="font-size:44px;font-weight:800;color:#1E50E0;letter-spacing:12px;font-family:monospace;">${otp}</div>
+      <div style="font-size:44px;font-weight:800;color:#264CFF;letter-spacing:12px;font-family:monospace;">${otp}</div>
     </div>
     <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;">Didn't request this? You can safely ignore this email — your account is secure.</p>
   </div>

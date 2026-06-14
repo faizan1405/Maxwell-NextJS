@@ -144,7 +144,7 @@ export function printInvoice(order, customSettings) {
 
   const eftSection = payMethod === 'EFT' && !isPaid ? `
     <div class="pay-box eft">
-      <p class="pay-title" style="color:#1E50E0">EFT Payment Instructions</p>
+      <p class="pay-title" style="color:#264CFF">EFT Payment Instructions</p>
       <p class="pay-detail">Reference: <strong>${safe.eftRef}</strong></p>
       ${bankDetails.bankName   ? `<p class="pay-detail">Bank: ${safe.bankName}</p>` : ''}
       ${bankDetails.accountHolder ? `<p class="pay-detail">Account Holder: ${safe.accountHolder}</p>` : ''}
@@ -189,7 +189,7 @@ export function printInvoice(order, customSettings) {
     text-align: right;
   }
   .print-btn {
-    background: #1e50e0;
+    background: #264CFF;
     color: #fff;
     border: none;
     padding: 10px 22px;
@@ -222,11 +222,11 @@ export function printInvoice(order, customSettings) {
   .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; }
   .header-left { display: flex; flex-direction: column; gap: 4px; }
   .logo-text { font-size: 28px; font-weight: 700; color: #0f172a; margin: 0 0 4px 0; letter-spacing: -0.02em; }
-  .logo-sub { font-size: 13px; font-weight: 600; color: #1e50e0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
+  .logo-sub { font-size: 13px; font-weight: 600; color: #264CFF; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.1em; }
   .business-details p { margin: 0; color: #64748b; font-size: 13px; line-height: 1.5; }
   
   .header-right { text-align: right; }
-  .invoice-title { font-size: 32px; font-weight: 700; color: #1e50e0; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em; }
+  .invoice-title { font-size: 32px; font-weight: 700; color: #264CFF; margin: 0 0 16px 0; text-transform: uppercase; letter-spacing: 0.05em; }
   .invoice-meta { display: grid; grid-template-columns: auto auto; gap: 6px 16px; text-align: right; justify-content: end; }
   .meta-label { color: #64748b; font-size: 12px; font-weight: 500; text-transform: uppercase; }
   .meta-value { color: #0f172a; font-size: 13px; font-weight: 600; }
@@ -253,7 +253,7 @@ export function printInvoice(order, customSettings) {
   .totals-box { width: 320px; background: #f8fafc; padding: 24px; border-radius: 8px; border: 1px solid #e2e8f0; }
   .total-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; color: #475569; }
   .total-row.grand-total { margin-top: 16px; padding-top: 16px; border-top: 2px solid #e2e8f0; font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 0; }
-  .total-row.grand-total .val { color: #1e50e0; }
+  .total-row.grand-total .val { color: #264CFF; }
   
   .footer { margin-top: 64px; text-align: center; padding-top: 24px; border-top: 1px solid #e2e8f0; page-break-inside: avoid; }
   .thank-you { font-size: 16px; font-weight: 600; color: #0f172a; margin: 0 0 8px 0; }

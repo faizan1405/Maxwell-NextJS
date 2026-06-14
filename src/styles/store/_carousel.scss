@@ -63,7 +63,7 @@
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(30, 80, 224, 0.18);
+    outline: 3px solid rgba(38, 76, 255, 0.18);
     outline-offset: 2px;
   }
 
@@ -119,7 +119,7 @@
   }
 
   &:focus-visible {
-    outline: 3px solid rgba(30, 80, 224, 0.16);
+    outline: 3px solid rgba(38, 76, 255, 0.16);
     outline-offset: 0.25rem;
     border-radius: $radius-2xl;
   }

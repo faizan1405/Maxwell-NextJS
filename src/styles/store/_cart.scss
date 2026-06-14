@@ -24,7 +24,7 @@
     
     &:focus {
       border-color: $cobalt;
-      box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+      box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.1);
     }
 
     &--error {
@@ -103,7 +103,7 @@
 
 .cart-page__count {
   border-radius: $radius-full;
-  background-color: rgba(30, 80, 224, 0.1);
+  background-color: rgba(38, 76, 255, 0.1);
   color: $cobalt;
   padding: 0.125rem 0.625rem;
   font-size: 12.5px;
@@ -176,7 +176,7 @@
 .cart-progress__bar {
   height: 100%;
   border-radius: $radius-full;
-  background: linear-gradient(to right, $cobalt, #38bdf8);
+  background: linear-gradient(to right, $cobalt, lighten($cobalt, 18%));
   transition: width 0.5s ease;
 }
 
@@ -616,11 +616,11 @@
   
   &--active {
     border-color: $cobalt;
-    background-color: rgba(30, 80, 224, 0.05);
+    background-color: rgba(38, 76, 255, 0.05);
   }
   
   &:hover:not(.checkout-address-btn--active) {
-    border-color: rgba(30, 80, 224, 0.4);
+    border-color: rgba(38, 76, 255, 0.4);
   }
   
   .radio {
@@ -678,16 +678,16 @@
   transition: all $transition-base;
   
   &:focus-within {
-    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.3);
+    box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.3);
   }
   
   &--active {
     border-color: $cobalt;
-    background-color: rgba(30, 80, 224, 0.05);
+    background-color: rgba(38, 76, 255, 0.05);
   }
   
   &:hover:not(.checkout-payment-btn--active) {
-    border-color: rgba(30, 80, 224, 0.4);
+    border-color: rgba(38, 76, 255, 0.4);
   }
   
   input[type="radio"] {
@@ -767,7 +767,7 @@
     
     &:focus {
       border-color: $cobalt;
-      box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+      box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.1);
     }
     
     &--error {
@@ -851,7 +851,7 @@
   
   &:focus {
     border-color: $cobalt;
-    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+    box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.1);
   }
 }
 

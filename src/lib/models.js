@@ -256,7 +256,7 @@ const CategorySchema = new Schema({
   icon: { type: String, default: 'Box' },
   count: { type: Number, default: 0, min: 0 },
   blurb: { type: String, default: '' },
-  accent: { type: String, default: '#0B2545' },
+  accent: { type: String, default: '#111111' },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
   displayOrder: { type: Number, default: 99 },
   image: { type: String, default: null },

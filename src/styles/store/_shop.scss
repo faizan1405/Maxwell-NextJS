@@ -189,7 +189,7 @@
   bottom: 0.75rem;
   right: 0.75rem;
   border-radius: $radius-full;
-  background-color: rgba(11, 37, 69, 0.85);
+  background-color: rgba(17, 17, 17, 0.85);
   padding: 0.25rem 0.625rem;
   font-size: 11px;
   font-weight: 700;
@@ -805,7 +805,7 @@
 .quickview-backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgba(11, 37, 69, 0.55);
+  background-color: rgba(17, 17, 17, 0.55);
   backdrop-filter: blur(2px);
   transition: opacity 0.3s ease;
 }

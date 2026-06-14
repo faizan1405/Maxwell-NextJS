@@ -154,7 +154,7 @@
   width: 5rem;
   place-items: center;
   border-radius: $radius-2xl;
-  background-color: rgba(30, 80, 224, 0.1);
+  background-color: rgba(38, 76, 255, 0.1);
   color: $cobalt;
   margin-bottom: 1.25rem;
 }
@@ -231,7 +231,7 @@
     
     &:focus {
       border-color: $cobalt;
-      box-shadow: 0 0 0 4px rgba(30, 80, 224, 0.1);
+      box-shadow: 0 0 0 4px rgba(38, 76, 255, 0.1);
     }
   }
 }
@@ -279,7 +279,7 @@
   
   &:hover {
     box-shadow: $shadow-sm;
-    border-color: rgba(30, 80, 224, 0.3);
+    border-color: rgba(38, 76, 255, 0.3);
   }
   
   &--needs-action {
@@ -295,7 +295,7 @@
   place-items: center;
   border-radius: $radius-xl;
   color: $cobalt;
-  background-color: rgba(30, 80, 224, 0.08);
+  background-color: rgba(38, 76, 255, 0.08);
   flex-shrink: 0;
   
   &--amber {
@@ -319,8 +319,8 @@
   transition: all $transition-base;
   
   &--default {
-    border-color: rgba(30, 80, 224, 0.4);
-    background-color: rgba(30, 80, 224, 0.03);
+    border-color: rgba(38, 76, 255, 0.4);
+    background-color: rgba(38, 76, 255, 0.03);
   }
 }
 
@@ -334,11 +334,11 @@
     transition: all $transition-base;
     cursor: pointer;
     
-    &:hover { border-color: rgba(30, 80, 224, 0.4); }
+    &:hover { border-color: rgba(38, 76, 255, 0.4); }
     
     &--active {
       border-color: $cobalt;
-      background-color: rgba(30, 80, 224, 0.05);
+      background-color: rgba(38, 76, 255, 0.05);
     }
     
     &--file {
@@ -421,7 +421,7 @@
 .acc-modal-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(11, 37, 69, 0.6); // ink/60
+  background-color: rgba(17, 17, 17, 0.6); // ink/60
   backdrop-filter: blur(4px);
 }
 
@@ -504,7 +504,7 @@
   &--red { background-color: $red-50; border: 1px solid $red-200; }
   &--orange { background-color: $orange-50; border: 1px solid $orange-200; }
   &--blue { background-color: #eff6ff; border: 1px solid #bfdbfe; }
-  &--cobalt-light { background-color: rgba(30, 80, 224, 0.05); border: 1px solid rgba(30, 80, 224, 0.15); }
+  &--cobalt-light { background-color: rgba(38, 76, 255, 0.05); border: 1px solid rgba(38, 76, 255, 0.15); }
   &--white { background-color: white; border: 1px solid $slate-200; }
   &--slate { background-color: $slate-50; border: 1px solid $slate-100; }
 }
@@ -663,8 +663,8 @@
 
 .acc-address-form {
   border-radius: $radius-2xl;
-  border: 1px solid rgba(30, 80, 224, 0.3);
-  background-color: rgba(30, 80, 224, 0.03);
+  border: 1px solid rgba(38, 76, 255, 0.3);
+  background-color: rgba(38, 76, 255, 0.03);
   padding: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -693,7 +693,7 @@
   
   &:focus {
     border-color: $cobalt;
-    box-shadow: 0 0 0 2px rgba(30, 80, 224, 0.1);
+    box-shadow: 0 0 0 2px rgba(38, 76, 255, 0.1);
   }
 }
 
@@ -741,7 +741,7 @@
   cursor: pointer;
   
   &--edit {
-    &:hover { color: $cobalt; background-color: rgba(30, 80, 224, 0.1); }
+    &:hover { color: $cobalt; background-color: rgba(38, 76, 255, 0.1); }
   }
   
   &--delete {
@@ -757,7 +757,7 @@
   
   &--cobalt {
     color: $cobalt;
-    background-color: rgba(30, 80, 224, 0.1);
+    background-color: rgba(38, 76, 255, 0.1);
   }
 }
 

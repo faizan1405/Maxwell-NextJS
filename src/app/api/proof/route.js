@@ -40,8 +40,8 @@ async function sendProofAdminEmail(order) {
 
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:Helvetica,Arial,sans-serif;">
-<div style="max-width:540px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(11,37,69,.10);">
-  <div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:28px 36px;text-align:center;">
+<div style="max-width:540px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(17,17,17,.10);">
+  <div style="background:linear-gradient(135deg,#264CFF,#111111);padding:28px 36px;text-align:center;">
     <h1 style="color:#fff;font-size:20px;font-weight:800;margin:0;">&#128190; Proof of Payment Submitted</h1>
     <p style="color:#bfdbfe;font-size:13px;margin:6px 0 0;">${order.customer?.name || 'A customer'} · ${order.orderNumber}</p>
   </div>
@@ -51,7 +51,7 @@ async function sendProofAdminEmail(order) {
       order <strong>${order.orderNumber}</strong> totalling <strong>${formatZar(order.total)}</strong>.
     </p>
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 4px;">${order.orderNumber} — ${formatZar(order.total)}</p>
+      <p style="font-size:13px;font-weight:700;color:#264CFF;margin:0 0 4px;">${order.orderNumber} — ${formatZar(order.total)}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">EFT Reference: <strong>${order.eftReference || order.orderNumber}</strong></p>
     </div>
     <p style="font-size:13px;color:#64748b;margin:0;">Log in to the admin panel to view the proof and verify or reject the payment.</p>
@@ -76,15 +76,15 @@ async function sendProofCustomerEmail(order) {
   const firstName = (order.customer.name || 'there').split(' ')[0];
   const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"/></head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:Helvetica,Arial,sans-serif;">
-<div style="max-width:540px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(11,37,69,.10);">
-  <div style="background:linear-gradient(135deg,#1E50E0,#0B2545);padding:32px 36px;text-align:center;">
+<div style="max-width:540px;margin:40px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(17,17,17,.10);">
+  <div style="background:linear-gradient(135deg,#264CFF,#111111);padding:32px 36px;text-align:center;">
     <p style="color:#7FC4FF;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin:0 0 6px;">Amahle Blue</p>
     <h1 style="color:#fff;font-size:22px;font-weight:800;margin:0 0 6px;">Proof Received!</h1>
     <p style="color:#bfdbfe;font-size:14px;margin:0;">Hi ${firstName}, we've received your proof of payment.</p>
   </div>
   <div style="padding:32px 36px;">
     <div style="background:#eff6ff;border-radius:10px;padding:14px 18px;margin-bottom:20px;">
-      <p style="font-size:13px;font-weight:700;color:#1E50E0;margin:0 0 3px;">${order.orderNumber}</p>
+      <p style="font-size:13px;font-weight:700;color:#264CFF;margin:0 0 3px;">${order.orderNumber}</p>
       <p style="font-size:12px;color:#64748b;margin:0;">Status: <span style="color:#d97706;font-weight:600;">Proof of Payment Submitted</span></p>
     </div>
     <p style="font-size:14px;color:#334155;line-height:1.6;margin:0 0 16px;">
@@ -96,7 +96,7 @@ async function sendProofCustomerEmail(order) {
       </p>
     </div>
     <p style="font-size:13px;color:#64748b;margin:0;">Questions? Email us at
-      <a href="mailto:info@amahle-blue.co.za" style="color:#1E50E0;">info@amahle-blue.co.za</a>
+      <a href="mailto:info@amahle-blue.co.za" style="color:#264CFF;">info@amahle-blue.co.za</a>
     </p>
   </div>
   <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 36px;text-align:center;">

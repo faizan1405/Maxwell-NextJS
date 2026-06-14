@@ -25,7 +25,7 @@ export const DEFAULT_CATEGORIES = [
 ];
 
 export const FREE_SHIP = 750;
-const STORE_PAGES = ['home', 'shop', 'cart', 'checkout', 'account', 'order-confirmed', 'faq'];
+const STORE_PAGES = ['home', 'shop', 'cart', 'checkout', 'account', 'order-confirmed', 'faq', 'delivery-policy', 'returns-refunds', 'privacy-policy', 'terms-conditions'];
 
 function pageFromPath(pathname) {
   const path = (pathname || '/').replace(/^\/+/, '').split('/')[0];

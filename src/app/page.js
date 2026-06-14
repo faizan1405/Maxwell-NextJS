@@ -201,7 +201,7 @@ function StoreRouter() {
     );
   }
 
-  const POLICY_PAGES = ['privacy-policy', 'terms', 'delivery-policy', 'returns-policy'];
+  const POLICY_PAGES = ['privacy-policy', 'terms-conditions', 'delivery-policy', 'returns-refunds'];
   if (POLICY_PAGES.includes(page)) {
     return (
       <>

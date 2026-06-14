@@ -105,13 +105,13 @@ export const Footer = ({ onShopCat }) => {
               <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'delivery-policy', url: '/delivery-policy' } }))} className="footer-links__link">Delivery Policy</button>
             </li>
             <li>
-              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'returns-policy', url: '/returns-policy' } }))} className="footer-links__link">Returns &amp; Refunds</button>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'returns-refunds', url: '/returns-refunds' } }))} className="footer-links__link">Returns &amp; Refunds</button>
             </li>
             <li>
               <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'privacy-policy', url: '/privacy-policy' } }))} className="footer-links__link">Privacy Policy</button>
             </li>
             <li>
-              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'terms', url: '/terms' } }))} className="footer-links__link">Terms &amp; Conditions</button>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'terms-conditions', url: '/terms-conditions' } }))} className="footer-links__link">Terms &amp; Conditions</button>
             </li>
           </ul>
         </div>

@@ -375,7 +375,7 @@ const POLICY_CONFIG = {
     subtitle: 'How we get your order to you across South Africa.',
     Content: DeliveryPolicyContent,
   },
-  'returns-policy': {
+  'returns-refunds': {
     title: 'Returns & Refund Policy',
     subtitle: 'What to do if something is wrong with your order.',
     Content: ReturnsPolicyContent,
@@ -385,7 +385,7 @@ const POLICY_CONFIG = {
     subtitle: 'How we collect, use, and protect your personal information.',
     Content: PrivacyPolicyContent,
   },
-  'terms': {
+  'terms-conditions': {
     title: 'Terms & Conditions',
     subtitle: 'The terms that apply when you use this website and place an order.',
     Content: TermsContent,

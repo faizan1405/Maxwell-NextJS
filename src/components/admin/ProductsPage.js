@@ -7,7 +7,7 @@ import {
   Badge, Btn, Input, Textarea, Select, Modal, ConfirmDialog, 
   Empty, SearchInput, Pagination, AdminToast, Spinner 
 } from '../ui/index';
-import { normalizePurchaseMode } from '../../utils/purchaseMode';
+import { normalizeAdminPurchaseMode, normalizePurchaseMode } from '../../utils/purchaseMode';
 
 const BADGES  = [null,'Bestseller','New','High Purity','Sale'];
 const STATUSES= ['active','draft','archived'];
@@ -330,7 +330,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
   const set         = (field, val) => setForm(f => ({...f, [field]: val}));
   const setPurchaseMode = (mode) => {
-    const nextMode = normalizePurchaseMode(mode, form.price);
+    const nextMode = normalizeAdminPurchaseMode(mode, form.price);
     setForm(f => ({ ...f, purchaseMode: nextMode, whatsappEnabled: nextMode === 'quote' }));
     setErrors(e => {
       const next = { ...e };
@@ -465,7 +465,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
   function validate() {
     const e = {};
-    const mode = normalizePurchaseMode(form.purchaseMode, form.price);
+    const mode = normalizeAdminPurchaseMode(form.purchaseMode, form.price);
     if (!form.name.trim())  e.name  = 'Product name is required.';
     if (mode === 'cart' && (!form.price || isNaN(parseFloat(form.price)) || parseFloat(form.price) <= 0)) e.price = 'Valid price is required for cart products.';
     if (!form.sku.trim())   e.sku   = 'SKU is required.';
@@ -489,7 +489,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
     const primaryImg = doneMedia.find(m => m.isPrimary && m.type === 'image') || doneMedia.find(m => m.type === 'image');
 
-    const purchaseMode = normalizePurchaseMode(form.purchaseMode, form.price);
+    const purchaseMode = normalizeAdminPurchaseMode(form.purchaseMode, form.price);
     const data = {
       ...form,
       purchaseMode,
@@ -517,7 +517,7 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
 
   const uploadingCount = mediaItems.filter(m => m.status === 'uploading').length;
   const isEdit         = !!initial;
-  const isQuoteMode    = normalizePurchaseMode(form.purchaseMode, form.price) === 'quote';
+  const isQuoteMode    = normalizeAdminPurchaseMode(form.purchaseMode, form.price) === 'quote';
 
   return (
     <>

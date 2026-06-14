@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
 import { Product, Category, StockHistory } from '../../../lib/models';
 import { requireAdmin, verifySession } from '../../../lib/auth';
-import { normalizePurchaseMode } from '../../../utils/purchaseMode';
+import { normalizeAdminPurchaseMode, normalizePurchaseMode } from '../../../utils/purchaseMode';
 import { del } from '@vercel/blob';
 
 function isVercelBlob(url) {
@@ -53,7 +53,7 @@ function sanitize(input) {
     outOfStock: !!v.outOfStock,
   }));
   if (input.purchaseMode !== undefined) {
-    out.purchaseMode = normalizePurchaseMode(input.purchaseMode, input.price);
+    out.purchaseMode = normalizeAdminPurchaseMode(input.purchaseMode, input.price);
   }
   if (input.whatsappEnabled !== undefined) out.whatsappEnabled = !!input.whatsappEnabled;
   if (input.whatsappNumber  !== undefined) out.whatsappNumber  = String(input.whatsappNumber || '').replace(/[^\d+]/g, '').slice(0, 20);

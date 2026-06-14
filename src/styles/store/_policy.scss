@@ -1,0 +1,121 @@
+@import "../variables";
+@import "../mixins";
+
+.policy-page {
+  min-height: 100vh;
+  background-color: #f7f9fc;
+  padding-bottom: 4rem;
+}
+
+/* reuses .faq-hero for the dark header — no extra styles needed */
+
+.policy-body {
+  padding: 2.5rem 1rem 0;
+
+  @include sm {
+    padding: 3rem 1.5rem 0;
+  }
+}
+
+.policy-body__inner {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.policy-section {
+  border-bottom: 1px solid $slate-200;
+  padding-bottom: 2rem;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.policy-section__title {
+  font-family: $font-display;
+  font-size: 17px;
+  font-weight: 800;
+  color: $ink;
+  margin: 0 0 0.75rem 0;
+
+  @include sm {
+    font-size: 18px;
+  }
+}
+
+.policy-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.policy-p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: $slate-700;
+  margin: 0;
+
+  @include sm {
+    font-size: 15px;
+  }
+}
+
+.policy-list {
+  margin: 0;
+  padding-left: 1.375rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+
+  li {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: $slate-700;
+
+    @include sm {
+      font-size: 15px;
+    }
+  }
+}
+
+.policy-contact-box {
+  background: $slate-50;
+  border: 1px solid $slate-200;
+  border-radius: $radius-lg;
+  padding: 1.25rem 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.policy-contact-box__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: $ink;
+  margin: 0 0 0.5rem 0;
+}
+
+.policy-contact-box__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 14px;
+}
+
+.policy-contact-box__link {
+  color: $cobalt;
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity $transition-fast;
+
+  &:hover {
+    opacity: 0.75;
+  }
+}
+
+.policy-contact-box__sep {
+  color: $slate-400;
+  user-select: none;
+}

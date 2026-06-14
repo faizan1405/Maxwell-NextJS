@@ -9,6 +9,7 @@ import { CartPage, CheckoutPage, OrderConfirmedPage } from '../components/store/
 import { AuthModal } from '../components/store/AuthModal';
 import { WhyUs, Reviews, Contact, Newsletter } from '../components/store/ContentSections';
 import { FaqPage, HomepageFaqSection } from '../components/store/FaqPage';
+import { PolicyPage } from '../components/store/PolicyPages';
 import { Footer, WhatsappFab } from '../components/store/Footer';
 import AccountPage from '../components/store/AccountPage';
 
@@ -196,6 +197,19 @@ function StoreRouter() {
         <Header onNavCat={onNavCat} activeCat={activeCat} />
         <FaqPage onGoHome={goHome} />
         <Toast />
+      </>
+    );
+  }
+
+  const POLICY_PAGES = ['privacy-policy', 'terms', 'delivery-policy', 'returns-policy'];
+  if (POLICY_PAGES.includes(page)) {
+    return (
+      <>
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
+        <PolicyPage type={page} onGoHome={goHome} />
+        <Footer onShopCat={onShopCat} />
+        <Toast />
+        <WhatsappFab />
       </>
     );
   }

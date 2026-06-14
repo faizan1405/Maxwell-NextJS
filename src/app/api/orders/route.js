@@ -781,14 +781,26 @@ export async function POST(req) {
     const idemKey = (body.idempotencyKey || '').trim();
 
     const customer = body.customer || {};
+
+    /* Strip HTML angle brackets from free-text fields before validation and storage.
+     * React escapes on render (Phase 3A), invoice escapes at generation time —
+     * this adds defence-in-depth at the persistence layer. */
+    const sanitizeText = (v, maxLen = 500) =>
+      String(v || '').replace(/[<>]/g, '').slice(0, maxLen).trim();
+
+    customer.name    = sanitizeText(customer.name, 120);
+    customer.email   = sanitizeText(customer.email, 254);
+    body.address     = sanitizeText(body.address, 500);
+    body.notes       = sanitizeText(body.notes, 1000);
+
     const customerPhone = String(customer.phone || '').trim();
-    if (!customer.name?.trim())  return NextResponse.json({ error: 'Customer name is required.' }, { status: 400 });
-    if (!customer.email?.trim()) return NextResponse.json({ error: 'Customer email is required.' }, { status: 400 });
+    if (!customer.name)          return NextResponse.json({ error: 'Customer name is required.' }, { status: 400 });
+    if (!customer.email)         return NextResponse.json({ error: 'Customer email is required.' }, { status: 400 });
     if (!customerPhone)          return NextResponse.json({ error: 'Mobile number is required.' }, { status: 400 });
     if (!isValidSaMobile(customerPhone)) {
       return NextResponse.json({ error: 'Please enter a valid South African mobile number (e.g. 067 101 4345).' }, { status: 400 });
     }
-    if (!body.address?.trim())   return NextResponse.json({ error: 'Delivery address is required.' }, { status: 400 });
+    if (!body.address)           return NextResponse.json({ error: 'Delivery address is required.' }, { status: 400 });
 
     const items = Array.isArray(body.items) ? body.items : [];
     if (!items.length) return NextResponse.json({ error: 'Cart is empty.' }, { status: 400 });

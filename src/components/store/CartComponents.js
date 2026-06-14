@@ -678,6 +678,17 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                 <Home size={16} /> Return to Store
               </button>
             </div>
+
+            {/* Trust reassurance note */}
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '0.875rem 1rem', marginTop: '0.25rem' }}>
+              <p style={{ fontSize: '13px', color: '#15803d', margin: 0, lineHeight: 1.6 }}>
+                {isEFT && !isPaid
+                  ? 'Your order is reserved. Once your EFT payment is received and verified by our team (usually within 1–2 business days), your order will be confirmed and dispatched.'
+                  : isCOD
+                  ? 'Your order has been placed. Our team will contact you to confirm delivery details. Payment is collected at the time of delivery.'
+                  : 'Your order has been placed. Our team will be in touch with updates shortly.'}
+              </p>
+            </div>
           </div>
         </div>
       </div>

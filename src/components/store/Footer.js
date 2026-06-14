@@ -92,9 +92,26 @@ export const Footer = ({ onShopCat }) => {
               }} className="footer-links__link">Contact</button>
             </li>
             <li><a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I'd like to inquire about bulk and trade pricing.")}`} target="_blank" rel="noopener noreferrer" className="footer-links__link">Bulk &amp; trade</a></li>
-            <li><button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">Delivery &amp; returns</button></li>
             <li>
               <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'faq', url: '/faq' } }))} className="footer-links__link">FAQs</button>
+            </li>
+          </ul>
+        </div>
+
+        <div className="footer-links">
+          <h4 className="footer-links__title">Policies</h4>
+          <ul className="footer-links__list">
+            <li>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'delivery-policy', url: '/delivery-policy' } }))} className="footer-links__link">Delivery Policy</button>
+            </li>
+            <li>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'returns-policy', url: '/returns-policy' } }))} className="footer-links__link">Returns &amp; Refunds</button>
+            </li>
+            <li>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'privacy-policy', url: '/privacy-policy' } }))} className="footer-links__link">Privacy Policy</button>
+            </li>
+            <li>
+              <button onClick={() => typeof window !== 'undefined' && window.dispatchEvent(new CustomEvent('ab:go-page', { detail: { page: 'terms', url: '/terms' } }))} className="footer-links__link">Terms &amp; Conditions</button>
             </li>
           </ul>
         </div>

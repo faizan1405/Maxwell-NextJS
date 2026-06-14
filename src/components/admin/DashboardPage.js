@@ -83,7 +83,7 @@ function OrderStatusChart({ byStatus }) {
   );
 }
 
-export default function DashboardPage({ setPage }) {
+export default function DashboardPage({ setPage, setInitialFilters }) {
   const { stats, fetchDashboardStats, fmtMoney, fmtDate, loadingStates } = useAdmin();
 
   useEffect(() => {
@@ -92,6 +92,36 @@ export default function DashboardPage({ setPage }) {
 
   const isDashboardLoading = loadingStates?.dashboard;
   const accounting = stats.accounting || {};
+
+  const handleGrossSalesClick = () => {
+    if (setInitialFilters) setInitialFilters(null);
+    setPage('orders');
+  };
+
+  const handleCollectedRevenueClick = () => {
+    if (setInitialFilters) setInitialFilters({ payStatus: 'Paid' });
+    setPage('orders');
+  };
+
+  const handlePendingPaymentsClick = () => {
+    if (setInitialFilters) setInitialFilters({ payStatus: 'Proof of Payment Submitted' });
+    setPage('orders');
+  };
+
+  const handleOutstandingCodClick = () => {
+    if (setInitialFilters) setInitialFilters({ payMethod: 'COD', payStatus: 'Cash Payment Pending' });
+    setPage('orders');
+  };
+
+  const handleEftAwaitingApprovalClick = () => {
+    if (setInitialFilters) setInitialFilters({ payMethod: 'EFT', payStatus: 'Proof of Payment Submitted' });
+    setPage('orders');
+  };
+
+  const handleTotalOrdersClick = () => {
+    if (setInitialFilters) setInitialFilters(null);
+    setPage('orders');
+  };
 
   return (
     <div className="dashboard-page">
@@ -103,6 +133,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.grossSales || 0)}
           color="cobalt"
           sub="Valid orders"
+          onClick={handleGrossSalesClick}
           loading={isDashboardLoading}
         />
         <StatCard
@@ -111,6 +142,7 @@ export default function DashboardPage({ setPage }) {
           value={formatZarCompact(accounting.collectedRevenue || 0)}
           color="cobalt"
           sub="Confirmed & paid"
+          onClick={handleCollectedRevenueClick}
           loading={isDashboardLoading}
         />
         <StatCard
@@ -119,6 +151,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.pendingPayments || 0)}
           color="amber"
           sub="COD pending + EFT unapproved"
+          onClick={handlePendingPaymentsClick}
           loading={isDashboardLoading}
         />
         <StatCard
@@ -127,6 +160,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.outstandingCOD || 0)}
           color="amber"
           sub="Delivered, cash not collected"
+          onClick={handleOutstandingCodClick}
           loading={isDashboardLoading}
         />
         <StatCard
@@ -135,6 +169,7 @@ export default function DashboardPage({ setPage }) {
           value={fmtMoney(accounting.eftAwaitingApproval || 0)}
           color="purple"
           sub="Proof uploaded"
+          onClick={handleEftAwaitingApprovalClick}
           loading={isDashboardLoading}
         />
         <StatCard
@@ -143,11 +178,11 @@ export default function DashboardPage({ setPage }) {
           value={stats.totalOrders}
           color="purple"
           sub={`${(stats.byStatus?.pending||0)+(stats.byStatus?.processing||0)} active`}
-          onClick={() => setPage('orders')}
+          onClick={handleTotalOrdersClick}
           loading={isDashboardLoading}
         />
         <StatCard
-          icon="🛒"
+          icon="🏷️"
           label="Products"
           value={stats.activeProducts}
           color="green"
@@ -162,6 +197,33 @@ export default function DashboardPage({ setPage }) {
           color="amber"
           sub="Unique buyers"
           onClick={() => setPage('customers')}
+          loading={isDashboardLoading}
+        />
+        <StatCard
+          icon="⭐"
+          label="Reviews"
+          value={stats.totalReviews || 0}
+          color="green"
+          sub="Approved ratings"
+          onClick={() => setPage('reviews')}
+          loading={isDashboardLoading}
+        />
+        <StatCard
+          icon="🛒"
+          label="Abandoned Carts"
+          value={stats.totalAbandonedCarts || 0}
+          color="purple"
+          sub="Unrecovered carts"
+          onClick={() => setPage('abandoned')}
+          loading={isDashboardLoading}
+        />
+        <StatCard
+          icon="✉️"
+          label="Subscribers"
+          value={stats.totalSubscribers || 0}
+          color="cobalt"
+          sub="Newsletter list"
+          onClick={() => setPage('newsletter')}
           loading={isDashboardLoading}
         />
       </div>

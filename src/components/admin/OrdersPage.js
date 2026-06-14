@@ -740,7 +740,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
   );
 }
 
-export default function OrdersPage() {
+export default function OrdersPage({ initialFilters, clearInitialFilters }) {
   const {
     orders = [],
     ordersPagination = { page: 1, limit: 20, total: 0, totalPages: 1 },
@@ -756,9 +756,9 @@ export default function OrdersPage() {
   } = useAdmin();
   const { isAdmin, session } = useAuth();
 
-  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
-  const [payStatusFilter,   setPayStatusFilter]   = useState('all');
-  const [payMethodFilter,   setPayMethodFilter]   = useState('all');
+  const [orderStatusFilter, setOrderStatusFilter] = useState(() => initialFilters?.status || 'all');
+  const [payStatusFilter,   setPayStatusFilter]   = useState(() => initialFilters?.payStatus || 'all');
+  const [payMethodFilter,   setPayMethodFilter]   = useState(() => initialFilters?.payMethod || 'all');
   const [dateRangeFilter,   setDateRangeFilter]   = useState('all');
   const [customStart,       setCustomStart]       = useState('');
   const [customEnd,         setCustomEnd]         = useState('');
@@ -769,6 +769,16 @@ export default function OrdersPage() {
   const [toast,             setToast]             = useState({ visible:false, msg:'', type:'success' });
   const [saving,            setSaving]            = useState(false);
   const [isExporting,       setIsExporting]       = useState(false);
+
+  useEffect(() => {
+    if (initialFilters) {
+      setOrderStatusFilter(initialFilters.status || 'all');
+      setPayStatusFilter(initialFilters.payStatus || 'all');
+      setPayMethodFilter(initialFilters.payMethod || 'all');
+      setPage(1);
+      if (clearInitialFilters) clearInitialFilters();
+    }
+  }, [initialFilters, clearInitialFilters]);
 
   function showToast(msg, type='success') {
     setToast({ visible:true, msg, type });

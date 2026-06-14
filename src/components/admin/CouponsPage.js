@@ -15,10 +15,11 @@ function blankCoupon() {
   return { code:'', type:'percentage', value:'', minOrderValue:'', maxUses:'', maxUsesPerCustomer:'', expiresAt:'', active:true };
 }
 
-function CouponForm({ open, onClose, initial, onSave }) {
+function CouponForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
   const [form,   setForm]   = useState(blankCoupon());
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -36,6 +37,40 @@ function CouponForm({ open, onClose, initial, onSave }) {
       setForm(blankCoupon());
     }
   }, [open, initial]);
+
+  const isDirty = useMemo(() => {
+    if (!open) return false;
+    const baseline = initial
+      ? {
+          ...initial,
+          value:         String(initial.value),
+          minOrderValue: initial.minOrderValue ? String(initial.minOrderValue) : '',
+          maxUses:       initial.maxUses       ? String(initial.maxUses)       : '',
+          maxUsesPerCustomer: initial.maxUsesPerCustomer ? String(initial.maxUsesPerCustomer) : '',
+          expiresAt:     initial.expiresAt     ? new Date(initial.expiresAt).toISOString().slice(0, 10) : '',
+        }
+      : blankCoupon();
+
+    if (form.code !== baseline.code) return true;
+    if (form.type !== baseline.type) return true;
+    if (form.value !== baseline.value) return true;
+    if (form.minOrderValue !== baseline.minOrderValue) return true;
+    if (form.maxUses !== baseline.maxUses) return true;
+    if (form.maxUsesPerCustomer !== baseline.maxUsesPerCustomer) return true;
+    if (form.expiresAt !== baseline.expiresAt) return true;
+    if (form.active !== baseline.active) return true;
+
+    return false;
+  }, [form, initial, open]);
+
+  useEffect(() => {
+    if (setUnsavedChanges) {
+      setUnsavedChanges(isDirty);
+    }
+    return () => {
+      if (setUnsavedChanges) setUnsavedChanges(false);
+    };
+  }, [isDirty, setUnsavedChanges]);
 
   const set = (f, v) => setForm(p => ({ ...p, [f]: v }));
 
@@ -65,10 +100,19 @@ function CouponForm({ open, onClose, initial, onSave }) {
     onClose();
   }
 
+  function handleCancel() {
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      onClose();
+    }
+  }
+
   return (
-    <Modal open={open} onClose={onClose} size="md" title={initial ? 'Edit Coupon' : 'New Coupon'}
-      footer={<><Btn variant="secondary" onClick={onClose}>Cancel</Btn><Btn onClick={handleSave} disabled={saving}>{saving?<><Spinner size={14}/>Saving…</>:(initial?'Save Changes':'Create Coupon')}</Btn></>}
-    >
+    <>
+      <Modal open={open} onClose={handleCancel} size="md" title={initial ? 'Edit Coupon' : 'New Coupon'}
+        footer={<><Btn variant="secondary" onClick={handleCancel}>Cancel</Btn><Btn onClick={handleSave} disabled={saving}>{saving?<><Spinner size={14}/>Saving…</>:(initial?'Save Changes':'Create Coupon')}</Btn></>}
+      >
       <div className="coupon-form">
         <Input label="Coupon Code *" value={form.code} onChange={e=>set('code',e.target.value.toUpperCase())}
           placeholder="e.g. SAVE20" error={errors.code} hint="Auto-uppercased · customers type this at checkout" />
@@ -94,10 +138,24 @@ function CouponForm({ open, onClose, initial, onSave }) {
         <Toggle checked={form.active} onChange={v=>set('active',v)} label="Active (customers can redeem this coupon)" />
       </div>
     </Modal>
+
+    <ConfirmDialog
+      open={showDiscardConfirm}
+      onClose={() => setShowDiscardConfirm(false)}
+      onConfirm={() => {
+        setShowDiscardConfirm(false);
+        onClose();
+      }}
+      title="Discard Unsaved Changes"
+      message="You have unsaved changes. Are you sure you want to discard them and close?"
+      confirmLabel="Discard"
+      variant="danger"
+    />
+    </>
   );
 }
 
-export default function CouponsPage() {
+export default function CouponsPage({ setUnsavedChanges }) {
   const { coupons, addCoupon, updateCoupon, deleteCoupon, fmtMoney, fmtDate } = useAdmin();
   const { isAdmin } = useAuth();
   const [search,   setSearch]   = useState('');
@@ -237,6 +295,7 @@ export default function CouponsPage() {
         onClose={() => { setFormOpen(false); setEditing(null); }}
         initial={editing}
         onSave={handleSave}
+        setUnsavedChanges={setUnsavedChanges}
       />
 
       <ConfirmDialog

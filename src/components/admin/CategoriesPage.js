@@ -5,7 +5,7 @@ import { useAdmin } from './AdminProvider';
 import * as Icon from '../ui/Icons';
 import { Badge, Btn, Input, Modal, AdminToast } from '../ui/index';
 
-export default function CategoriesPage() {
+export default function CategoriesPage({ setUnsavedChanges }) {
   const { categories, products, addCategory, updateCategory, deleteCategory, updateProduct } = useAdmin();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -34,13 +34,33 @@ export default function CategoriesPage() {
     });
   }, [categories, search, filterStatus]);
 
+  const [originalItemSnapshot, setOriginalItemSnapshot] = useState(null);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  const isDirty = useMemo(() => {
+    if (!activeItem || !originalItemSnapshot || modalMode === 'delete') return false;
+    return JSON.stringify(activeItem) !== JSON.stringify(originalItemSnapshot);
+  }, [activeItem, originalItemSnapshot, modalMode]);
+
+  useEffect(() => {
+    if (setUnsavedChanges) {
+      setUnsavedChanges(isDirty);
+    }
+    return () => {
+      if (setUnsavedChanges) setUnsavedChanges(false);
+    };
+  }, [isDirty, setUnsavedChanges]);
+
   function handleAdd() {
-    setActiveItem({ name: '', id: '', short: '', icon: 'Box', image: '', blurb: '', accent: '#111111', status: 'active', displayOrder: 99 });
+    const item = { name: '', id: '', short: '', icon: 'Box', image: '', blurb: '', accent: '#111111', status: 'active', displayOrder: 99 };
+    setActiveItem(item);
+    setOriginalItemSnapshot(item);
     setModalMode('add');
   }
 
   function handleEdit(c) {
     setActiveItem({ ...c });
+    setOriginalItemSnapshot({ ...c });
     setModalMode('edit');
   }
 
@@ -48,6 +68,21 @@ export default function CategoriesPage() {
     setActiveItem({ ...c });
     setReassignTo('');
     setModalMode('delete');
+  }
+
+  function handleCloseCategoryModal() {
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      executeDiscardCategory();
+    }
+  }
+
+  function executeDiscardCategory() {
+    setModalMode(null);
+    setActiveItem(null);
+    setOriginalItemSnapshot(null);
+    setShowDiscardConfirm(false);
   }
 
   async function handleToggleStatus(c) {
@@ -72,6 +107,8 @@ export default function CategoriesPage() {
         await updateCategory(activeItem.id, activeItem);
         showToast('Category updated');
       }
+      setOriginalItemSnapshot(null);
+      setActiveItem(null);
       setModalMode(null);
     } catch (err) {
       showToast(err.message, 'error');
@@ -202,7 +239,7 @@ export default function CategoriesPage() {
         </div>
       </div>
 
-      <Modal open={modalMode === 'add' || modalMode === 'edit'} onClose={() => !isSaving && setModalMode(null)} title={modalMode === 'add' ? 'New Category' : 'Edit Category'} size="lg">
+      <Modal open={modalMode === 'add' || modalMode === 'edit'} onClose={handleCloseCategoryModal} title={modalMode === 'add' ? 'New Category' : 'Edit Category'} size="lg">
         {activeItem && (
           <form onSubmit={onSave} className="admin-cat-form__space-y">
             <div className="admin-cat-form__grid-2">
@@ -238,7 +275,7 @@ export default function CategoriesPage() {
             </div>
 
             <div className="admin-cat-form__footer">
-              <Btn type="button" variant="secondary" onClick={() => setModalMode(null)} disabled={isSaving}>Cancel</Btn>
+              <Btn type="button" variant="secondary" onClick={handleCloseCategoryModal} disabled={isSaving}>Cancel</Btn>
               <Btn type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Category'}</Btn>
             </div>
           </form>
@@ -283,6 +320,16 @@ export default function CategoriesPage() {
           </div>
         )}
       </Modal>
+
+      <ConfirmDialog
+        open={showDiscardConfirm}
+        onClose={() => setShowDiscardConfirm(false)}
+        onConfirm={executeDiscardCategory}
+        title="Discard Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to discard them and close?"
+        confirmLabel="Discard"
+        variant="danger"
+      />
     </div>
   );
 }

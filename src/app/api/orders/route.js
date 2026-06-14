@@ -14,7 +14,7 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Order, Product, Settings, Coupon, ShippingRate, StockHistory, Customer } from '../../../lib/models';
+import { Order, Product, Settings, Coupon, ShippingRate, StockHistory, Customer, Review, AbandonedCart, NewsletterSubscriber } from '../../../lib/models';
 import { verifySession } from '../../../lib/auth';
 import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
@@ -1100,6 +1100,10 @@ export async function GET(req) {
           o.paymentStatus === 'Payment Verification Required'
         ).length;
 
+        const totalReviews = await Review.countDocuments({});
+        const totalAbandonedCarts = await AbandonedCart.countDocuments({ recovered: false });
+        const totalSubscribers = await NewsletterSubscriber.countDocuments({ status: 'subscribed' });
+
         return NextResponse.json({
           accounting: acc,
           collectedRevenue: acc.collectedRevenue,
@@ -1111,7 +1115,10 @@ export async function GET(req) {
           recentOrders,
           byStatus,
           orders: last7DaysOrders,
-          attentionCount
+          attentionCount,
+          totalReviews,
+          totalAbandonedCarts,
+          totalSubscribers,
         }, { status: 200 });
       }
 

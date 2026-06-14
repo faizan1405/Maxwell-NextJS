@@ -335,59 +335,82 @@ export default function NewsletterPage() {
 function EditSubscriberModal({ sub, onClose, onSave }) {
   const [notes, setNotes] = useState(sub.notes || '');
   const [status, setStatus] = useState(sub.status || 'subscribed');
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  const isDirty = notes !== (sub.notes || '') || status !== (sub.status || 'subscribed');
 
   function handleSubmit(e) {
     e.preventDefault();
     onSave(notes, status);
   }
 
+  function handleCancel() {
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      onClose();
+    }
+  }
+
   return (
-    <Modal
-      open={true}
-      onClose={onClose}
-      title="Edit Subscriber"
-      size="sm"
-      footer={
-        <>
-          <Btn variant="ghost" size="sm" onClick={onClose}>Cancel</Btn>
-          <Btn variant="primary" size="sm" onClick={handleSubmit}>Save Changes</Btn>
-        </>
-      }
-    >
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Email</label>
-          <input
-            type="text"
-            disabled
-            value={sub.email}
-            style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '14px', outline: 'none', color: '#64748b' }}
-          />
-        </div>
+    <>
+      <Modal
+        open={true}
+        onClose={handleCancel}
+        title="Edit Subscriber"
+        size="sm"
+        footer={
+          <>
+            <Btn variant="ghost" size="sm" onClick={handleCancel}>Cancel</Btn>
+            <Btn variant="primary" size="sm" onClick={handleSubmit}>Save Changes</Btn>
+          </>
+        }
+      >
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Email</label>
+            <input
+              type="text"
+              disabled
+              value={sub.email}
+              style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '14px', outline: 'none', color: '#64748b' }}
+            />
+          </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', cursor: 'pointer' }}
-          >
-            <option value="subscribed">Subscribed</option>
-            <option value="unsubscribed">Unsubscribed</option>
-          </select>
-        </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', cursor: 'pointer' }}
+            >
+              <option value="subscribed">Subscribed</option>
+              <option value="unsubscribed">Unsubscribed</option>
+            </select>
+          </div>
 
-        <div>
-          <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Admin Notes</label>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={4}
-            placeholder="Add administrative notes regarding this subscriber..."
-            style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', resize: 'none' }}
-          />
-        </div>
-      </form>
-    </Modal>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#475569', marginBottom: '0.375rem' }}>Admin Notes</label>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              placeholder="Add administrative notes regarding this subscriber..."
+              style={{ width: '100%', padding: '0.625rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '14px', outline: 'none', resize: 'none' }}
+            />
+          </div>
+        </form>
+      </Modal>
+
+      <ConfirmDialog
+        open={showDiscardConfirm}
+        onClose={() => setShowDiscardConfirm(false)}
+        onConfirm={onClose}
+        title="Discard Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to discard them and close?"
+        confirmLabel="Discard"
+        variant="danger"
+      />
+    </>
   );
 }

@@ -17,19 +17,46 @@ import FaqsPage from './FaqsPage';
 import AbandonedPage from './AbandonedPage';
 import SettingsPage from './SettingsPage';
 import NewsletterPage from './NewsletterPage';
+import { ConfirmDialog } from '../ui/index';
 
 function AdminRouter() {
   const { session } = useAuth();
   const { stats } = useAdmin();
   const [page, setPage] = useState('dashboard');
+  
+  // Dashboard shortcuts filter states
+  const [initialFilters, setInitialFilters] = useState(null);
+
+  // Unsaved changes warnings
+  const [unsavedChanges, setUnsavedChanges] = useState(false);
+  const [pendingPage, setPendingPage] = useState(null);
 
   if (!session) return <LoginPage />;
 
+  function handlePageChange(nextPage) {
+    if (nextPage === page) return;
+    if (unsavedChanges) {
+      setPendingPage(nextPage);
+    } else {
+      setPage(nextPage);
+    }
+  }
+
+  function handleConfirmDiscard() {
+    setUnsavedChanges(false);
+    setPage(pendingPage);
+    setPendingPage(null);
+  }
+
+  function handleCancelDiscard() {
+    setPendingPage(null);
+  }
+
   const pages = {
-    dashboard: <DashboardPage setPage={setPage} />,
+    dashboard: <DashboardPage setPage={handlePageChange} setInitialFilters={setInitialFilters} />,
     reports:   <ReportsPage />,
     products:  <ProductsPage />,
-    orders:    <OrdersPage />,
+    orders:    <OrdersPage initialFilters={initialFilters} clearInitialFilters={() => setInitialFilters(null)} />,
     customers: <CustomersPage />,
     settings:  <SettingsPage />,
     categories:<CategoriesPage />,
@@ -41,10 +68,25 @@ function AdminRouter() {
     newsletter:<NewsletterPage />,
   };
 
+  const currentPage = pages[page] || pages.dashboard;
+  const pageWithProps = React.cloneElement(currentPage, { setUnsavedChanges });
+
   return (
-    <AdminLayout page={page} setPage={setPage} stats={stats}>
-      {pages[page] || pages.dashboard}
-    </AdminLayout>
+    <>
+      <AdminLayout page={page} setPage={handlePageChange} stats={stats}>
+        {pageWithProps}
+      </AdminLayout>
+
+      <ConfirmDialog
+        open={!!pendingPage}
+        onClose={handleCancelDiscard}
+        onConfirm={handleConfirmDiscard}
+        title="Discard Unsaved Changes"
+        message="You have unsaved changes. If you leave this page, your changes will be lost. Are you sure you want to navigate away?"
+        confirmLabel="Discard"
+        variant="danger"
+      />
+    </>
   );
 }
 

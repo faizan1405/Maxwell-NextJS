@@ -213,7 +213,7 @@ async function deleteUnsavedBlob(url) {
   }
 }
 
-function ProductForm({ open, onClose, initial, onSave }) {
+function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
   const { session }                    = useAuth();
   const { categories }                 = useAdmin();
   const [form,       setForm]          = useState(blankProduct);
@@ -228,6 +228,56 @@ function ProductForm({ open, onClose, initial, onSave }) {
   // Snapshot of URLs that already belong to the saved product when the modal
   // opened, so we never delete pre-existing media on cancel.
   const [initialUrls, setInitialUrls] = useState(() => new Set());
+
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  const isDirty = useMemo(() => {
+    if (!open) return false;
+    const baselineForm = initial
+      ? { ...initial, benefits: (initial.benefits||['','','','']).slice(0,4).concat(['','','','']).slice(0,4) }
+      : { ...blankProduct(), cat: categories && categories.length > 0 ? categories[0].id : '' };
+
+    if (form.name !== baselineForm.name) return true;
+    if (form.cat !== baselineForm.cat) return true;
+    if (form.sub !== baselineForm.sub) return true;
+    if (String(form.price || '') !== String(baselineForm.price || '')) return true;
+    if (String(form.was || '') !== String(baselineForm.was || '')) return true;
+    if (form.size !== baselineForm.size) return true;
+    if (form.badge !== baselineForm.badge) return true;
+    if (form.desc !== baselineForm.desc) return true;
+    if (form.scent !== baselineForm.scent) return true;
+    if (form.sku !== baselineForm.sku) return true;
+    if (String(form.stock || '') !== String(baselineForm.stock || '')) return true;
+    if (String(form.lowStockThreshold || '') !== String(baselineForm.lowStockThreshold || '')) return true;
+    if (form.outOfStock !== baselineForm.outOfStock) return true;
+    
+    if (JSON.stringify(form.benefits) !== JSON.stringify(baselineForm.benefits)) return true;
+    if (JSON.stringify(form.variants) !== JSON.stringify(baselineForm.variants)) return true;
+
+    const baselineMedia = initial ? (initial.media || []).map(m => m.url) : [];
+    const currentMedia = mediaItems.map(m => m.url);
+    if (JSON.stringify(currentMedia) !== JSON.stringify(baselineMedia)) return true;
+
+    for (let i = 0; i < mediaItems.length; i++) {
+      const item = mediaItems[i];
+      if (item.status === 'uploading') return true;
+      const baselineItem = initial?.media?.find(m => m.url === item.url);
+      if (baselineItem) {
+        if (item.altText !== baselineItem.altText) return true;
+        if (item.isPrimary !== baselineItem.isPrimary) return true;
+      }
+    }
+    return false;
+  }, [form, mediaItems, initial, categories, open]);
+
+  useEffect(() => {
+    if (setUnsavedChanges) {
+      setUnsavedChanges(isDirty);
+    }
+    return () => {
+      if (setUnsavedChanges) setUnsavedChanges(false);
+    };
+  }, [isDirty, setUnsavedChanges]);
 
   const categoryOptions = useMemo(() => {
     const list = Array.isArray(categories) ? [...categories] : [];
@@ -372,6 +422,14 @@ function ProductForm({ open, onClose, initial, onSave }) {
   }
 
   function handleCancel() {
+    if (isDirty) {
+      setShowDiscardConfirm(true);
+    } else {
+      executeDiscard();
+    }
+  }
+
+  function executeDiscard() {
     // Clean up any blobs uploaded during this session that the user did not save.
     if (unsavedUrls.size > 0) {
       for (const url of unsavedUrls) {
@@ -379,6 +437,7 @@ function ProductForm({ open, onClose, initial, onSave }) {
       }
     }
     setUnsavedUrls(new Set());
+    setShowDiscardConfirm(false);
     onClose();
   }
 
@@ -434,7 +493,8 @@ function ProductForm({ open, onClose, initial, onSave }) {
   const isEdit         = !!initial;
 
   return (
-    <Modal open={open} onClose={handleCancel} size="xl" title={isEdit ? `Edit: ${initial?.name}` : 'Add New Product'}
+    <>
+      <Modal open={open} onClose={handleCancel} size="xl" title={isEdit ? `Edit: ${initial?.name}` : 'Add New Product'}
       footer={<>
         {formError && <span style={{flex: 1, fontSize: '0.75rem', color: '#dc2626', fontWeight: 500, marginRight: '0.5rem'}}>{formError}</span>}
         <Btn variant="secondary" onClick={handleCancel}>Cancel</Btn>
@@ -527,6 +587,16 @@ function ProductForm({ open, onClose, initial, onSave }) {
         </div>
       </div>
     </Modal>
+    <ConfirmDialog
+      open={showDiscardConfirm}
+      onClose={() => setShowDiscardConfirm(false)}
+      onConfirm={executeDiscard}
+      title="Discard Unsaved Changes"
+      message="You have unsaved changes. Are you sure you want to discard them and close?"
+      confirmLabel="Discard"
+      variant="danger"
+    />
+    </>
   );
 }
 
@@ -744,7 +814,7 @@ function StockHistoryModal({ open, onClose }) {
   );
 }
 
-export default function ProductsPage() {
+export default function ProductsPage({ setUnsavedChanges }) {
   const {
     products = [],
     productsPagination = { page: 1, limit: 20, total: 0, totalPages: 1, counts: {} },
@@ -984,7 +1054,7 @@ export default function ProductsPage() {
         )}
       </div>
 
-      <ProductForm open={formOpen} onClose={()=>setFormOpen(false)} initial={editing} onSave={handleSave}/>
+      <ProductForm open={formOpen} onClose={()=>setFormOpen(false)} initial={editing} onSave={handleSave} setUnsavedChanges={setUnsavedChanges} />
       <StockAdjustmentModal open={adjustmentOpen} onClose={()=>setAdjustmentOpen(false)} product={adjustmentProd} onSave={handleAdjustmentSave}/>
       <StockHistoryModal open={historyOpen} onClose={()=>setHistoryOpen(false)}/>
 

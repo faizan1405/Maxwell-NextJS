@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from './AdminProvider';
-import { AdminToast, Avatar, Badge, Input, Btn, Spinner } from '../ui/index';
+import { AdminToast, Avatar, Badge, Input, Btn, Spinner, ConfirmDialog } from '../ui/index';
 import { Eye, Check } from '../ui/Icons';
 import '../../styles/admin/_settings.scss';
 
-function PaymentSettingsTab() {
+function PaymentSettingsTab({ onDirtyChange }) {
   const [data, setData] = useState(null);
+  const [initialData, setInitialData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState({ visible: false, msg: '', type: 'success' });
@@ -24,12 +25,25 @@ function PaymentSettingsTab() {
         if (!res.ok) throw new Error('Failed to load');
         const s = await res.json();
         setData(s);
+        setInitialData(s);
       } catch {
         showToast('Could not load payment settings.', 'error');
       }
       setLoading(false);
     })();
   }, []);
+
+  const isDirty = useMemo(() => {
+    if (!data || !initialData) return false;
+    return JSON.stringify(data) !== JSON.stringify(initialData);
+  }, [data, initialData]);
+
+  useEffect(() => {
+    if (onDirtyChange) onDirtyChange(isDirty);
+    return () => {
+      if (onDirtyChange) onDirtyChange(false);
+    };
+  }, [isDirty, onDirtyChange]);
 
   function setFieldValue(section, key, val) {
     setData(d => ({ ...d, [section]: { ...d[section], [key]: val } }));
@@ -47,6 +61,7 @@ function PaymentSettingsTab() {
       });
       if (!res.ok) throw new Error('Save failed');
       showToast('Payment settings saved');
+      setInitialData(data);
     } catch {
       showToast('Failed to save. Please try again.', 'error');
     }
@@ -202,12 +217,46 @@ function PaymentSettingsTab() {
   );
 }
 
-export default function SettingsPage() {
+export default function SettingsPage({ setUnsavedChanges }) {
   const { session } = useAuth();
   const [tab, setTab] = useState('account');
   const [toast, setToast] = useState({ visible: false, msg: '', type: 'success' });
   const [pwForm, setPwForm] = useState({ current: '', next: '', confirm: '' });
   const [pwErrors, setPwErrors] = useState({});
+  const [isPaymentDirty, setIsPaymentDirty] = useState(false);
+
+  const isPwDirty = pwForm.current !== '' || pwForm.next !== '' || pwForm.confirm !== '';
+  const isDirty = isPaymentDirty || isPwDirty;
+
+  useEffect(() => {
+    if (setUnsavedChanges) {
+      setUnsavedChanges(isDirty);
+    }
+    return () => {
+      if (setUnsavedChanges) setUnsavedChanges(false);
+    };
+  }, [isDirty, setUnsavedChanges]);
+
+  const [pendingTab, setPendingTab] = useState(null);
+  const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
+
+  function handleTabChange(nextTab) {
+    if (nextTab === tab) return;
+    if (isDirty) {
+      setPendingTab(nextTab);
+      setShowDiscardConfirm(true);
+    } else {
+      setTab(nextTab);
+    }
+  }
+
+  function executeTabChange() {
+    setTab(pendingTab);
+    setPendingTab(null);
+    setShowDiscardConfirm(false);
+    setPwForm({ current: '', next: '', confirm: '' });
+    setIsPaymentDirty(false);
+  }
   const [saving, setSaving] = useState(false);
   const [showCurrent, setShowCurrent] = useState(false);
   const [showNext, setShowNext] = useState(false);
@@ -265,7 +314,7 @@ export default function SettingsPage() {
 
       <div className="settings__tabs">
         {['account', 'security', 'store', 'payment'].map(t => (
-          <button key={t} onClick={() => setTab(t)} className={tab === t ? 'active' : ''}>
+          <button key={t} onClick={() => handleTabChange(t)} className={tab === t ? 'active' : ''}>
             {t}
           </button>
         ))}
@@ -396,9 +445,18 @@ export default function SettingsPage() {
       )}
 
       {tab === 'payment' && (
-        <PaymentSettingsTab />
+        <PaymentSettingsTab key={tab} onDirtyChange={setIsPaymentDirty} />
       )}
 
+      <ConfirmDialog
+        open={showDiscardConfirm}
+        onClose={() => setShowDiscardConfirm(false)}
+        onConfirm={executeTabChange}
+        title="Discard Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to discard them and switch tabs?"
+        confirmLabel="Discard"
+        variant="danger"
+      />
     </div>
   );
 }

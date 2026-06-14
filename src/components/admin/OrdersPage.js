@@ -18,6 +18,11 @@ const ORDER_STATUS_OPTIONS = [
   { value:'Dispatched',       label:'Dispatched' },
   { value:'Delivered',        label:'Delivered' },
   { value:'Cancelled',        label:'Cancelled' },
+  { value:'Return Requested', label:'Return Requested' },
+  { value:'Return Approved',  label:'Return Approved' },
+  { value:'Return Rejected',  label:'Return Rejected' },
+  { value:'Refunded',         label:'Refunded' },
+  { value:'Refund Not Applicable', label:'Refund Not Applicable' },
   { value:'pending',          label:'Pending (legacy)' },
   { value:'confirmed',        label:'Confirmed (legacy)' },
   { value:'processing',       label:'Processing (legacy)' },
@@ -57,6 +62,11 @@ function orderStatusClass(s) {
     'Dispatched':'admin-badge--indigo',
     'Delivered':'admin-badge--green',
     'Cancelled':'admin-badge--red',
+    'Return Requested':'admin-badge--orange',
+    'Return Approved':'admin-badge--teal',
+    'Return Rejected':'admin-badge--red',
+    'Refunded':'admin-badge--purple',
+    'Refund Not Applicable':'admin-badge--slate',
     pending:'admin-badge--amber',
     confirmed:'admin-badge--teal',
     processing:'admin-badge--blue',
@@ -471,7 +481,7 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     disabled={saving}
                     className="admin-order-detail__status-select"
                   >
-                    {!['Order Placed','Awaiting Payment','Confirmed','Processing','Dispatched','Delivered','Cancelled'].includes(orderStatus) && orderStatus && (
+                    {!['Order Placed','Awaiting Payment','Confirmed','Processing','Dispatched','Delivered','Cancelled','Return Requested','Return Approved','Return Rejected','Refunded','Refund Not Applicable'].includes(orderStatus) && orderStatus && (
                       <option value={orderStatus}>{orderStatus}</option>
                     )}
                     {orderStatus === 'Order Placed' && <option value="Order Placed">Order Placed</option>}
@@ -482,6 +492,11 @@ function OrderDetail({ order, saving, onClose, onOrderStatusChange, onPayStatusC
                     <option value="Processing">Processing</option>
                     <option value="Dispatched">Dispatched</option>
                     <option value="Delivered">Delivered</option>
+                    <option value="Return Requested">Return Requested</option>
+                    <option value="Return Approved">Return Approved</option>
+                    <option value="Return Rejected">Return Rejected</option>
+                    <option value="Refunded">Refunded</option>
+                    <option value="Refund Not Applicable">Refund Not Applicable</option>
                     {isAdmin && <option value="Cancelled">Cancelled</option>}
                   </select>
                 </div>

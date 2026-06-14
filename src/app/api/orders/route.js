@@ -883,16 +883,70 @@ export async function POST(req) {
     if (body.couponCode) {
       const code = (body.couponCode || '').toUpperCase().trim();
       const c = await Coupon.findOne({ code }).lean();
-      if (c && c.active && !(c.expiresAt && Date.now() > c.expiresAt) && !(c.maxUses > 0 && c.usedCount >= c.maxUses)) {
-        if (subtotal >= (c.minOrderValue || 0)) {
-          if (c.type === 'percentage') {
-            couponDiscount = Math.round(subtotal * (c.value / 100) * 100) / 100;
-          } else {
-            couponDiscount = Math.min(c.value, subtotal);
-          }
-          couponCode = c.code;
-          couponId = c.id;
+      if (c) {
+        if (!c.active) {
+          return NextResponse.json({ error: 'Invalid or inactive coupon code.' }, { status: 400 });
         }
+        if (c.expiresAt && Date.now() > c.expiresAt) {
+          return NextResponse.json({ error: 'This coupon has expired.' }, { status: 400 });
+        }
+        if (c.maxUses > 0 && c.usedCount >= c.maxUses) {
+          return NextResponse.json({ error: 'This coupon has reached its usage limit.' }, { status: 400 });
+        }
+
+        // Per-customer usage limit check
+        if (c.maxUsesPerCustomer > 0) {
+          const email = customer.email.trim().toLowerCase();
+          const custUsageCount = await Order.countDocuments({
+            couponId: c.id,
+            'customer.email': email,
+            status: { $ne: 'cancelled' }
+          });
+          if (custUsageCount >= c.maxUsesPerCustomer) {
+            return NextResponse.json({ error: 'You have reached the usage limit for this coupon.' }, { status: 400 });
+          }
+        }
+
+        if (subtotal >= (c.minOrderValue || 0)) {
+          // Product & category restrictions check
+          let applicableTotal = subtotal;
+          if (c.restrictToProducts?.length > 0 || c.restrictToCategories?.length > 0) {
+            let matchingTotal = 0;
+            for (const item of validatedItems) {
+              const product = await Product.findOne({ id: item.productId }).lean();
+              const cat = product ? product.cat : '';
+              const itemSubtotal = (item.price || 0) * (item.qty || 1);
+              
+              let match = false;
+              if (c.restrictToProducts?.includes(item.productId)) {
+                match = true;
+              }
+              if (c.restrictToCategories?.includes(cat)) {
+                match = true;
+              }
+              if (match) {
+                matchingTotal += itemSubtotal;
+              }
+            }
+            applicableTotal = matchingTotal;
+          }
+
+          if (applicableTotal > 0) {
+            if (c.type === 'percentage') {
+              couponDiscount = Math.round(applicableTotal * (c.value / 100) * 100) / 100;
+            } else {
+              couponDiscount = Math.min(c.value, applicableTotal);
+            }
+            couponCode = c.code;
+            couponId = c.id;
+          } else {
+            return NextResponse.json({ error: 'This coupon is not applicable to any products in your cart.' }, { status: 400 });
+          }
+        } else {
+          return NextResponse.json({ error: `Minimum order value of ${formatZar(c.minOrderValue)} required to use this coupon.` }, { status: 400 });
+        }
+      } else {
+        return NextResponse.json({ error: 'Invalid coupon code.' }, { status: 400 });
       }
     }
 
@@ -966,7 +1020,14 @@ export async function POST(req) {
     await Order.create(newOrder);
 
     if (couponId) {
-      await Coupon.updateOne({ id: couponId }, { $inc: { usedCount: 1 }, $set: { updatedAt: Date.now() } });
+      const result = await Coupon.updateOne(
+        { id: couponId, active: true, $or: [{ maxUses: 0 }, { $expr: { $lt: ["$usedCount", "$maxUses"] } }] },
+        { $inc: { usedCount: 1 }, $set: { updatedAt: Date.now() } }
+      );
+      if (result.matchedCount === 0) {
+        await Order.deleteOne({ id: newOrder.id }); // rollback order creation
+        return NextResponse.json({ error: 'This coupon has just reached its usage limit.' }, { status: 400 });
+      }
     }
 
     if (payMethod === 'COD') { sendCODEmail(newOrder).catch(() => {}); }

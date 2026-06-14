@@ -17,6 +17,11 @@ export const ORDER_STATUS_VALUES = [
   'shipped',
   'delivered',
   'cancelled',
+  'Return Requested',
+  'Return Approved',
+  'Return Rejected',
+  'Refunded',
+  'Refund Not Applicable',
 ];
 
 export const PAYMENT_STATUS_VALUES = [
@@ -223,6 +228,7 @@ const CouponSchema = new Schema({
   active: { type: Boolean, default: true },
   expiresAt: { type: Number, default: null },
   maxUses: { type: Number, default: 0, min: 0 },
+  maxUsesPerCustomer: { type: Number, default: 0, min: 0 },
   usedCount: { type: Number, default: 0, min: 0 },
   minOrderValue: { type: Number, default: 0, min: 0 },
   restrictToProducts: [{ type: String }],

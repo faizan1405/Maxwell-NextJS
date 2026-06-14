@@ -106,7 +106,7 @@ export const ProductCard = ({ p }) => {
         )}
         <div className="product-card__badges">
           {!outOfStock && <BadgeChip badge={p.badge} />}
-          {p.was && p.was > displayPrice && !outOfStock && <span className="product-card__save-badge">Save {money(p.was - displayPrice)}</span>}
+          {!outOfStock && <span className="product-card__quote-badge">Quote Only</span>}
         </div>
         <div className="product-card__actions">
           <button onClick={handleWish}
@@ -137,11 +137,7 @@ export const ProductCard = ({ p }) => {
         </div>
         <div className="product-card__price-row">
           <div className="product-card__price-wrap">
-            {contactForPrice
-              ? <span className="product-card__price product-card__price--contact">Contact for price</span>
-              : <><span className="product-card__price">{hasMultiplePrices ? 'From ' : ''}{money(displayPrice)}</span>
-                  {p.was && <span className="product-card__price-was">{money(p.was)}</span>}</>
-            }
+            <span className="product-card__price product-card__price--contact">Quote Only</span>
           </div>
           {lowStock && <span className="product-card__stock-low">{hasVariants && p.variants.length > 1 ? 'Limited stock' : `Only ${displayStock} left`}</span>}
         </div>
@@ -157,7 +153,7 @@ export const ProductCard = ({ p }) => {
               added      ? 'product-card__btn--added' :
                            'product-card__btn--add'
             }`}>
-            {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Cart</>}
+            {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Quote Cart</>}
           </button>
         )}
       </div>
@@ -659,11 +655,7 @@ export const QuickView = () => {
                   <React.Fragment>
                     <div className="quickview-price-section">
                       <div className="quickview-price-wrap">
-                        {contactForPrice
-                          ? <span className="quickview-price quickview-price--contact">Contact for price</span>
-                          : <><span className="quickview-price">{money(activePrice)}</span>
-                              {activeWas && <span className="quickview-price-was">{money(activeWas)}</span>}</>
-                        }
+                        <span className="quickview-price quickview-price--contact">Quote Only</span>
                       </div>
                       <div className="quickview-stock-info">
                         <span className="quickview-stock-status">
@@ -692,7 +684,7 @@ export const QuickView = () => {
                           onClick={() => { if (!activeOutOfStock) { add(product, qty, selectedVarName); setProduct(null); setTimeout(() => setOpen(true), 150); } }}
                           className={`quickview-add-btn ${activeOutOfStock ? 'quickview-add-btn--oos' : 'quickview-add-btn--active'}`}
                         >
-                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Cart</>}
+                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Quote Cart</>}
                         </button>
                       </div>
                     )}

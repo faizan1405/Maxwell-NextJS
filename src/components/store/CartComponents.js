@@ -91,22 +91,7 @@ export function CartPage({ onGoHome, onCheckout }) {
       <div className="cart-page__main">
         <div className="cart-page__grid">
           <div className="cart-page__left">
-            {/* Free shipping progress */}
-            <div className="cart-progress">
-              {remaining > 0 ? (
-                <p className="cart-progress__text">
-                  Add <span className="cart-progress__amount">{money(remaining)}</span> more for{' '}
-                  <span style={{ fontWeight: 600, color: '#111111' }}>free delivery</span>
-                </p>
-              ) : (
-                <p className="cart-progress__text cart-progress__text--success">
-                  <CheckCircle size={16} /> You've unlocked free delivery!
-                </p>
-              )}
-              <div className="cart-progress__bar-wrap">
-                <div className="cart-progress__bar" style={{ width: `${pct}%` }} />
-              </div>
-            </div>
+
 
             {/* Cart items */}
             <div className="cart-items">
@@ -124,7 +109,6 @@ export function CartPage({ onGoHome, onCheckout }) {
                           <p className="cart-item__title">{product.name}</p>
                           <p className="cart-item__meta">{size} · {c?.short}</p>
                           <div className="cart-item__price-wrap">
-                            <span className="cart-item__price-unit">{money(price)} each</span>
                             {lowStock && <span className="cart-item__badge cart-item__badge--amber">Only {maxStock} left</span>}
                             {outOfStock && <span className="cart-item__badge cart-item__badge--red">Out of Stock</span>}
                           </div>
@@ -142,7 +126,6 @@ export function CartPage({ onGoHome, onCheckout }) {
                             <Plus size={14} />
                           </button>
                         </div>
-                        <span className="cart-item__price-total">{money(price * qty)}</span>
                       </div>
                       {typeof maxStock === 'number' && maxStock > 0 && maxStock <= 10 && !outOfStock && (
                         <p className="cart-item__stock-warning">Only {maxStock} left in stock</p>
@@ -170,28 +153,11 @@ export function CartPage({ onGoHome, onCheckout }) {
               {detailed.map(({ product, qty, variation, price, size }) => (
                 <div key={`${product.id}-${variation || ''}`} className="order-summary__row">
                   <span className="order-summary__row-label">{product.name}{variation ? ` (${size})` : ''} ×{qty}</span>
-                  <span className="order-summary__row-val">{money(price * qty)}</span>
                 </div>
               ))}
             </div>
-            <div className="order-summary__totals">
-              <div className="order-summary__row">
-                <span>Subtotal</span>
-                <span className="order-summary__row-val" style={{ color: '#111111' }}>{money(subtotal)}</span>
-              </div>
-              <div className="order-summary__row">
-                <span>Delivery</span>
-                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#36F700' : '#111111' }}>
-                  {delivery === 0 ? 'FREE' : money(delivery)}
-                </span>
-              </div>
-            </div>
-            <div className="order-summary__grand-total">
-              <span>Total</span>
-              <span>{money(total)}</span>
-            </div>
             <button onClick={onCheckout} className="order-summary__btn">
-              <Lock size={16} /> Proceed to Checkout
+              <Lock size={16} /> Proceed to Quote
             </button>
             <p className="order-summary__secure">
               <Shield size={13} /> Secure checkout · SSL encrypted
@@ -211,7 +177,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
   const [form, setForm] = useState({
     name: customer?.name || '', email: customer?.email || '', phone: customer?.phone || '',
     addrLine: '', addrCity: '', addrProvince: '', addrPostal: '', addrCountry: 'South Africa',
-    payment: '', notes: '',
+    payment: 'EFT', notes: '',
   });
   const [selectedAddr, setSelectedAddr] = useState('');
   const [placing, setPlacing] = useState(false);
@@ -485,96 +451,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
               </div>
             </div>
 
-            {/* Payment method */}
-            <div className="checkout-section">
-              <h3 className="checkout-section__title">
-                <CreditCard size={17} /> Payment Method
-              </h3>
 
-              <div className="checkout-section__grid" role="radiogroup" aria-label="Select payment method">
-                {/* Cash on Delivery */}
-                {settings?.cod?.enabled !== false && (
-                  <label className={`checkout-payment-btn ${form.payment === 'COD' ? 'checkout-payment-btn--active' : ''}`}>
-                    <input
-                      type="radio" name="paymentMethod" value="COD"
-                      checked={form.payment === 'COD'}
-                      onChange={() => setForm(p => ({ ...p, payment: 'COD' }))}
-                    />
-                    <div className="details">
-                      <p className={`label ${form.payment === 'COD' ? 'label--active' : ''}`}>
-                        Cash on Delivery
-                      </p>
-                      <p className="text">Pay in cash when your order is delivered.</p>
-                    </div>
-                  </label>
-                )}
-
-                {/* EFT / Bank Transfer */}
-                {settings?.eft?.enabled !== false && (
-                  <label className={`checkout-payment-btn ${form.payment === 'EFT' ? 'checkout-payment-btn--active' : ''}`}>
-                    <input
-                      type="radio" name="paymentMethod" value="EFT"
-                      checked={form.payment === 'EFT'}
-                      onChange={() => setForm(p => ({ ...p, payment: 'EFT' }))}
-                    />
-                    <div className="details">
-                      <p className={`label ${form.payment === 'EFT' ? 'label--active' : ''}`}>
-                        EFT / Bank Transfer
-                      </p>
-                      <p className="text">Pay directly into our bank account. Details provided after checkout.</p>
-                    </div>
-                  </label>
-                )}
-              </div>
-
-              {form.payment === 'EFT' && (
-                <div className="checkout-note checkout-note--info" style={{ marginTop: '1rem' }}>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
-                  <p>Bank details and your payment reference will be shown after placing your order and emailed to you.</p>
-                </div>
-              )}
-
-              {settings?.cod?.enabled === false && settings?.eft?.enabled === false && (
-                <div className="checkout-note checkout-note--error" style={{ marginTop: '1rem' }}>
-                  <p>No payment methods are currently available. Please contact us for assistance.</p>
-                </div>
-              )}
-            </div>
-
-            {/* Coupon code */}
-            <div className="checkout-section">
-              <h3 className="checkout-section__title">
-                <Tag size={16} /> Coupon Code
-              </h3>
-              {coupon ? (
-                <div className="checkout-coupon-active">
-                  <div className="details">
-                    <CheckCircle size={16} />
-                    <div>
-                      <p className="label">{coupon.code} applied</p>
-                      <p className="sub">
-                        {coupon.type === 'percentage' ? `${coupon.value}% off` : `${money(coupon.value)} off`} — saving {money(coupon.discount)}
-                      </p>
-                    </div>
-                  </div>
-                  <button type="button" onClick={removeCoupon} className="remove">
-                    <X size={16} />
-                  </button>
-                </div>
-              ) : (
-                <div className="checkout-coupon">
-                  <input value={couponInput} onChange={e => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
-                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(e); } }}
-                    placeholder="Enter coupon code"
-                    className={`checkout-coupon__input ${couponError ? 'checkout-coupon__input--error' : ''}`} />
-                  <button type="button" onClick={applyCoupon} disabled={couponLoading || !couponInput.trim()}
-                    className="checkout-coupon__btn">
-                    {couponLoading ? 'Checking…' : 'Apply'}
-                  </button>
-                </div>
-              )}
-              {couponError && <p className="checkout-note checkout-note--error checkout-note--shake" style={{ marginTop: '0.75rem' }}>{couponError}</p>}
-            </div>
 
             {/* Order notes */}
             <div className="checkout-section">
@@ -605,43 +482,12 @@ export function CheckoutPage({ onBack, onSuccess }) {
                     <p className="title">{product.name}</p>
                     <p className="meta">{size} ×{qty}</p>
                   </div>
-                  <span className="order-summary__item-price">{money(price * qty)}</span>
                 </div>
               ))}
             </div>
 
-            <div className="order-summary__totals">
-              <div className="order-summary__row">
-                <span>Subtotal</span>
-                <span className="order-summary__row-val" style={{ color: '#111111' }}>{money(subtotal)}</span>
-              </div>
-              {coupon && (
-                <div className="order-summary__row" style={{ color: '#36F700' }}>
-                  <span>Coupon discount</span>
-                  <span className="order-summary__row-val">−{money(couponDiscount)}</span>
-                </div>
-              )}
-              <div className="order-summary__row">
-                <span>Delivery to {form.addrProvince || 'SA'}</span>
-                <span className="order-summary__row-val" style={{ color: delivery === 0 ? '#36F700' : '#111111' }}>
-                  {delivery === 0 ? 'FREE' : money(delivery)}
-                </span>
-              </div>
-              {form.payment === 'COD' && codFee > 0 && (
-                <div className="order-summary__row" style={{ color: '#d97706' }}>
-                  <span>Cash on Delivery fee</span>
-                  <span className="order-summary__row-val">{money(codFee)}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="order-summary__grand-total">
-              <span>Total</span>
-              <span>{money(total)}</span>
-            </div>
-
             <button type="submit" form="ck-form" disabled={placing || mobileMissing} className="order-summary__btn">
-              {placing ? <Spinner size={18} /> : <><Lock size={16} /> Place Order</>}
+              {placing ? <Spinner size={18} /> : <><Lock size={16} /> Submit Quote Request</>}
             </button>
             <p className="order-summary__secure">
               <Shield size={13} /> Secure checkout · SSL encrypted
@@ -770,106 +616,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                   {order.orderStatus || order.status || 'Pending'}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', alignItems: 'center' }}>
-                <span style={{ color: '#64748b' }}>Payment Status</span>
-                <span className={`acc-badge ${getPaymentBadgeClass()}`} style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
-                  {getPaymentStatusLabel()}
-                </span>
-              </div>
-              <div style={{ borderTop: '1px dashed #e2e8f0', marginTop: '0.5rem', paddingTop: '0.5rem', fontSize: '13px', color: '#264CFF', fontWeight: 600 }}>
-                {isCOD ? (
-                  <span>Next Steps: Payment will be collected during delivery.</span>
-                ) : (
-                  <span>
-                    {upOk || order.proofOfPaymentUrl ? (
-                      <span style={{ color: '#36F700' }}>Next Steps: Payment proof has been uploaded. Administrative approval is pending.</span>
-                    ) : (
-                      <span>Next Steps: Payment proof is pending upload. Please transfer the funds using the details below and upload proof to activate processing.</span>
-                    )}
-                  </span>
-                )}
-              </div>
             </div>
-
-            {showEFTInfo && (
-              <div className="order-confirmed__eft">
-                <h3 className="order-confirmed__eft-title">
-                  <CreditCard size={16} /> EFT Bank Transfer Details
-                </h3>
-                <div className="order-confirmed__eft-grid">
-                  <div className="order-confirmed__eft-item">
-                    <p className="label">Bank Name</p>
-                    <p className="val">{eftConfig.bankName || 'FNB'}</p>
-                  </div>
-                  <div className="order-confirmed__eft-item">
-                    <p className="label">Account Number</p>
-                    <p className="val">
-                      {eftConfig.accountNumber || '1234567890'}
-                      <button onClick={() => copyToClipboard(eftConfig.accountNumber || '1234567890')} title="Copy">
-                        <Copy size={14} />
-                      </button>
-                    </p>
-                  </div>
-                  <div className="order-confirmed__eft-item">
-                    <p className="label">Branch Code</p>
-                    <p className="val">{eftConfig.branchCode || '250655'}</p>
-                  </div>
-                  <div className="order-confirmed__eft-item">
-                    <p className="label">Account Holder</p>
-                    <p className="val">{eftConfig.accountHolder || 'Amahle Blue'}</p>
-                  </div>
-                </div>
-                <p className="order-confirmed__eft-note">
-                  Please use <strong>{order.eftReference || order.orderNumber}</strong> as your payment reference.
-                </p>
-              </div>
-            )}
-
-            {showEFTInfo && (
-              <div style={{ padding: '1.25rem', background: '#f8fafc', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
-                <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#111111', marginTop: 0, marginBottom: '0.75rem' }}>
-                  Upload Proof of Payment
-                </h3>
-                {upOk ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1rem', background: '#f0fdf4', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
-                    <CheckCircle size={16} style={{ color: '#36F700', flexShrink: 0 }} />
-                    <p style={{ fontSize: '13px', color: '#15803d', margin: 0 }}>Proof uploaded! We'll verify and confirm your order shortly.</p>
-                  </div>
-                ) : isLoggedIn ? (
-                  <>
-                    <p style={{ fontSize: '13px', color: '#64748b', marginTop: 0, marginBottom: '0.75rem' }}>
-                      Already paid? Upload your proof of payment to speed up order verification.
-                    </p>
-                    <input
-                      ref={fileRef}
-                      type="file"
-                      accept=".pdf,.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp,application/pdf"
-                      onChange={uploadProof}
-                      style={{ display: 'none' }}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => fileRef.current?.click()}
-                      disabled={uploading}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.625rem 1.25rem', background: uploading ? '#94a3b8' : '#264CFF', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: uploading ? 'not-allowed' : 'pointer', width: '100%' }}
-                    >
-                      {uploading ? 'Uploading…' : (proof ? `Uploading: ${proof.name.slice(0, 28)}…` : 'Select & Upload Proof')}
-                    </button>
-                    {upError && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', padding: '0.5rem 0.75rem', background: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca' }}>
-                        <AlertCircle size={13} style={{ color: '#dc2626', flexShrink: 0 }} />
-                        <p style={{ fontSize: '12px', color: '#dc2626', margin: 0 }}>{upError}</p>
-                      </div>
-                    )}
-                    <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '0.5rem', marginBottom: 0 }}>Accepted: PDF, JPG, PNG, WEBP · Max 5 MB</p>
-                  </>
-                ) : (
-                  <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-                    <button type="button" onClick={onGoOrders} style={{ color: '#264CFF', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, padding: 0, fontSize: '13px' }}>Sign in &amp; go to My Orders</button>{' '}to upload your proof of payment.
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* Detailed Order Summary Section */}
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
@@ -895,11 +642,8 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
                         </p>
                       )}
                       <p style={{ fontSize: '12px', color: '#64748b', margin: '4px 0 0 0' }}>
-                        Qty: {item.qty} × {money(item.price)}
+                        Qty: {item.qty}
                       </p>
-                    </div>
-                    <div style={{ fontWeight: 700, fontSize: '14px', color: '#111111', flexShrink: 0 }}>
-                      {money(item.price * item.qty)}
                     </div>
                   </div>
                 ))}
@@ -922,73 +666,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
               </div>
             </div>
 
-            {/* Payment breakdown */}
-            <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
-                <span>Subtotal</span>
-                <span style={{ fontWeight: 600, color: '#111111' }}>{money(order.subtotal)}</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
-                <span>Delivery</span>
-                <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#36F700' : '#111111' }}>
-                  {order.delivery === 0 ? 'FREE' : money(order.delivery)}
-                </span>
-              </div>
-
-              {(order.couponDiscount || 0) > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#36F700' }}>
-                  <span>Coupon Deduction {order.couponCode ? `(${order.couponCode})` : ''}</span>
-                  <span style={{ fontWeight: 700 }}>−{money(order.couponDiscount)}</span>
-                </div>
-              )}
-
-              {(order.codFee || 0) > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#d97706' }}>
-                  <span>COD Fee</span>
-                  <span style={{ fontWeight: 600 }}>{money(order.codFee)}</span>
-                </div>
-              )}
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#64748b' }}>
-                <span>Payment Method</span>
-                <span style={{ fontWeight: 600, color: '#111111' }}>
-                  {order.paymentMethod === 'COD' ? 'Cash on Delivery' : order.paymentMethod === 'EFT' ? 'EFT / Bank Transfer' : (order.paymentMethod || '')}
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', alignItems: 'center', color: '#64748b' }}>
-                <span>Payment Status</span>
-                <span className={`acc-badge ${getPaymentBadgeClass()}`} style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
-                  {getPaymentStatusLabel()}
-                </span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: '#64748b', borderTop: '1px dashed #e2e8f0', marginTop: '0.25rem', paddingTop: '0.5rem' }}>
-                <span>VAT Included (15%)</span>
-                <span>{money(vatAmount)}</span>
-              </div>
-
-              <div className="order-confirmed__total" style={{ borderTop: '1px solid #e2e8f0', marginTop: '0.25rem', paddingTop: '1rem' }}>
-                <p className="label">Final Total</p>
-                <p className="val">{money(order.total)}</p>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', marginTop: '0.25rem' }}>
-                <span style={{ color: '#64748b' }}>Amount Paid</span>
-                <span style={{ fontWeight: 600, color: '#111111' }}>{money(amountPaid)}</span>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', fontWeight: 700, color: balanceDue > 0 ? '#b45309' : '#36F700' }}>
-                <span>Amount Due / Balance</span>
-                <span>{money(balanceDue)}</span>
-              </div>
-            </div>
-
-            <div className="order-confirmed__actions">
-              <button onClick={() => printInvoice(order)} className="order-confirmed__btn order-confirmed__btn--secondary">
-                <Download size={16} /> Download Invoice
-              </button>
+            <div className="order-confirmed__actions" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
               <button onClick={onGoOrders} className="order-confirmed__btn order-confirmed__btn--secondary">
                 View My Orders
               </button>

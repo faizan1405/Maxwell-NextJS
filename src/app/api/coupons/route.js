@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Coupon } from '../../../lib/models';
+import { Coupon, Order } from '../../../lib/models';
 import { requireAdmin, verifySession } from '../../../lib/auth';
+import { verifyCustomerCookie } from '../../../lib/customerAuth';
 import { formatZar } from '../../../utils/currency';
 
 function calcDiscount(coupon, cartTotal) {
@@ -34,11 +35,52 @@ export async function POST(req) {
     if (!c || !c.active) return NextResponse.json({ error: 'Invalid or expired coupon code.' }, { status: 404 });
     if (c.expiresAt && Date.now() > c.expiresAt) return NextResponse.json({ error: 'This coupon has expired.' }, { status: 400 });
     if (c.maxUses > 0 && c.usedCount >= c.maxUses) return NextResponse.json({ error: 'This coupon has reached its usage limit.' }, { status: 400 });
+    
+    // Per-customer usage limit check
+    const customerSession = await verifyCustomerCookie(req);
+    const email = customerSession?.email || body.email || '';
+    if (c.maxUsesPerCustomer > 0 && email) {
+      const custUsageCount = await Order.countDocuments({
+        couponId: c.id,
+        'customer.email': email.toLowerCase().trim(),
+        status: { $ne: 'cancelled' }
+      });
+      if (custUsageCount >= c.maxUsesPerCustomer) {
+        return NextResponse.json({ error: 'You have reached the usage limit for this coupon.' }, { status: 400 });
+      }
+    }
+
     if (c.minOrderValue > 0 && cartTotal < c.minOrderValue) {
       return NextResponse.json({ error: `Minimum order value of ${formatZar(c.minOrderValue)} required.` }, { status: 400 });
     }
 
-    const discount = calcDiscount(c, cartTotal);
+    // Product & category restrictions check
+    let applicableTotal = cartTotal;
+    if ((c.restrictToProducts?.length > 0 || c.restrictToCategories?.length > 0) && Array.isArray(body.items)) {
+      let matchingTotal = 0;
+      for (const item of body.items) {
+        const prodId = item.productId;
+        const cat = item.cat || '';
+        const itemSubtotal = (item.price || 0) * (item.qty || 1);
+        
+        let match = false;
+        if (c.restrictToProducts?.includes(prodId)) {
+          match = true;
+        }
+        if (c.restrictToCategories?.includes(cat)) {
+          match = true;
+        }
+        if (match) {
+          matchingTotal += itemSubtotal;
+        }
+      }
+      applicableTotal = matchingTotal;
+      if (applicableTotal <= 0) {
+        return NextResponse.json({ error: 'This coupon is not applicable to any products in your cart.' }, { status: 400 });
+      }
+    }
+
+    const discount = calcDiscount(c, applicableTotal);
     return NextResponse.json({
       valid: true,
       couponId: c.id,
@@ -65,6 +107,7 @@ export async function POST(req) {
     value: Math.max(0, Number(body.value) || 0),
     minOrderValue: Math.max(0, Number(body.minOrderValue) || 0),
     maxUses: Math.max(0, Number(body.maxUses) || 0),
+    maxUsesPerCustomer: Math.max(0, Number(body.maxUsesPerCustomer) || 0),
     usedCount: 0,
     expiresAt: body.expiresAt ? Number(body.expiresAt) : null,
     active: body.active !== false,
@@ -96,6 +139,7 @@ export async function PATCH(req) {
   if (body.value !== undefined) patch.value = Math.max(0, Number(body.value) || 0);
   if (body.minOrderValue !== undefined) patch.minOrderValue = Math.max(0, Number(body.minOrderValue) || 0);
   if (body.maxUses !== undefined) patch.maxUses = body.maxUses == null ? 0 : Math.max(0, Number(body.maxUses) || 0);
+  if (body.maxUsesPerCustomer !== undefined) patch.maxUsesPerCustomer = body.maxUsesPerCustomer == null ? 0 : Math.max(0, Number(body.maxUsesPerCustomer) || 0);
   if (body.expiresAt !== undefined) patch.expiresAt = body.expiresAt ? Number(body.expiresAt) : null;
   if (body.active !== undefined) patch.active = !!body.active;
   if (Array.isArray(body.restrictToProducts)) patch.restrictToProducts = body.restrictToProducts;

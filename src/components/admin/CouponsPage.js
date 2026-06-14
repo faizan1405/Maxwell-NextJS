@@ -12,7 +12,7 @@ import '../../styles/admin/_coupons.scss'; // Ensure we import it or rely on a g
 const COUPON_PAGE_SIZE = 10;
 
 function blankCoupon() {
-  return { code:'', type:'percentage', value:'', minOrderValue:'', maxUses:'', expiresAt:'', active:true };
+  return { code:'', type:'percentage', value:'', minOrderValue:'', maxUses:'', maxUsesPerCustomer:'', expiresAt:'', active:true };
 }
 
 function CouponForm({ open, onClose, initial, onSave }) {
@@ -29,6 +29,7 @@ function CouponForm({ open, onClose, initial, onSave }) {
         value:         String(initial.value),
         minOrderValue: initial.minOrderValue ? String(initial.minOrderValue) : '',
         maxUses:       initial.maxUses       ? String(initial.maxUses)       : '',
+        maxUsesPerCustomer: initial.maxUsesPerCustomer ? String(initial.maxUsesPerCustomer) : '',
         expiresAt:     initial.expiresAt     ? new Date(initial.expiresAt).toISOString().slice(0, 10) : '',
       });
     } else {
@@ -57,6 +58,7 @@ function CouponForm({ open, onClose, initial, onSave }) {
       value:         parseFloat(form.value),
       minOrderValue: form.minOrderValue ? parseFloat(form.minOrderValue) : 0,
       maxUses:       form.maxUses       ? parseInt(form.maxUses, 10)     : null,
+      maxUsesPerCustomer: form.maxUsesPerCustomer ? parseInt(form.maxUsesPerCustomer, 10) : null,
       expiresAt:     form.expiresAt     ? new Date(form.expiresAt + 'T23:59:59').getTime() : null,
     });
     setSaving(false);
@@ -80,11 +82,11 @@ function CouponForm({ open, onClose, initial, onSave }) {
             placeholder={form.type==='percentage'?'e.g. 20':'e.g. 50'} />
         </div>
         <div className="coupon-form__grid">
-          <Input label="Min Order Value (R)" type="number" min="0" step="0.01"
-            value={form.minOrderValue} onChange={e=>set('minOrderValue',e.target.value)}
-            placeholder="0 = no minimum" />
           <Input label="Max Uses" type="number" min="1" step="1"
             value={form.maxUses} onChange={e=>set('maxUses',e.target.value)}
+            placeholder="Blank = unlimited" />
+          <Input label="Limit Per Customer" type="number" min="1" step="1"
+            value={form.maxUsesPerCustomer} onChange={e=>set('maxUsesPerCustomer',e.target.value)}
             placeholder="Blank = unlimited" />
         </div>
         <Input label="Expiry Date" type="date" value={form.expiresAt} onChange={e=>set('expiresAt',e.target.value)}
@@ -194,7 +196,7 @@ export default function CouponsPage() {
                           {c.minOrderValue>0 ? fmtMoney(c.minOrderValue) : '—'}
                         </td>
                         <td className="coupons-page__td coupons-page__td--hide-md">
-                          {c.usedCount||0}{c.maxUses!=null?` / ${c.maxUses}`:''}
+                          {c.usedCount||0}{c.maxUses!=null?` / ${c.maxUses}`:''} {c.maxUsesPerCustomer > 0 ? `(${c.maxUsesPerCustomer}/cust)` : ''}
                         </td>
                         <td className="coupons-page__td coupons-page__td--hide-lg">
                           {c.expiresAt ? fmtDate(c.expiresAt) : '—'}

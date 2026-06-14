@@ -291,7 +291,6 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
             <div className="acc-modal__title-row">
               <h3 className="acc-modal__title">{order.orderNumber}</h3>
               <StatusBadge status={ordStatus} />
-              <PayStatusBadge payStatus={payStatus} />
             </div>
             <p className="acc-modal__meta">
               {fmtOrderDate(order.createdAt)}
@@ -307,109 +306,7 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
             <OrderTracker orderStatus={ordStatus} status={order.status} />
           </div>
 
-          {isCOD && (
-            <div className={`acc-panel ${isPaid ? 'acc-panel--green' : 'acc-panel--amber'}`}>
-              <div className="acc-panel-flex">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={isPaid ? '#15803d' : '#d97706'} strokeWidth="2" className="acc-panel-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                <div>
-                  <p className={`acc-panel-title ${isPaid ? 'acc-panel-title--green' : 'acc-panel-title--amber'}`}>
-                    {isPaid ? 'Cash Payment Collected' : 'Cash on Delivery'}
-                  </p>
-                  {!isPaid && (
-                    <p className="acc-panel-text acc-panel-text--amber" style={{ marginTop: '0.125rem' }}>
-                      Please have <strong>{money(order.total)}</strong> in cash ready when your order is delivered.
-                    </p>
-                  )}
-                  {isPaid && (
-                    <p className="acc-panel-text acc-panel-text--green" style={{ marginTop: '0.125rem' }}>Payment of <strong>{money(order.total)}</strong> received.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
 
-          {isEFT && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              <div className="acc-panel acc-panel--cobalt-light" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <p className="acc-modal__section-title" style={{ marginBottom: 0 }}>EFT Reference</p>
-                  <PayStatusBadge payStatus={payStatus} />
-                </div>
-                <p style={{ fontFamily: 'monospace', fontSize: '20px', fontWeight: 800, color: '#264CFF', margin: 0 }}>
-                  {order.eftReference || order.orderNumber}
-                </p>
-                {!isPaid && (
-                  <p style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.4, margin: 0 }}>
-                    Use this reference number when making your bank transfer. Amount payable: <strong>{money(order.total)}</strong>.
-                  </p>
-                )}
-              </div>
-
-              {isRejected && (
-                <div className="acc-panel acc-panel--red acc-panel-flex">
-                  <AlertCircle size={16} className="acc-panel-icon" style={{ color: '#ef4444' }} />
-                  <div>
-                    <p className="acc-panel-title acc-panel-title--red">Payment Rejected</p>
-                    <p className="acc-panel-text acc-panel-text--red">Your proof of payment was rejected. Please upload a new, clear proof showing the correct amount and reference.</p>
-                  </div>
-                </div>
-              )}
-              {isCorrectionNeeded && (
-                <div className="acc-panel acc-panel--orange acc-panel-flex">
-                  <AlertCircle size={16} className="acc-panel-icon" style={{ color: '#f97316' }} />
-                  <div>
-                    <p className="acc-panel-title acc-panel-title--orange">Corrected Proof Required</p>
-                    <p className="acc-panel-text acc-panel-text--orange">Please upload a corrected proof of payment as instructed.</p>
-                  </div>
-                </div>
-              )}
-              {isProofSubmitted && (
-                <div className="acc-panel acc-panel--blue acc-panel-flex">
-                  <CheckCircle size={16} className="acc-panel-icon" style={{ color: '#3b82f6' }} />
-                  <div>
-                    <p className="acc-panel-title acc-panel-title--blue">Proof Submitted — Awaiting Verification</p>
-                    <p className="acc-panel-text acc-panel-text--blue">We'll verify your payment within 1–2 business days. You can upload a replacement if needed.</p>
-                  </div>
-                </div>
-              )}
-              {isPaid && (
-                <div className="acc-panel acc-panel--green acc-panel-flex">
-                  <CheckCircle size={16} className="acc-panel-icon" style={{ color: '#36F700' }} />
-                  <p className="acc-panel-title acc-panel-title--green">EFT Payment Verified — Thank you!</p>
-                </div>
-              )}
-
-              {hasBankDetails && !isPaid && (
-                <div className="acc-bank-details">
-                  <div className="acc-bank-details__header">Bank Details</div>
-                  <div className="acc-bank-details__list">
-                    {bank.accountHolder && <div className="acc-bank-details__row"><span className="acc-bank-details__label">Account Holder</span><span className="acc-bank-details__value">{bank.accountHolder}</span></div>}
-                    {bank.bankName      && <div className="acc-bank-details__row"><span className="acc-bank-details__label">Bank</span><span className="acc-bank-details__value">{bank.bankName}</span></div>}
-                    {bank.accountNumber && <div className="acc-bank-details__row"><span className="acc-bank-details__label">Account Number</span><span className="acc-bank-details__value acc-bank-details__value--mono">{bank.accountNumber}</span></div>}
-                    {bank.branchCode    && <div className="acc-bank-details__row"><span className="acc-bank-details__label">Branch Code</span><span className="acc-bank-details__value acc-bank-details__value--mono">{bank.branchCode}</span></div>}
-                    {bank.accountType  && <div className="acc-bank-details__row"><span className="acc-bank-details__label">Account Type</span><span className="acc-bank-details__value">{bank.accountType}</span></div>}
-                    {bank.swiftCode    && <div className="acc-bank-details__row"><span className="acc-bank-details__label">SWIFT Code</span><span className="acc-bank-details__value acc-bank-details__value--mono">{bank.swiftCode}</span></div>}
-                  </div>
-                  <div className="acc-bank-details__total">
-                    <span style={{ fontSize: '13px', fontWeight: 700 }}>Amount Payable</span>
-                    <span style={{ fontSize: '16px', fontWeight: 800 }}>{money(order.total)}</span>
-                  </div>
-                </div>
-              )}
-
-              {canUploadProof && (
-                <div className="acc-panel acc-panel--slate" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <p style={{ fontSize: '12px', fontWeight: 700, color: '#475569', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-                    {isProofSubmitted ? 'Replace Proof of Payment' : 'Upload Proof of Payment'}
-                  </p>
-                  <p style={{ fontSize: '12px', color: '#64748b', lineHeight: 1.4, margin: 0 }}>
-                    Upload your bank proof of payment (PDF, JPG, PNG, or WEBP · max 5 MB).
-                  </p>
-                  <ProofUploadWidget order={order} apiBase={apiBase} onProofUploaded={onProofUploaded} />
-                </div>
-              )}
-            </div>
-          )}
 
           <div>
             <p className="acc-modal__section-title">Items Ordered</p>
@@ -418,29 +315,10 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
                 <div key={i} className="acc-panel acc-panel--slate" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem' }}>
                   <div>
                     <p style={{ fontSize: '13.5px', fontWeight: 600, color: '#111111', margin: 0 }}>{item.name}</p>
-                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Qty: {item.qty} × {money(item.price)}</p>
+                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0 }}>Qty: {item.qty}</p>
                   </div>
-                  <span style={{ fontWeight: 700, color: '#111111', fontSize: '14px' }}>{money(item.price * item.qty)}</span>
                 </div>
               ))}
-            </div>
-          </div>
-
-          <div className="acc-panel acc-panel--slate" style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', padding: '0.75rem 1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>Subtotal</span><span style={{ fontWeight: 600, color: '#111111' }}>{money(order.subtotal)}</span></div>
-            {(order.couponDiscount || 0) > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#36F700', fontWeight: 600 }}>Coupon ({order.couponCode})</span><span style={{ fontWeight: 700, color: '#36F700' }}>−{money(order.couponDiscount)}</span></div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-              <span style={{ color: '#64748b' }}>Delivery</span>
-              <span style={{ fontWeight: 600, color: order.delivery === 0 ? '#36F700' : '#111111' }}>{order.delivery === 0 ? 'FREE' : money(order.delivery)}</span>
-            </div>
-            {(order.codFee || 0) > 0 && (
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}><span style={{ color: '#64748b' }}>COD Fee</span><span style={{ fontWeight: 600, color: '#111111' }}>{money(order.codFee)}</span></div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', borderTop: '1px solid #e2e8f0', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-              <span style={{ fontWeight: 700, color: '#111111' }}>Total</span>
-              <span style={{ fontWeight: 800, color: '#111111' }}>{money(order.total)}</span>
             </div>
           </div>
 
@@ -475,9 +353,6 @@ function OrderDetailModal({ order, apiBase, onClose, onReorder, onCancel, onProo
               {cancelling ? 'Cancelling…' : 'Cancel Order'}
             </button>
           )}
-          <button onClick={() => printInvoice(order)} className="acc-btn-outline">
-            <FileText size={15} /> Invoice
-          </button>
           <button onClick={onClose} className="acc-btn-outline">
             Close
           </button>
@@ -585,8 +460,7 @@ function OrdersTab({ apiBase, onReorder }) {
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontWeight: 800, color: '#111111', fontSize: '15px', margin: 0 }}>{money(order.total)}</p>
-              <ChevronRight size={16} style={{ color: '#cbd5e1', marginLeft: 'auto', marginTop: '0.25rem' }} />
+              <ChevronRight size={16} style={{ color: '#cbd5e1', marginLeft: 'auto' }} />
             </div>
           </div>
         );

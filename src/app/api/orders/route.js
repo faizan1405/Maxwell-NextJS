@@ -143,7 +143,8 @@ function describeOrderStatus(simple, prev) {
 function assertValidOrderTransition(prev, next, actorRole, isCustomerOnly) {
   const from = normalizeOrderStatus(prev.status || prev.orderStatus || 'pending');
   const to = normalizeOrderStatus(next);
-  if (!ORDER_TRANSITIONS[from] || !ORDER_TRANSITIONS[from].has(to)) {
+  const canAdminSkipToDelivered = !isCustomerOnly && to === 'delivered' && ['pending', 'confirmed', 'processing', 'packed', 'shipped'].includes(from);
+  if (!canAdminSkipToDelivered && (!ORDER_TRANSITIONS[from] || !ORDER_TRANSITIONS[from].has(to))) {
     throw orderPatchError(`Invalid order status transition: ${from} to ${to}.`, 400);
   }
   if (!isCustomerOnly && to === 'cancelled' && actorRole !== 'admin') {
@@ -153,6 +154,23 @@ function assertValidOrderTransition(prev, next, actorRole, isCustomerOnly) {
 
 function actorName(session) {
   return session?.user?.username || session?.username || session?.email || 'system';
+}
+
+function orderLookupFilter(rawId) {
+  const value = String(rawId || '').trim();
+  const refs = new Set([value]);
+  if (/^\d+$/.test(value)) refs.add(`#${value}`);
+  if (/^#\d+$/.test(value)) refs.add(value.slice(1));
+
+  const conditions = [];
+  refs.forEach(ref => {
+    if (!ref) return;
+    conditions.push({ id: ref }, { orderNumber: ref });
+  });
+  if (mongoose.Types.ObjectId.isValid(value)) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(value) });
+  }
+  return conditions.length ? { $or: conditions } : { id: value };
 }
 
 async function writeStockHistory(entry, session) {
@@ -1302,7 +1320,7 @@ export async function PATCH(req) {
     const { id, status, orderStatus, notes, internalNotes, paymentStatus, trackingNumber, carrier, trackingLink, dispatchDate, statusNote } = body;
     if (!id) return NextResponse.json({ error: 'Missing order id' }, { status: 400 });
 
-    const prev = await Order.findOne({ id }).lean();
+    const prev = await Order.findOne(orderLookupFilter(id)).lean();
     if (!prev) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
 
     const isCustomerOnly = customerSession && !adminSession;

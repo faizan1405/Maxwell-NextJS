@@ -654,7 +654,11 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             <div className="order-confirmed__details" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
               <div className="order-confirmed__section">
                 <p className="title">Delivery Address</p>
-                <p className="content" dangerouslySetInnerHTML={{ __html: (order.address || '').replace(/,\s*/g, ',<br>') }} />
+                <p className="content">
+                  {(order.address || '').split(/,\s*/).filter(Boolean).map((part, i, arr) => (
+                    <span key={i}>{part}{i < arr.length - 1 ? ',' : ''}{i < arr.length - 1 && <br />}</span>
+                  ))}
+                </p>
               </div>
               <div className="order-confirmed__section">
                 <p className="title">Contact Details</p>

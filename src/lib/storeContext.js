@@ -403,7 +403,7 @@ export function CartProvider({ children }) {
     const price = variant ? variant.price : (product.price || 0);
     const maxStock = variant ? variant.stock : (product.stock || 0);
     const outOfStock = !!product.outOfStock || (variant ? !!variant.outOfStock : false);
-    const lowStock = maxStock <= (product.lowStockThreshold || 0);
+    const lowStock = maxStock > 0 && maxStock <= (product.lowStockThreshold || 10);
     return { ...i, product, size, price, maxStock, outOfStock, lowStock };
   }).filter(Boolean);
 

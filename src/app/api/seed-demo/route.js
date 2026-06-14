@@ -25,6 +25,16 @@ const demoCategories = [
     status: 'active',
     displayOrder: 6,
   },
+  {
+    id: 'laundry',
+    name: 'Laundry Products',
+    short: 'Laundry',
+    icon: 'Sparkles',
+    blurb: 'Washing powders and laundry solutions for homes and businesses.',
+    accent: '#0891B2',
+    status: 'active',
+    displayOrder: 7,
+  },
 ];
 
 function safeCompare(a = '', b = '') {

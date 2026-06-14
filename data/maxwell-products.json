@@ -3509,5 +3509,200 @@
         "fileSize": 0
       }
     ]
+  },
+  {
+    "id": "demo-brite-shine-washing-powder-5kg",
+    "name": "Brite n' Shine Washing Powder — 5kg",
+    "cat": "laundry",
+    "sub": "Everyday laundry washing powder",
+    "price": 0,
+    "was": null,
+    "size": "5kg",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+5kg",
+    "desc": "Powerful everyday washing powder for fresh, clean laundry.",
+    "benefits": [
+      "Fresh, clean laundry every wash",
+      "Suitable for machine and hand washing",
+      "Effective on everyday stains",
+      "Gentle on fabrics"
+    ],
+    "sku": "DEMO-LND-001",
+    "stock": 10,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-lnd-001",
+        "type": "image",
+        "url": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+5kg",
+        "storageKey": null,
+        "altText": "Brite n' Shine Washing Powder 5kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-brite-shine-washing-powder-10kg",
+    "name": "Brite n' Shine Washing Powder — 10kg",
+    "cat": "laundry",
+    "sub": "Value-size laundry washing powder",
+    "price": 0,
+    "was": null,
+    "size": "10kg",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+10kg",
+    "desc": "Value-size washing powder for homes, guesthouses, and small businesses.",
+    "benefits": [
+      "Value size for households and small businesses",
+      "Effective on tough stains",
+      "Suitable for machine and hand washing",
+      "Long-lasting supply"
+    ],
+    "sku": "DEMO-LND-002",
+    "stock": 10,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-lnd-002",
+        "type": "image",
+        "url": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+10kg",
+        "storageKey": null,
+        "altText": "Brite n' Shine Washing Powder 10kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-brite-shine-washing-powder-20kg",
+    "name": "Brite n' Shine Washing Powder — 20kg",
+    "cat": "laundry",
+    "sub": "Bulk laundry washing powder",
+    "price": 0,
+    "was": null,
+    "size": "20kg",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+20kg",
+    "desc": "Bulk laundry washing powder for high-volume cleaning needs.",
+    "benefits": [
+      "Bulk pack for high-volume use",
+      "Cost-effective per wash",
+      "Powerful stain removal",
+      "Suitable for commercial laundry"
+    ],
+    "sku": "DEMO-LND-003",
+    "stock": 10,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-lnd-003",
+        "type": "image",
+        "url": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+20kg",
+        "storageKey": null,
+        "altText": "Brite n' Shine Washing Powder 20kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-brite-shine-washing-powder-25kg",
+    "name": "Brite n' Shine Washing Powder — 25kg",
+    "cat": "laundry",
+    "sub": "Heavy-duty bulk washing powder",
+    "price": 0,
+    "was": null,
+    "size": "25kg",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+25kg",
+    "desc": "Heavy-duty laundry powder for commercial and household use.",
+    "benefits": [
+      "Heavy-duty formula for commercial use",
+      "Handles large laundry loads",
+      "Effective on overalls and workwear",
+      "Bulk value pricing"
+    ],
+    "sku": "DEMO-LND-004",
+    "stock": 10,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-lnd-004",
+        "type": "image",
+        "url": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+25kg",
+        "storageKey": null,
+        "altText": "Brite n' Shine Washing Powder 25kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
+  },
+  {
+    "id": "demo-brite-shine-washing-powder-50kg",
+    "name": "Brite n' Shine Washing Powder — 50kg",
+    "cat": "laundry",
+    "sub": "Large bulk washing powder pack",
+    "price": 750,
+    "was": null,
+    "size": "50kg",
+    "rating": 0,
+    "reviews": 0,
+    "badge": null,
+    "img": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+50kg",
+    "desc": "Large bulk washing powder pack for businesses and high-volume laundry use.",
+    "benefits": [
+      "Largest pack for maximum value",
+      "Ideal for businesses and high-volume laundry",
+      "Powerful cleaning formula",
+      "Reduces cost per wash significantly"
+    ],
+    "sku": "DEMO-LND-005",
+    "stock": 10,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "variants": [],
+    "media": [
+      {
+        "id": "media-demo-lnd-005",
+        "type": "image",
+        "url": "https://placehold.co/600x600/0891B2/ffffff?text=Brite+n+Shine+50kg",
+        "storageKey": null,
+        "altText": "Brite n' Shine Washing Powder 50kg",
+        "sortOrder": 0,
+        "isPrimary": true,
+        "fileName": "",
+        "mimeType": "image/png",
+        "fileSize": 0
+      }
+    ]
   }
 ]

@@ -22,6 +22,7 @@ export const DEFAULT_CATEGORIES = [
   { id: "car", name: "Car Care", short: "Car Care", icon: "Car", blurb: "Showroom shine for tyres, dashboards & trim.", accent: "#0B2E6B" },
   { id: "car-exterior", name: "Car Exterior", short: "Car Exterior", icon: "Car", blurb: "Tar removers, bumper black, chassis coatings & exterior detailing.", accent: "#1E3A5F" },
   { id: "sanitiser", name: "Sanitisers", short: "Sanitisers", icon: "Shield", blurb: "High-purity protection that kills 99.9% of germs.", accent: "#36F700" },
+  { id: "laundry", name: "Laundry Products", short: "Laundry", icon: "Sparkles", blurb: "Washing powders and laundry solutions for homes and businesses.", accent: "#0891B2" },
 ];
 
 export const FREE_SHIP = 750;

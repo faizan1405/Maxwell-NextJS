@@ -244,16 +244,22 @@ const CouponSchema = new Schema({
 
 const ReviewSchema = new Schema({
   id: { type: String, required: true, unique: true, index: true },
-  productId: { type: String, required: true, index: true },
+  productId: { type: String, default: '', index: true },
   productName: { type: String, default: '' },
   customerId: { type: String, default: null, index: true },
   email: { type: String, default: '' },
   author: { type: String, default: '' },
   customerName: { type: String, default: '' },
+  customerInitials: { type: String, default: '' },
+  customerPhoto: { type: String, default: '' },
+  location: { type: String, default: '' },
   rating: { type: Number, required: true, min: 1, max: 5 },
   text: { type: String, default: '' },
   date: { type: Number },
   status: { type: String, enum: REVIEW_STATUS_VALUES, default: 'pending' },
+  isVerified: { type: Boolean, default: false, index: true },
+  source: { type: String, enum: ['website', 'whatsapp', 'email', 'manual', ''], default: '' },
+  showOnHomepage: { type: Boolean, default: false, index: true },
   createdAt: { type: Number },
   updatedAt: { type: Number },
 }, { timestamps: true });

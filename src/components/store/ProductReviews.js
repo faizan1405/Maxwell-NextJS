@@ -25,25 +25,37 @@ function StarPicker({ value, onChange, size = 28 }) {
 }
 
 function ReviewCard({ review }) {
-  const initials = (review.customerName || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const fallbackInitials = (review.customerName || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const initials = (review.customerInitials || fallbackInitials).slice(0, 2);
   const COLORS   = ['#264CFF', '#111111', '#36F700', '#7C3AED', '#0E7490'];
   const bg       = COLORS[(review.customerName || '?').charCodeAt(0) % COLORS.length];
   const date     = review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+  const isVerified = !!review.isVerified;
 
   return (
     <div className="review-item">
-      <div className="review-item__avatar" style={{ background: bg }}>
-        {initials}
-      </div>
+      {review.customerPhoto ? (
+        <img src={review.customerPhoto} alt="" className="review-item__avatar" style={{ objectFit: 'cover' }} />
+      ) : (
+        <div className="review-item__avatar" style={{ background: bg }}>{initials}</div>
+      )}
       <div className="review-item__content">
         <div className="review-item__header">
           <span className="review-item__name">{review.customerName || 'Verified Buyer'}</span>
-          <span className="review-item__verified">Verified Purchase</span>
+          {isVerified && (
+            <span className="review-item__verified" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <CheckCircle size={12} /> Verified Customer
+            </span>
+          )}
+          {review.location && (
+            <span className="review-item__date">· {review.location}</span>
+          )}
           <span className="review-item__date">{date}</span>
         </div>
         <div className="review-item__rating">
           <Stars value={review.rating} size={13} />
-          <span className="val">{review.rating.toFixed(1)}</span>
+          <span className="val">{(review.rating || 0).toFixed(1)}</span>
+          {review.productName && <span className="review-item__date">· {review.productName}</span>}
         </div>
         {review.text && (
           <p className="review-item__text">{review.text}</p>

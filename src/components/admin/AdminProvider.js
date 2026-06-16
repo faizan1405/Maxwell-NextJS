@@ -816,6 +816,25 @@ export function AdminProvider({ children }) {
   }, [session, fetchCategories]);
 
   // ── Review moderation ─────────────────────────────────────────────────────
+  const createReview = useCallback(async (payload) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/reviews`, {
+        method: 'POST',
+        headers: apiHeaders(),
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
+        throw new Error(d.error || `Server error ${res.status}`);
+      }
+      const created = await res.json();
+      setReviews(prev => [created, ...prev]);
+      return created;
+    } catch (e) {
+      throw e instanceof Error ? e : new Error('Failed to create review.');
+    }
+  }, [session]);
+
   const updateReview = useCallback(async (id, patch) => {
     setReviews(prev => prev.map(r => r.id === id ? { ...r, ...patch, updatedAt: Date.now() } : r));
     let errMsg = null;
@@ -913,6 +932,7 @@ export function AdminProvider({ children }) {
     reviews,
     setReviews,
     fetchReviews,
+    createReview,
     updateReview,
     deleteReview,
     abandonedCarts,
@@ -981,6 +1001,7 @@ export function AdminProvider({ children }) {
     deleteCoupon,
     reviews,
     fetchReviews,
+    createReview,
     updateReview,
     deleteReview,
     abandonedCarts,

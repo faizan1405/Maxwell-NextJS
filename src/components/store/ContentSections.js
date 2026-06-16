@@ -1,11 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight, MapPin, Phone, Whatsapp } from '../ui/Icons';
 import { Star } from '../ui/Icons';
 import { FadeReveal, Reveal, Stars } from '../ui/index';
 import { SwipeCarousel } from './SwipeCarousel';
 import { BRAND } from '../../lib/storeContext';
+
+function deriveInitials(name) {
+  return (name || '?').trim().split(/\s+/).filter(Boolean).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
 
 const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
@@ -61,53 +65,93 @@ export const WhyUs = () => (
   </section>
 );
 
-const REVIEWS = [
-  { name: "Thandi M.", role: "Verified buyer · Pretoria", initials: "TM", rating: 5, product: "All Purpose Cleaner", text: "Cuts through kitchen grease like nothing else I've tried, and the fresh smell lingers for hours. Repurchasing for sure." },
-  { name: "Riaan D.", role: "Verified buyer · Boksburg", initials: "RD", rating: 5, product: "Tyre & Dash Shine", text: "My car looks like it just left the dealership. Deep gloss on the tyres, non-greasy dash. Brilliant value at 5L." },
-  { name: "Naledi K.", role: "Carwash owner · Johannesburg", initials: "NK", rating: 5, product: "Bulk supply", text: "We switched our whole wash bay to Amahle Blue. Consistent quality, great bulk pricing and delivery is always on time." },
-  { name: "Sarah P.", role: "Verified buyer · Centurion", initials: "SP", rating: 4, product: "Carpet & Upholstery Shampoo", text: "Lifted years-old stains off my couch. Low foam so it dries quickly too. Would love a bigger range of scents." },
-];
+export const Reviews = () => {
+  const [reviews, setReviews] = useState(null);
 
-export const Reviews = () => (
-  <section className="content-reviews">
-    <div className="content-reviews__inner">
-      <div className="content-reviews__header">
-        <Reveal><span className="content-reviews__subtitle">Loved by customers</span></Reveal>
-        <Reveal delay={60}><h2 className="content-reviews__title">Real reviews, real results</h2></Reveal>
-        <Reveal delay={110}>
-          <div className="content-reviews__rating">
-            <Stars value={4.8} size={20} />
-            <span className="score">4.8 out of 5</span>
-            <span className="count">· 900+ verified reviews</span>
-          </div>
-        </Reveal>
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/reviews?homepage=1&limit=12');
+        if (!res.ok) { if (!cancelled) setReviews([]); return; }
+        const data = await res.json();
+        if (!cancelled) setReviews(Array.isArray(data) ? data : []);
+      } catch {
+        if (!cancelled) setReviews([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (reviews !== null && reviews.length === 0) return null;
+
+  const avg = reviews && reviews.length
+    ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length)
+    : 0;
+
+  return (
+    <section className="content-reviews">
+      <div className="content-reviews__inner">
+        <div className="content-reviews__header">
+          <Reveal><span className="content-reviews__subtitle">Loved by customers</span></Reveal>
+          <Reveal delay={60}><h2 className="content-reviews__title">Real reviews, real results</h2></Reveal>
+          {reviews && reviews.length > 0 && (
+            <Reveal delay={110}>
+              <div className="content-reviews__rating">
+                <Stars value={avg} size={20} />
+                <span className="score">{avg.toFixed(1)} out of 5</span>
+                <span className="count">· {reviews.length} customer review{reviews.length !== 1 ? 's' : ''}</span>
+              </div>
+            </Reveal>
+          )}
+        </div>
+        {reviews && reviews.length > 0 && (
+          <SwipeCarousel
+            className="content-reviews__carousel swipe-carousel--reviews"
+            label="Customer reviews"
+            previousLabel="Previous reviews"
+            nextLabel="Next reviews"
+            hint="Swipe to read more"
+          >
+            {reviews.map((r, i) => {
+              const initials = (r.customerInitials || deriveInitials(r.customerName)).slice(0, 2);
+              const subtitle = [
+                r.isVerified ? 'Verified buyer' : null,
+                r.location || null,
+              ].filter(Boolean).join(' · ');
+              return (
+                <Reveal key={r.id || i} delay={i * 70}>
+                  <figure className="review-card">
+                    <Stars value={r.rating} size={15} />
+                    <blockquote className="review-card__text">&ldquo;{r.text}&rdquo;</blockquote>
+                    <figcaption className="review-card__author">
+                      {r.customerPhoto ? (
+                        <img src={r.customerPhoto} alt="" className="review-card__avatar" style={{ objectFit: 'cover' }} />
+                      ) : (
+                        <span className="review-card__avatar">{initials}</span>
+                      )}
+                      <div className="review-card__info">
+                        <strong>
+                          {r.customerName || 'Verified buyer'}
+                          {r.isVerified && (
+                            <span title="Verified customer" style={{ display: 'inline-flex', alignItems: 'center', marginLeft: 6, color: '#16a34a' }}>
+                              <CheckCircle size={14} />
+                            </span>
+                          )}
+                        </strong>
+                        <span>{subtitle || (r.productName ? r.productName : '')}</span>
+                      </div>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              );
+            })}
+          </SwipeCarousel>
+        )}
       </div>
-      <SwipeCarousel
-        className="content-reviews__carousel swipe-carousel--reviews"
-        label="Customer reviews"
-        previousLabel="Previous reviews"
-        nextLabel="Next reviews"
-        hint="Swipe to read more"
-      >
-        {REVIEWS.map((r, i) => (
-          <Reveal key={r.name} delay={i * 70}>
-            <figure className="review-card">
-              <Stars value={r.rating} size={15} />
-              <blockquote className="review-card__text">"{r.text}"</blockquote>
-              <figcaption className="review-card__author">
-                <span className="review-card__avatar">{r.initials}</span>
-                <div className="review-card__info">
-                  <strong>{r.name}</strong>
-                  <span>{r.role}</span>
-                </div>
-              </figcaption>
-            </figure>
-          </Reveal>
-        ))}
-      </SwipeCarousel>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const Contact = () => (
   <section id="contact" className="contact-section">

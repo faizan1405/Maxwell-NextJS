@@ -135,10 +135,16 @@ export async function GET(req) {
   });
 
   if (homepageOnly) {
-    const docs = await Review.find({ showOnHomepage: true, status: 'approved' })
+    let docs = await Review.find({ showOnHomepage: true, status: 'approved' })
       .sort({ updatedAt: -1, createdAt: -1 })
       .limit(limitParam)
       .lean();
+    if (docs.length === 0) {
+      docs = await Review.find({ status: 'approved' })
+        .sort({ updatedAt: -1, createdAt: -1 })
+        .limit(limitParam)
+        .lean();
+    }
     return NextResponse.json(docs.map(stripPii));
   }
 

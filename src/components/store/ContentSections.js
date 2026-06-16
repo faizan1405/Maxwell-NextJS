@@ -83,9 +83,8 @@ export const Reviews = () => {
     return () => { cancelled = true; };
   }, []);
 
-  if (reviews !== null && reviews.length === 0) return null;
-
-  const avg = reviews && reviews.length
+  const hasReviews = !!(reviews && reviews.length > 0);
+  const avg = hasReviews
     ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length)
     : 0;
 
@@ -95,7 +94,7 @@ export const Reviews = () => {
         <div className="content-reviews__header">
           <Reveal><span className="content-reviews__subtitle">Loved by customers</span></Reveal>
           <Reveal delay={60}><h2 className="content-reviews__title">Real reviews, real results</h2></Reveal>
-          {reviews && reviews.length > 0 && (
+          {hasReviews ? (
             <Reveal delay={110}>
               <div className="content-reviews__rating">
                 <Stars value={avg} size={20} />
@@ -103,9 +102,15 @@ export const Reviews = () => {
                 <span className="count">· {reviews.length} customer review{reviews.length !== 1 ? 's' : ''}</span>
               </div>
             </Reveal>
+          ) : (
+            <Reveal delay={110}>
+              <p className="content-reviews__rating" style={{ color: '#475569', fontSize: 15 }}>
+                We&rsquo;re collecting genuine reviews from our customers. Be one of the first to share your experience.
+              </p>
+            </Reveal>
           )}
         </div>
-        {reviews && reviews.length > 0 && (
+        {hasReviews && (
           <SwipeCarousel
             className="content-reviews__carousel swipe-carousel--reviews"
             label="Customer reviews"

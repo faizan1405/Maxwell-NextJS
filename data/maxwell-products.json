@@ -10,33 +10,20 @@
     "rating": 4.7,
     "reviews": 38,
     "badge": "Bestseller",
-    "img": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
+    "img": "",
     "desc": "Versatile everyday cleaner that cuts through grease, grime and dirt on all hard surfaces. Safe for kitchen counters, bathroom tiles, appliances and more.",
     "benefits": [
       "Cuts through grease & grime",
       "Safe on all hard surfaces",
       "Fresh lemon fragrance",
-      "Ready to use \u00e2\u20ac\u201c no dilution needed"
+      "Ready to use â€“ no dilution needed"
     ],
     "sku": "DEMO-HH-001",
     "stock": 50,
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-hh-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
-        "storageKey": null,
-        "altText": "All Purpose Cleaner Spray 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-floor-cleaner-concentrate",
@@ -49,11 +36,11 @@
     "rating": 4.5,
     "reviews": 24,
     "badge": "New",
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "High-concentration floor cleaner that leaves floors sparkling clean and streak-free. Suitable for tiles, vinyl, laminate and sealed hardwood floors.",
     "benefits": [
       "Streak-free finish",
-      "Concentrated formula \u00e2\u20ac\u201c dilute up to 1:20",
+      "Concentrated formula â€“ dilute up to 1:20",
       "Pleasant lavender scent",
       "Works on all sealed floor types"
     ],
@@ -62,20 +49,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-hh-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Floor Cleaner Concentrate 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-tile-grout-cleaner",
@@ -88,7 +62,7 @@
     "rating": 4.6,
     "reviews": 17,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1740325952758-eff797651e2d?w=800&q=80",
+    "img": "",
     "desc": "Powerful acid-based cleaner that dissolves soap scum, limescale and mould stains from tiles and grout lines. Restores grout to its original white colour.",
     "benefits": [
       "Removes limescale & soap scum",
@@ -101,20 +75,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-hh-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1740325952758-eff797651e2d?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bathroom Tile & Grout Cleaner 750ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-fabric-freshener",
@@ -127,7 +88,7 @@
     "rating": 4.4,
     "reviews": 31,
     "badge": "Sale",
-    "img": "https://images.unsplash.com/photo-1766384093044-7dba33a6d1de?w=800&q=80",
+    "img": "",
     "desc": "Eliminates odours from fabrics, upholstery and soft furnishings on contact. Leaves a long-lasting fresh fragrance without washing.",
     "benefits": [
       "Eliminates odours instantly",
@@ -140,20 +101,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-hh-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1766384093044-7dba33a6d1de?w=800&q=80",
-        "storageKey": null,
-        "altText": "Fabric Freshener Spray 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-heavy-duty-degreaser",
@@ -166,7 +114,7 @@
     "rating": 4.8,
     "reviews": 42,
     "badge": "Bestseller",
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Industrial-strength degreaser for removing heavy oil, grease and carbon deposits from machinery, workshop floors and equipment. Fast-acting solvent formula.",
     "benefits": [
       "Removes heavy oil & grease",
@@ -179,20 +127,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Heavy Duty Degreaser 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-floor-stripper",
@@ -205,7 +140,7 @@
     "rating": 4.6,
     "reviews": 19,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "Professional-grade floor stripper for removing old wax, sealers and coatings from concrete, vinyl and tiled floors. Used by cleaning contractors nationwide.",
     "benefits": [
       "Strips old wax & sealers",
@@ -218,20 +153,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Industrial Floor Stripper 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-engine-bay-cleaner",
@@ -244,7 +166,7 @@
     "rating": 4.7,
     "reviews": 28,
     "badge": "New",
-    "img": "https://images.unsplash.com/photo-1527383418406-f85a3b146499?w=800&q=80",
+    "img": "",
     "desc": "Penetrating degreaser formulated specifically for engine bays and mechanical components. Safely dissolves grime, oil and road tar without damaging plastic or rubber parts.",
     "benefits": [
       "Safe on plastic & rubber",
@@ -257,20 +179,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1527383418406-f85a3b146499?w=800&q=80",
-        "storageKey": null,
-        "altText": "Engine Bay Cleaner 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-industrial-solvent",
@@ -283,7 +192,7 @@
     "rating": 4.5,
     "reviews": 11,
     "badge": "Sale",
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Multi-purpose industrial solvent for cleaning adhesives, resins, paint overspray and stubborn industrial contamination. Suitable for metal, glass and most hard surfaces.",
     "benefits": [
       "Removes adhesives & resins",
@@ -296,20 +205,7 @@
     "lowStockThreshold": 4,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Industrial Solvent Cleaner 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-tyre-dashboard-shine",
@@ -322,7 +218,7 @@
     "rating": 4.8,
     "reviews": 56,
     "badge": "Bestseller",
-    "img": "https://images.unsplash.com/photo-1660174315404-4890f2c71afc?w=800&q=80",
+    "img": "",
     "desc": "Premium shine spray that gives tyres and dashboards a deep, long-lasting gloss. Water-repellent formula protects against UV fading and cracking.",
     "benefits": [
       "Deep gloss finish",
@@ -335,20 +231,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1660174315404-4890f2c71afc?w=800&q=80",
-        "storageKey": null,
-        "altText": "Tyre & Dashboard Shine 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-car-interior-cleaner",
@@ -361,7 +244,7 @@
     "rating": 4.5,
     "reviews": 33,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1654522659761-b6ad370e0bb3?w=800&q=80",
+    "img": "",
     "desc": "Gentle yet effective spray cleaner for all car interior surfaces including seats, door panels, carpet and plastic trim. Leaves a clean, non-greasy finish.",
     "benefits": [
       "Cleans seats & carpet",
@@ -374,20 +257,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1654522659761-b6ad370e0bb3?w=800&q=80",
-        "storageKey": null,
-        "altText": "Car Interior Cleaner 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-leather-conditioner",
@@ -400,7 +270,7 @@
     "rating": 4.7,
     "reviews": 22,
     "badge": "New",
-    "img": "https://images.unsplash.com/photo-1667893530449-e58102223524?w=800&q=80",
+    "img": "",
     "desc": "Nourishing conditioner that cleans, softens and protects leather car seats. Restores natural suppleness and prevents cracking and fading.",
     "benefits": [
       "Softens & nourishes leather",
@@ -413,20 +283,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1667893530449-e58102223524?w=800&q=80",
-        "storageKey": null,
-        "altText": "Leather Seat Conditioner 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-car-air-freshener",
@@ -439,7 +296,7 @@
     "rating": 4.3,
     "reviews": 48,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1778530207659-0574c49eca07?w=800&q=80",
+    "img": "",
     "desc": "Long-lasting car air freshener that neutralises odours and fills your car with a fresh, clean fragrance. Available in Ocean Breeze scent.",
     "benefits": [
       "Neutralises bad odours",
@@ -453,20 +310,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1778530207659-0574c49eca07?w=800&q=80",
-        "storageKey": null,
-        "altText": "Car Air Freshener Spray 300ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-car-wash-shampoo",
@@ -479,8 +323,8 @@
     "rating": 4.6,
     "reviews": 61,
     "badge": "Bestseller",
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-    "desc": "High-suds car wash shampoo that safely lifts dirt and road grime without stripping wax. Highly concentrated \u00e2\u20ac\u201c one cap per bucket.",
+    "img": "",
+    "desc": "High-suds car wash shampoo that safely lifts dirt and road grime without stripping wax. Highly concentrated â€“ one cap per bucket.",
     "benefits": [
       "High-suds formula",
       "Wax-safe formula",
@@ -492,20 +336,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Premium Car Wash Shampoo 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-tar-remover",
@@ -518,7 +349,7 @@
     "rating": 4.7,
     "reviews": 29,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
+    "img": "",
     "desc": "Effortlessly dissolves tar spots, road tar, tree sap and adhesive residue from paintwork, glass and chrome without scratching.",
     "benefits": [
       "Dissolves tar & tree sap",
@@ -531,20 +362,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-        "storageKey": null,
-        "altText": "Tar & Adhesive Remover 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bumper-black",
@@ -557,7 +375,7 @@
     "rating": 4.8,
     "reviews": 37,
     "badge": "Sale",
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "Restores faded, grey plastic bumpers and trim to a deep, rich black finish that lasts months. Water-based formula with UV inhibitors.",
     "benefits": [
       "Restores faded plastic",
@@ -570,20 +388,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bumper Black Restorer 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-waterless-car-wash",
@@ -596,7 +401,7 @@
     "rating": 4.4,
     "reviews": 18,
     "badge": "New",
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Clean and polish your car without water. Encapsulates dirt particles and wipes away cleanly, leaving a streak-free shine in minutes.",
     "benefits": [
       "No water needed",
@@ -609,20 +414,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Waterless Car Wash Spray 750ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-auto-spot-cleaner",
@@ -635,7 +427,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Targeted spot cleaner for removing stubborn stains, bird droppings and insect residue from vehicle paintwork without damaging the surface.",
     "benefits": [
       "Removes bird droppings & insects",
@@ -648,20 +440,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Auto Spot Cleaner 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bumper-black-formula",
@@ -674,7 +453,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "Professional-grade liquid formula that instantly restores faded plastic bumpers and exterior trim to a deep, rich black finish.",
     "benefits": [
       "Deep black finish",
@@ -687,20 +466,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-006",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bumper Black 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-chassis-black-water-based",
@@ -713,11 +479,11 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1725289339928-06ee31684df5?w=800&q=80",
+    "img": "",
     "desc": "Water-based black chassis coating that protects the underbody from rust, corrosion and road debris. Easy to apply and environmentally friendly.",
     "benefits": [
       "Rust & corrosion protection",
-      "Water-based \u00e2\u20ac\u201c low VOC",
+      "Water-based â€“ low VOC",
       "Protects from road debris",
       "Durable underbody coating"
     ],
@@ -726,20 +492,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-007",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1725289339928-06ee31684df5?w=800&q=80",
-        "storageKey": null,
-        "altText": "Chassis Black Water Based 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-concentrated-cleaner-degreaser",
@@ -752,7 +505,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty concentrated cleaner and degreaser for removing oil, grease and road grime from vehicle exteriors, engines and wheels.",
     "benefits": [
       "Highly concentrated formula",
@@ -765,20 +518,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-008",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Concentrated Cleaner & Degreaser 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-de-wax",
@@ -791,7 +531,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "Powerful de-waxing solution that strips old wax, polish and silicone residue from paintwork, preparing the surface for fresh wax or paint correction.",
     "benefits": [
       "Strips old wax & silicone",
@@ -804,20 +544,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-009",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "De-Wax 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-engine-cleaner-solvent-based",
@@ -830,7 +557,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1527383418406-f85a3b146499?w=800&q=80",
+    "img": "",
     "desc": "Solvent-based engine cleaner that rapidly dissolves heavy grease, oil build-up and carbon deposits from engine components and bay surfaces.",
     "benefits": [
       "Rapid grease & oil removal",
@@ -843,20 +570,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-010",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1527383418406-f85a3b146499?w=800&q=80",
-        "storageKey": null,
-        "altText": "Engine Cleaner Solvent Based 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-engine-cleaner-waterbased",
@@ -869,7 +583,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1725289339928-06ee31684df5?w=800&q=80",
+    "img": "",
     "desc": "Water-based engine cleaner for safely removing grease and grime from engine bays. Biodegradable formula safe for use near drains and environmentally sensitive areas.",
     "benefits": [
       "Biodegradable formula",
@@ -882,20 +596,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-011",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1725289339928-06ee31684df5?w=800&q=80",
-        "storageKey": null,
-        "altText": "Engine Cleaner Waterbased 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-tar-remover-spray",
@@ -908,7 +609,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
+    "img": "",
     "desc": "Fast-acting tar remover that dissolves road tar, bitumen, and adhesive contamination from painted surfaces, glass and alloy wheels without scratching.",
     "benefits": [
       "Dissolves road tar & bitumen",
@@ -921,20 +622,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ce-012",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-        "storageKey": null,
-        "altText": "Tar Remover 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-overall-washing-powders",
@@ -947,7 +635,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty industrial washing powder for laundering overalls, workwear and uniforms. Powerful formulation removes oil, grease and industrial soiling from heavy-duty fabrics.",
     "benefits": [
       "Removes industrial oil & grease",
@@ -960,20 +648,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "Overall Washing Powders 25kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-alubrite",
@@ -986,7 +661,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
+    "img": "",
     "desc": "Specialist aluminium brightener and cleaner that removes oxidation, tarnish and corrosion from aluminium surfaces. Restores a bright, polished finish without abrasives.",
     "benefits": [
       "Removes aluminium oxidation",
@@ -999,20 +674,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-006",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
-        "storageKey": null,
-        "altText": "Alubrite 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hf-alubrite",
@@ -1025,7 +687,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
+    "img": "",
     "desc": "High-foam aluminium brightener for truck and transport cleaning applications. Produces rich foam for improved contact time and superior brightening on aluminium tankers and trailers.",
     "benefits": [
       "High-foam formula for better contact",
@@ -1038,20 +700,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-007",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
-        "storageKey": null,
-        "altText": "HF Alubrite 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-anti-freeze-concentrate-96",
@@ -1064,10 +713,10 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1746014995585-5bc2421a5f23?w=800&q=80",
+    "img": "",
     "desc": "High-concentration 96% anti-freeze and coolant for industrial and automotive cooling systems. Prevents freezing, boilover and corrosion in all engine types. Dilute to required protection level.",
     "benefits": [
-      "96% concentration \u00e2\u20ac\u201c long life",
+      "96% concentration â€“ long life",
       "Prevents freezing & boilover",
       "Corrosion inhibitors included",
       "Compatible with all engine types"
@@ -1077,20 +726,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-008",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1746014995585-5bc2421a5f23?w=800&q=80",
-        "storageKey": null,
-        "altText": "Anti-Freeze Concentrate 96% 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hand-cleaner-paste-grit",
@@ -1103,7 +739,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1601092410910-3d2e1151e55d?w=800&q=80",
+    "img": "",
     "desc": "Waterless grit hand cleaner paste that removes stubborn grease, oil, tar and industrial soiling from hands without water. Natural grit particles provide gentle exfoliation while cleaning.",
     "benefits": [
       "Removes grease & oil without water",
@@ -1116,20 +752,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-009",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1601092410910-3d2e1151e55d?w=800&q=80",
-        "storageKey": null,
-        "altText": "Hand Cleaner Paste Grit 5kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bio-degreaser-specialised",
@@ -1142,10 +765,10 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
+    "img": "",
     "desc": "Biodegradable industrial degreaser formulated with specialist surfactants for breaking down heavy oil and grease contamination. Environmentally responsible and drain-safe.",
     "benefits": [
-      "Biodegradable \u00e2\u20ac\u201c eco-friendly",
+      "Biodegradable â€“ eco-friendly",
       "Breaks down heavy oils & grease",
       "Drain-safe disposal",
       "Concentrated for bulk use"
@@ -1155,20 +778,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-010",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bio Degreaser Specialised 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-eco-degreaser-hd-red",
@@ -1181,7 +791,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty eco-friendly degreaser in distinctive red formulation for high-visibility identification. Tackles industrial grease and oil with powerful surfactant action while minimising environmental impact.",
     "benefits": [
       "Heavy-duty degreasing power",
@@ -1194,20 +804,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-011",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Eco Degreaser HD Red 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hd-degreaser",
@@ -1220,7 +817,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Professional heavy-duty degreaser concentrate for removing extreme oil, grease and contamination from industrial machinery, floors and equipment. Dilute for varied cleaning strengths.",
     "benefits": [
       "Extreme oil & grease removal",
@@ -1233,20 +830,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-012",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "HD Degreaser 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-nr-solvent-degreaser",
@@ -1259,7 +843,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Non-residue solvent degreaser that evaporates cleanly without leaving any film or residue. Ideal for electrical components, precision parts and surfaces where contamination-free cleaning is critical.",
     "benefits": [
       "Zero residue after evaporation",
@@ -1272,20 +856,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-013",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "NR Solvent Degreaser 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-truck-shampoo",
@@ -1298,7 +869,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty truck and fleet washing shampoo that rapidly removes road grime, diesel soot and traffic film from large vehicles. High-foam concentrate safe on all vehicle finishes.",
     "benefits": [
       "Removes diesel soot & road grime",
@@ -1311,20 +882,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-014",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Truck Shampoo 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-window-dae-scaler",
@@ -1337,7 +895,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1550963295-019d8a8a61c5?w=800&q=80",
+    "img": "",
     "desc": "Industrial descaler and acid-based glass cleaner that dissolves mineral deposits, hard water scale and silica staining from windows, glass panels and glazing. Leaves streak-free clarity.",
     "benefits": [
       "Dissolves hard water & mineral scale",
@@ -1350,20 +908,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-015",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1550963295-019d8a8a61c5?w=800&q=80",
-        "storageKey": null,
-        "altText": "Window DAE-Scaler 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-alkaline-washing-powders",
@@ -1376,7 +921,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
+    "img": "",
     "desc": "High-alkaline industrial washing powder for laundry and parts washing applications. Powerful cleaning action removes heavy soiling, carbonised deposits and industrial contamination.",
     "benefits": [
       "High-alkaline heavy-duty cleaning",
@@ -1389,20 +934,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-ind-016",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
-        "storageKey": null,
-        "altText": "Alkaline Washing Powders 25kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hand-sanitiser-gel",
@@ -1415,11 +947,11 @@
     "rating": 4.8,
     "reviews": 74,
     "badge": "Bestseller",
-    "img": "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=800&q=80",
+    "img": "",
     "desc": "WHO-formulated hand sanitiser with 70% ethanol that kills 99.9% of bacteria and viruses. Quick-drying, non-sticky gel with added moisturiser.",
     "benefits": [
       "Kills 99.9% of germs",
-      "70% ethanol \u00e2\u20ac\u201c WHO formula",
+      "70% ethanol â€“ WHO formula",
       "Non-sticky quick-dry gel",
       "Added aloe vera moisturiser"
     ],
@@ -1428,20 +960,7 @@
     "lowStockThreshold": 15,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-san-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=800&q=80",
-        "storageKey": null,
-        "altText": "Hand Sanitiser Gel 70% 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-surface-disinfectant",
@@ -1454,7 +973,7 @@
     "rating": 4.6,
     "reviews": 52,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1583947581279-4eec08383c38?w=800&q=80",
+    "img": "",
     "desc": "Hospital-grade disinfectant spray that kills 99.9% of bacteria, fungi and enveloped viruses on contact. Ideal for homes, offices and healthcare facilities.",
     "benefits": [
       "Hospital-grade disinfection",
@@ -1467,20 +986,7 @@
     "lowStockThreshold": 12,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-san-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1583947581279-4eec08383c38?w=800&q=80",
-        "storageKey": null,
-        "altText": "Surface Disinfectant Spray 750ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-isopropyl-alcohol-99",
@@ -1493,10 +999,10 @@
     "rating": 4.9,
     "reviews": 46,
     "badge": "High Purity",
-    "img": "https://images.unsplash.com/photo-1584744982491-665216d95f8b?w=800&q=80",
-    "desc": "Ultra-pure 99% isopropyl alcohol for electronics cleaning, laboratory use and surface sterilisation. Leaves no residue \u00e2\u20ac\u201c safe for PCBs and sensitive equipment.",
+    "img": "",
+    "desc": "Ultra-pure 99% isopropyl alcohol for electronics cleaning, laboratory use and surface sterilisation. Leaves no residue â€“ safe for PCBs and sensitive equipment.",
     "benefits": [
-      "99% purity \u00e2\u20ac\u201c no residue",
+      "99% purity â€“ no residue",
       "Safe for electronics & PCBs",
       "Fast evaporation",
       "Laboratory & medical grade"
@@ -1506,20 +1012,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-san-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1584744982491-665216d95f8b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Isopropyl Alcohol 99% 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-antibacterial-foam-wash",
@@ -1532,7 +1025,7 @@
     "rating": 4.5,
     "reviews": 39,
     "badge": "New",
-    "img": "https://images.unsplash.com/photo-1632454672044-db96fe310ad0?w=800&q=80",
+    "img": "",
     "desc": "Rich foaming hand wash with anti-bacterial agents that kill 99.9% of germs while keeping hands soft and moisturised. Dermatologically tested.",
     "benefits": [
       "Rich foaming lather",
@@ -1545,20 +1038,7 @@
     "lowStockThreshold": 12,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-san-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632454672044-db96fe310ad0?w=800&q=80",
-        "storageKey": null,
-        "altText": "Anti-Bacterial Foam Hand Wash 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-auto-gloss",
@@ -1571,7 +1051,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "High-shine auto gloss that buffs to a brilliant finish on dashboards, door panels and all interior plastic surfaces. Long-lasting protective coating.",
     "benefits": [
       "Deep gloss finish",
@@ -1584,20 +1064,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Auto Gloss 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-dashboard-polish-white",
@@ -1610,7 +1077,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1771491237218-cbd4a707497e?w=800&q=80",
+    "img": "",
     "desc": "Premium dashboard polish that cleans, shines and protects all interior plastic and vinyl surfaces. Leaves a non-greasy satin finish that resists dust.",
     "benefits": [
       "Cleans & shines dashboards",
@@ -1623,20 +1090,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1771491237218-cbd4a707497e?w=800&q=80",
-        "storageKey": null,
-        "altText": "Dashboard Polish 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-dashboard-polish-blue",
@@ -1649,7 +1103,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1771491237218-cbd4a707497e?w=800&q=80",
+    "img": "",
     "desc": "Bulk-size dashboard polish for professional detailers and workshops. Cleans, shines and protects all interior plastic and vinyl surfaces with a dust-resistant finish.",
     "benefits": [
       "Bulk 25L professional size",
@@ -1662,20 +1116,7 @@
     "lowStockThreshold": 4,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1771491237218-cbd4a707497e?w=800&q=80",
-        "storageKey": null,
-        "altText": "Dashboard Polish Bulk 25L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-leather-conditioner-cream",
@@ -1688,7 +1129,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1682858110563-3f609263d418?w=800&q=80",
+    "img": "",
     "desc": "Rich cream formula that deeply nourishes and restores leather car seats, steering wheels and door panels. Prevents cracking, fading and stiffness.",
     "benefits": [
       "Deep nourishing cream formula",
@@ -1701,20 +1142,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1682858110563-3f609263d418?w=800&q=80",
-        "storageKey": null,
-        "altText": "Leather Conditioner Cream 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-4in1-leather-treatment",
@@ -1727,7 +1155,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": "Premium",
-    "img": "https://images.unsplash.com/photo-1667893530449-e58102223524?w=800&q=80",
+    "img": "",
     "desc": "Premium all-in-one leather treatment that cleans, conditions, protects and restores in a single application. Professional-grade formula for showroom-quality results.",
     "benefits": [
       "Cleans, conditions, protects & restores",
@@ -1740,20 +1168,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1667893530449-e58102223524?w=800&q=80",
-        "storageKey": null,
-        "altText": "Ultimate 4in1 Leather Treatment Premium 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-leather-cleaner",
@@ -1766,7 +1181,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1682858110563-3f609263d418?w=800&q=80",
+    "img": "",
     "desc": "Specially formulated leather cleaner that removes dirt, grime, sweat and body oils from car leather seats and interior trim without drying or damaging the surface.",
     "benefits": [
       "Removes dirt & body oils",
@@ -1779,20 +1194,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-006",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1682858110563-3f609263d418?w=800&q=80",
-        "storageKey": null,
-        "altText": "Leather Cleaner 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-car-perfumes",
@@ -1805,7 +1207,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1631390573019-5b5deb1daf53?w=800&q=80",
+    "img": "",
     "desc": "Premium car interior perfumes in 5 luxurious scents: Cherry, Lavender, Floral, Nucar and Apple. Long-lasting fragrance that neutralises odours and keeps your car smelling fresh.",
     "benefits": [
       "5 luxurious scent options",
@@ -1845,20 +1247,7 @@
         "stock": 0
       }
     ],
-    "media": [
-      {
-        "id": "media-demo-car-int-007",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1631390573019-5b5deb1daf53?w=800&q=80",
-        "storageKey": null,
-        "altText": "Car Perfumes 100ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-upholstery-carpet-shampoo",
@@ -1871,7 +1260,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1654522659761-b6ad370e0bb3?w=800&q=80",
+    "img": "",
     "desc": "Fast-drying shampoo for car seats, carpets and upholstery. Lifts stubborn stains, eliminates odours and dries quickly to prevent mould and dampness.",
     "benefits": [
       "Quick-dry formula",
@@ -1884,20 +1273,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-008",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1654522659761-b6ad370e0bb3?w=800&q=80",
-        "storageKey": null,
-        "altText": "Quick Dry Upholstery & Carpet Shampoo 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-window-cleaner",
@@ -1910,7 +1286,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1550963295-019d8a8a61c5?w=800&q=80",
+    "img": "",
     "desc": "Streak-free window cleaner for car windscreens, windows and mirrors. Cuts through road film, smears and fingerprints for crystal-clear visibility.",
     "benefits": [
       "Streak-free crystal-clear finish",
@@ -1923,20 +1299,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-car-int-009",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1550963295-019d8a8a61c5?w=800&q=80",
-        "storageKey": null,
-        "altText": "Window Cleaner 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-claybar",
@@ -1949,7 +1312,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
+    "img": "",
     "desc": "Professional clay bar kit for removing bonded contaminants from paintwork. Includes clay bar, lubricant spray and microfibre cloths for a smooth, glass-like finish.",
     "benefits": [
       "Removes bonded contamination",
@@ -1962,20 +1325,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
-        "storageKey": null,
-        "altText": "Claybar Kit 200g",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-quick-detailer",
@@ -1988,7 +1338,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Fast-acting quick detailer spray for removing light dust, fingerprints and water spots between washes. Leaves a streak-free, high-gloss finish in seconds.",
     "benefits": [
       "Removes light dust & fingerprints",
@@ -2001,20 +1351,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Quick Detailer Spray 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-dura-glaze",
@@ -2027,7 +1364,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "Durable paint glaze that fills minor swirls and hairlines while adding a deep, wet-look shine. Suitable for use before wax or sealant application.",
     "benefits": [
       "Fills swirls & hairlines",
@@ -2040,20 +1377,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Dura Glaze 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-medium-cut",
@@ -2066,7 +1390,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
+    "img": "",
     "desc": "Medium-cut polishing compound for removing moderate swirls, light scratches and oxidation. Leaves a clean, bright finish ready for glazing or waxing.",
     "benefits": [
       "Removes moderate swirls & scratches",
@@ -2079,20 +1403,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
-        "storageKey": null,
-        "altText": "Medium-Cut Compound 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-high-cut",
@@ -2105,7 +1416,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
+    "img": "",
     "desc": "Heavy-cut polishing compound for removing deep scratches, heavy oxidation and severe swirl marks. Designed for machine polisher use on neglected or damaged paintwork.",
     "benefits": [
       "Removes deep scratches & heavy oxidation",
@@ -2118,20 +1429,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
-        "storageKey": null,
-        "altText": "High-Cut Compound 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-burnishing-compound",
@@ -2144,7 +1442,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "Ultra-fine burnishing compound for final-stage paint finishing. Removes fine buffer trails and micro-marring left by cutting compounds, delivering a mirror-like clarity.",
     "benefits": [
       "Removes buffer trails & micro-marring",
@@ -2157,20 +1455,7 @@
     "lowStockThreshold": 6,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-006",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Burnishing Compound 500g",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-correction-compound",
@@ -2183,7 +1468,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
+    "img": "",
     "desc": "Professional paint correction compound formulated for multi-stage correction. Effectively removes swirls, holograms and light scratches, restoring paint depth and clarity.",
     "benefits": [
       "Multi-stage correction formula",
@@ -2196,20 +1481,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-007",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1620584898989-d39f7f9ed1b7?w=800&q=80",
-        "storageKey": null,
-        "altText": "Correction Compound 1L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-easy-gloss-car-polish",
@@ -2222,7 +1494,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
+    "img": "",
     "desc": "All-in-one car polish for everyday shine maintenance. Cleans, polishes and protects in a single step, leaving a brilliant gloss that repels water and dust.",
     "benefits": [
       "All-in-one clean, polish & protect",
@@ -2235,20 +1507,7 @@
     "lowStockThreshold": 8,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cp-008",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=800&q=80",
-        "storageKey": null,
-        "altText": "Easy Gloss Car Polish 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-blue-shampoo",
@@ -2261,7 +1520,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Professional-grade blue car wash shampoo with a rich lather that safely lifts dirt and road grime from all vehicle surfaces without stripping wax or sealants.",
     "benefits": [
       "Rich foaming lather",
@@ -2274,20 +1533,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Blue Shampoo 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hi-foam-shampoo-pink",
@@ -2300,7 +1546,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
+    "img": "",
     "desc": "High-foam car shampoo that produces a thick, clinging foam to encapsulate and safely remove dirt, dust and road contamination from paintwork and glass.",
     "benefits": [
       "Ultra-thick foam formula",
@@ -2313,20 +1559,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-        "storageKey": null,
-        "altText": "Hi Foam Shampoo Pink 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-rinseless-wash",
@@ -2339,7 +1572,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Concentrated rinseless car wash that cleans the entire vehicle using only a small amount of water and a microfibre cloth. No hosing or rinsing required.",
     "benefits": [
       "No rinsing required",
@@ -2352,20 +1585,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Rinseless Wash 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-waterless-car-wash-cs",
@@ -2378,7 +1598,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
+    "img": "",
     "desc": "Complete waterless car wash solution that cleans, polishes and protects in a single step. Simply spray on and wipe off for a spotless, scratch-free finish anywhere.",
     "benefits": [
       "No water needed at all",
@@ -2391,20 +1611,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?w=800&q=80",
-        "storageKey": null,
-        "altText": "Waterless Car Wash 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-wash-n-wax-pearly-blue",
@@ -2417,7 +1624,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
+    "img": "",
     "desc": "Two-in-one wash and wax shampoo with a pearly blue formula that cleans and deposits a protective wax coating in a single wash. Leaves paintwork shiny and water-beading.",
     "benefits": [
       "Washes & waxes in one step",
@@ -2430,20 +1637,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-        "storageKey": null,
-        "altText": "Wash N Wax Pearly Blue 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-foam-3-concentrate",
@@ -2456,8 +1650,8 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-    "desc": "Triple-action foam concentrate that cleans, decontaminates and conditions paintwork in one application. Exceptionally concentrated \u00e2\u20ac\u201d a small amount produces massive foam coverage.",
+    "img": "",
+    "desc": "Triple-action foam concentrate that cleans, decontaminates and conditions paintwork in one application. Exceptionally concentrated â€” a small amount produces massive foam coverage.",
     "benefits": [
       "Triple-action clean & condition",
       "Exceptionally concentrated",
@@ -2469,20 +1663,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-cs-006",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1754296577179-0e14f78a1262?w=800&q=80",
-        "storageKey": null,
-        "altText": "Foam 3 Concentrate 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-sanitizers",
@@ -2492,10 +1673,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=800&q=80",
+    "img": "",
     "desc": "Effective hand and surface sanitizer. Kills 99.9% of germs and bacteria on contact.",
     "benefits": [
       "Kills 99.9% of germs",
@@ -2507,20 +1688,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-sanitizers",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=800&q=80",
-        "storageKey": null,
-        "altText": "Sanitizers 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-sani-pine",
@@ -2530,10 +1698,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
+    "img": "",
     "desc": "Pine-scented disinfectant cleaner for floors, bathrooms and general surfaces.",
     "benefits": [
       "Disinfects and cleans",
@@ -2545,20 +1713,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-sani-pine",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
-        "storageKey": null,
-        "altText": "Sani-Pine 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-floor-shine-high-traffic",
@@ -2568,10 +1723,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty floor polish for high-traffic areas. Durable high-gloss finish that resists scuffs.",
     "benefits": [
       "High-gloss finish",
@@ -2583,20 +1738,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-floor-shine-high-traffic",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Floor Shine High Traffic 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-shower-gel",
@@ -2606,10 +1748,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1549869638-10ef712893a7?w=800&q=80",
+    "img": "",
     "desc": "Gentle, moisturising shower gel for daily use. Leaves skin clean, soft and refreshed.",
     "benefits": [
       "Gentle on skin",
@@ -2621,20 +1763,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-shower-gel",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1549869638-10ef712893a7?w=800&q=80",
-        "storageKey": null,
-        "altText": "Shower Gel 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-sulphuric-acid",
@@ -2644,10 +1773,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Industrial-grade sulphuric acid for drain unblocking and heavy-duty cleaning. Handle with care.",
     "benefits": [
       "Powerful drain unblocker",
@@ -2659,20 +1788,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-sulphuric-acid",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Sulphuric Acid 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-toilet-bowl-cleaner",
@@ -2682,10 +1798,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1740325952758-eff797651e2d?w=800&q=80",
+    "img": "",
     "desc": "Removes limescale, stains and kills bacteria. Leaves the bowl fresh and hygienically clean.",
     "benefits": [
       "Removes limescale and stains",
@@ -2697,20 +1813,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-toilet-bowl-cleaner",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1740325952758-eff797651e2d?w=800&q=80",
-        "storageKey": null,
-        "altText": "Toilet Bowl Cleaner 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-thick-bleach-domestos-type",
@@ -2720,10 +1823,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1646533683740-670d8ee20fff?w=800&q=80",
+    "img": "",
     "desc": "Thick bleach that clings to surfaces for maximum disinfecting power. Kills germs, whitens and deodorises.",
     "benefits": [
       "Thick cling formula",
@@ -2735,20 +1838,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-thick-bleach-domestos-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1646533683740-670d8ee20fff?w=800&q=80",
-        "storageKey": null,
-        "altText": "Thick Bleach (Domestos Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-oxy-o2-vanish-type",
@@ -2758,10 +1848,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
+    "img": "",
     "desc": "Oxygen-powered stain remover for fabrics. Lifts tough stains without damaging colours.",
     "benefits": [
       "Oxygen-powered stain removal",
@@ -2773,20 +1863,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-oxy-o2-vanish-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
-        "storageKey": null,
-        "altText": "Oxy O2 (Vanish Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-wash-up-liquid-green",
@@ -2796,10 +1873,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1649944607215-33cea628763f?w=800&q=80",
+    "img": "",
     "desc": "Green dish washing liquid that cuts through grease and food residue. Gentle on hands, tough on grease.",
     "benefits": [
       "Cuts through grease",
@@ -2811,20 +1888,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-wash-up-liquid-green",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1649944607215-33cea628763f?w=800&q=80",
-        "storageKey": null,
-        "altText": "Wash-Up Liquid (Green) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-fabric-softner-comfort-type",
@@ -2834,10 +1898,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1764242191304-9bafa618c3c4?w=800&q=80",
+    "img": "",
     "desc": "Fabric softener that leaves laundry irresistibly soft and fresh. Reduces static.",
     "benefits": [
       "Softens fabrics",
@@ -2849,20 +1913,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-fabric-softner-comfort-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1764242191304-9bafa618c3c4?w=800&q=80",
-        "storageKey": null,
-        "altText": "Fabric Softner (Comfort Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-floor-stripper-household",
@@ -2872,10 +1923,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "Removes old polish, wax build-up and sealers from hard floors before re-coating.",
     "benefits": [
       "Removes old polish and wax",
@@ -2887,20 +1938,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-floor-stripper-household",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Floor Stripper 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-furniture-polish",
@@ -2910,10 +1948,10 @@
     "price": 0,
     "was": null,
     "size": "500ml",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1712171984530-e25a4aaa46dd?w=800&q=80",
+    "img": "",
     "desc": "Nourishing furniture polish that cleans, shines and protects wood surfaces. Streak-free finish.",
     "benefits": [
       "Cleans and shines wood",
@@ -2925,20 +1963,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-furniture-polish",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1712171984530-e25a4aaa46dd?w=800&q=80",
-        "storageKey": null,
-        "altText": "Furniture Polish 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-hard-surface-cleaner-handy-andy-type",
@@ -2948,10 +1973,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
+    "img": "",
     "desc": "Cream-based cleaner that removes tough stains, grease and grime from kitchen and bathroom surfaces.",
     "benefits": [
       "Removes tough stains",
@@ -2963,20 +1988,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-hard-surface-cleaner-handy-andy-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1563453392212-326f5e854473?w=800&q=80",
-        "storageKey": null,
-        "altText": "Hard Surface Cleaner (Handy Andy Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-laundry-liquid-omo-auto-type",
@@ -2986,10 +1998,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
+    "img": "",
     "desc": "Concentrated laundry liquid for automatic washing machines. Outstanding results even in cold water.",
     "benefits": [
       "Concentrated formula",
@@ -3001,20 +2013,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-laundry-liquid-omo-auto-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
-        "storageKey": null,
-        "altText": "Laundry Liquid (Omo Auto Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-overall-washing-powder",
@@ -3024,10 +2023,10 @@
     "price": 0,
     "was": null,
     "size": "10kg",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty washing powder for overalls, work wear and heavily soiled laundry.",
     "benefits": [
       "Removes heavy grease and dirt",
@@ -3039,20 +2038,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-overall-washing-powder",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "Overall Washing Powder 10kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-industrial-washing-powder",
@@ -3062,10 +2048,10 @@
     "price": 0,
     "was": null,
     "size": "10kg",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
+    "img": "",
     "desc": "High-performance industrial washing powder. Delivers superior whitening and stain removal.",
     "benefits": [
       "Superior whitening",
@@ -3077,20 +2063,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-industrial-washing-powder",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
-        "storageKey": null,
-        "altText": "Industrial Washing Powder 10kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-high-foaming-handing-washing-powder",
@@ -3100,10 +2073,10 @@
     "price": 0,
     "was": null,
     "size": "10kg",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "High-foaming hand washing powder with rich lather for effective hand laundry.",
     "benefits": [
       "High-foaming formula",
@@ -3115,20 +2088,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-high-foaming-handing-washing-powder",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "High Foaming Handing Washing Powder 10kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bio-ultra-bio-classic-type",
@@ -3138,10 +2098,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
+    "img": "",
     "desc": "Biological washing liquid with enzyme action that breaks down protein, fat and starch stains.",
     "benefits": [
       "Enzyme-powered cleaning",
@@ -3153,20 +2113,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-bio-ultra-bio-classic-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1624372635310-01d078c05dd9?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bio Ultra (Bio Classic Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-metal-polish",
@@ -3176,10 +2123,10 @@
     "price": 0,
     "was": null,
     "size": "500ml",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
+    "img": "",
     "desc": "Restores shine and removes tarnish, rust and oxidation from all metal surfaces.",
     "benefits": [
       "Removes tarnish and oxidation",
@@ -3191,20 +2138,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-metal-polish",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1687845542154-0063ce9e4fad?w=800&q=80",
-        "storageKey": null,
-        "altText": "Metal Polish 500ml",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-mop-and-shine",
@@ -3214,10 +2148,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "Floor cleaner and shine in one. Cleans and polishes hard floors with a brilliant, long-lasting shine.",
     "benefits": [
       "Cleans and polishes in one step",
@@ -3229,20 +2163,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-mop-and-shine",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Mop & Shine 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-pine-gel",
@@ -3252,10 +2173,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
+    "img": "",
     "desc": "Thick pine gel disinfectant for floors, toilets and drains. Kills germs, fresh pine fragrance.",
     "benefits": [
       "Thick gel formula",
@@ -3267,20 +2188,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-pine-gel",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1582020711621-ab153a0f3631?w=800&q=80",
-        "storageKey": null,
-        "altText": "Pine Gel 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bleach-jik-type",
@@ -3290,10 +2198,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1646533683740-670d8ee20fff?w=800&q=80",
+    "img": "",
     "desc": "Powerful liquid bleach for whitening laundry, disinfecting surfaces and removing tough stains.",
     "benefits": [
       "Whitens laundry",
@@ -3305,20 +2213,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-bleach-jik-type",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1646533683740-670d8ee20fff?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bleach (Jik Type) 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-bubble-bath",
@@ -3328,10 +2223,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1645724466583-9adee761f530?w=800&q=80",
+    "img": "",
     "desc": "Luxurious bubble bath that creates rich foamy lather. Gentle on skin, long-lasting fragrance.",
     "benefits": [
       "Rich foamy lather",
@@ -3343,20 +2238,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-bubble-bath",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1645724466583-9adee761f530?w=800&q=80",
-        "storageKey": null,
-        "altText": "Bubble Bath 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-deo-blocks",
@@ -3366,10 +2248,10 @@
     "price": 0,
     "was": null,
     "size": "1kg",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1650543679355-0fcf8a621d1a?w=800&q=80",
+    "img": "",
     "desc": "Deodorant urinal blocks that neutralise odours and keep urinals fresh and hygienic.",
     "benefits": [
       "Neutralises odours",
@@ -3381,20 +2263,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-deo-blocks",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1650543679355-0fcf8a621d1a?w=800&q=80",
-        "storageKey": null,
-        "altText": "Deo Blocks 1kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-dispenser-hand-soap-pink",
@@ -3404,10 +2273,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722858957804-7708fb96159a?w=800&q=80",
+    "img": "",
     "desc": "Pink liquid hand soap for soap dispensers. Gentle cleansing formula, leaves hands soft.",
     "benefits": [
       "Gentle on hands",
@@ -3419,20 +2288,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-dispenser-hand-soap-pink",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722858957804-7708fb96159a?w=800&q=80",
-        "storageKey": null,
-        "altText": "Dispenser Hand Soap Pink 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-drain-cleaner",
@@ -3442,10 +2298,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
+    "img": "",
     "desc": "Powerful drain cleaner that dissolves hair, grease, soap scum and other blockages fast.",
     "benefits": [
       "Dissolves blockages fast",
@@ -3457,20 +2313,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-drain-cleaner",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1722842253242-1a40ba701095?w=800&q=80",
-        "storageKey": null,
-        "altText": "Drain Cleaner 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-dribrite-floor-shine",
@@ -3480,10 +2323,10 @@
     "price": 0,
     "was": null,
     "size": "5L",
-    "rating": 5.0,
+    "rating": 5,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
+    "img": "",
     "desc": "Premium floor shine that provides a brilliant, long-lasting gloss on all hard floor surfaces.",
     "benefits": [
       "Brilliant gloss finish",
@@ -3495,20 +2338,7 @@
     "lowStockThreshold": 10,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-dribrite-floor-shine",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1749214307591-0bdd1d89de6b?w=800&q=80",
-        "storageKey": null,
-        "altText": "Dribrite Floor Shine 5L",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-brite-shine-washing-powder-5kg",
@@ -3521,7 +2351,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "Powerful everyday washing powder for fresh, clean laundry.",
     "benefits": [
       "Fresh, clean laundry every wash",
@@ -3534,20 +2364,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-lnd-001",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "Brite n' Shine Washing Powder 5kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-brite-shine-washing-powder-10kg",
@@ -3560,7 +2377,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
+    "img": "",
     "desc": "Value-size washing powder for homes, guesthouses, and small businesses.",
     "benefits": [
       "Value size for households and small businesses",
@@ -3573,20 +2390,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-lnd-002",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
-        "storageKey": null,
-        "altText": "Brite n' Shine Washing Powder 10kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-brite-shine-washing-powder-20kg",
@@ -3599,7 +2403,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "Bulk laundry washing powder for high-volume cleaning needs.",
     "benefits": [
       "Bulk pack for high-volume use",
@@ -3612,20 +2416,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-lnd-003",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "Brite n' Shine Washing Powder 20kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-brite-shine-washing-powder-25kg",
@@ -3638,7 +2429,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
+    "img": "",
     "desc": "Heavy-duty laundry powder for commercial and household use.",
     "benefits": [
       "Heavy-duty formula for commercial use",
@@ -3651,20 +2442,7 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-lnd-004",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947954-fe6e3aa61389?w=800&q=80",
-        "storageKey": null,
-        "altText": "Brite n' Shine Washing Powder 25kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   },
   {
     "id": "demo-brite-shine-washing-powder-50kg",
@@ -3677,7 +2455,7 @@
     "rating": 0,
     "reviews": 0,
     "badge": null,
-    "img": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
+    "img": "",
     "desc": "Large bulk washing powder pack for businesses and high-volume laundry use.",
     "benefits": [
       "Largest pack for maximum value",
@@ -3690,19 +2468,6 @@
     "lowStockThreshold": 5,
     "status": "active",
     "variants": [],
-    "media": [
-      {
-        "id": "media-demo-lnd-005",
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1642429947963-f04215ed5577?w=800&q=80",
-        "storageKey": null,
-        "altText": "Brite n' Shine Washing Powder 50kg",
-        "sortOrder": 0,
-        "isPrimary": true,
-        "fileName": "",
-        "mimeType": "image/png",
-        "fileSize": 0
-      }
-    ]
+    "media": []
   }
 ]

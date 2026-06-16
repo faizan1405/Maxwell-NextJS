@@ -42,16 +42,16 @@ export const WhyUs = () => (
     <Reveal delay={120} className="why-images">
       <div className="why-images__grid">
         <div className="why-images__item">
-          <img src="/assets/products/all-purpose-cleaner.jpg" alt="All Purpose Cleaner" />
+          <img src="/assets/products/placeholder.svg" alt="Amahle Blue product" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src="/assets/products/tyre-shine.jpg" alt="Tyre Shine" />
+          <img src="/assets/products/placeholder.svg" alt="Amahle Blue product" />
         </div>
         <div className="why-images__item why-images__item--up">
-          <img src="/assets/products/carpet-upholstery-shampoo.png" alt="Carpet Shampoo" />
+          <img src="/assets/products/placeholder.svg" alt="Amahle Blue product" />
         </div>
         <div className="why-images__item why-images__item--down">
-          <img src="/assets/products/hand-surface-sanitiser.jpg" alt="Sanitiser" />
+          <img src="/assets/products/placeholder.svg" alt="Amahle Blue product" />
         </div>
       </div>
       <div className="why-images__badge">

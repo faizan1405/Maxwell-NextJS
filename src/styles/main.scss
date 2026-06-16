@@ -44,3 +44,6 @@
 @import "admin/components/empty";
 @import "admin/components/form-field";
 @import "admin/components/toggle";
+
+// Mobile-first overrides layer — keep LAST
+@import "mobile";

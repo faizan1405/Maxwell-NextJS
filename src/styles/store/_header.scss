@@ -145,7 +145,7 @@
   }
 
   &__trigger-text {
-    max-w: 100px;
+    max-width: 100px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -511,7 +511,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-b: 1px solid $slate-100;
+  border-bottom: 1px solid $slate-100;
   padding: 1rem 1.25rem;
 }
 

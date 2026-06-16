@@ -5,6 +5,9 @@ import { requireAdmin, verifySession } from '../../../lib/auth';
 import { normalizeAdminPurchaseMode, normalizePurchaseMode } from '../../../utils/purchaseMode';
 import { del } from '@vercel/blob';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 function isVercelBlob(url) {
   return typeof url === 'string' && url.includes('.vercel-storage.com');
 }

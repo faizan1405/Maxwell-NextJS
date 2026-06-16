@@ -8,8 +8,9 @@ export function hasPositivePrice(value) {
 export function normalizePurchaseMode(mode, price) {
   const raw = String(mode || '').toLowerCase();
   if (raw === 'quote') return 'quote';
+  if (raw === 'cart') return hasPositivePrice(price) ? 'cart' : 'quote';
   if (raw === 'both') return hasPositivePrice(price) ? 'cart' : 'quote';
-  return hasPositivePrice(price) ? 'cart' : 'quote';
+  return 'quote';
 }
 
 export function normalizeAdminPurchaseMode(mode, price) {

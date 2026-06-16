@@ -288,10 +288,18 @@ export default function ReviewsPage() {
   }
 
   async function handleCreate(payload) {
-    await createReview(payload);
+    const created = await createReview(payload);
     showToast('Review added');
     setAdding(false);
-    fetchReviewsPaginated({ page, limit: REVIEW_PAGE_SIZE, search: search.trim(), status: tab === 'all' ? '' : tab, rating: ratingFilter, verified: verifiedFilter, productId: productFilter });
+    // Jump to the tab that matches the new review's status so the admin sees it
+    const newTab = (created?.status && ['pending', 'approved', 'rejected', 'hidden'].includes(created.status))
+      ? created.status
+      : tab;
+    if (newTab !== tab) {
+      setTab(newTab);
+    } else {
+      fetchReviewsPaginated({ page, limit: REVIEW_PAGE_SIZE, search: search.trim(), status: tab === 'all' ? '' : tab, rating: ratingFilter, verified: verifiedFilter, productId: productFilter });
+    }
   }
 
   async function handleEditSave(payload) {

@@ -77,40 +77,32 @@ export function getSecondImg(p) {
 }
 
 /* ── Products store ────────────────────────────────────────────────────────── */
-const ProductsContext = createContext({ products: [], categories: DEFAULT_CATEGORIES, settings: null });
+const ProductsContext = createContext({ products: [], productsLoaded: false, categories: DEFAULT_CATEGORIES, settings: null });
 export const useProducts = () => useContext(ProductsContext);
 
-const FALLBACK_PRODUCTS = [
-  { id: "all-purpose-cleaner", name: "All Purpose Cleaner", cat: "household", size: "500ml", desc: "Versatile Multi-Surface Cleaning Solution", price: 45, was: 65, badge: "Bestseller", img: "", media: [], stock: 100, rating: 4.8, reviews: 120 },
-  { id: "carpet-upholstery-shampoo", name: "Carpet & Upholstery Shampoo", cat: "household", size: "5L", desc: "Deep Cleaning Fabric & Carpet Care", price: 180, was: 200, badge: "Bestseller", img: "", media: [], stock: 50, rating: 4.9, reviews: 85 },
-  { id: "hand-surface-sanitiser", name: "Hand & Surface Sanitiser", cat: "sanitiser", size: "5L", desc: "Isopropyl Alcohol 85% — Kills 99.9% of germs", price: 250, was: 300, badge: "Bestseller", img: "", media: [], stock: 200, rating: 4.9, reviews: 340 },
-  { id: "tyre-dash-shine", name: "Tyre & Dash Shine", cat: "car", size: "5L", desc: "Interior & Exterior Dressing Combo", price: 220, img: "", media: [], stock: 150, rating: 4.7, reviews: 95 }
-];
-
 export function ProductsProvider({ children }) {
-  const [products, setProducts] = useState(FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState([]);
+  const [productsLoaded, setProductsLoaded] = useState(false);
   const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
-    // Fetch products from API
+    // Purge any stale product cache from earlier builds so it never flashes
+    // the old price/cart mode before the live API data lands.
+    try { localStorage.removeItem('ab_products'); } catch {}
+
+    // Fetch products from API — DB is the only source of truth.
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/products`);
-        if (!res.ok) return;
+        const res = await fetch(`${API_BASE}/api/products`, { cache: 'no-store' });
+        if (!res.ok) { setProductsLoaded(true); return; }
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setProducts(data);
-          try { localStorage.setItem("ab_products", JSON.stringify(data)); } catch {}
-        } else {
-          setProducts(FALLBACK_PRODUCTS);
-        }
+        if (Array.isArray(data)) setProducts(data);
       } catch {
-        // Fallback to localStorage
-        try {
-          const raw = localStorage.getItem("ab_products");
-          if (raw) { const p = JSON.parse(raw); if (Array.isArray(p) && p.length) setProducts(p); }
-        } catch {}
+        // Network failure — leave products empty; UI shows skeleton/empty state
+        // rather than risk a wrong purchase-mode flash.
+      } finally {
+        setProductsLoaded(true);
       }
     })();
 
@@ -149,7 +141,7 @@ export function ProductsProvider({ children }) {
     })();
   }, []);
 
-  const value = useMemo(() => ({ products, categories, settings }), [products, categories, settings]);
+  const value = useMemo(() => ({ products, productsLoaded, categories, settings }), [products, productsLoaded, categories, settings]);
   return <ProductsContext.Provider value={value}>{children}</ProductsContext.Provider>;
 }
 

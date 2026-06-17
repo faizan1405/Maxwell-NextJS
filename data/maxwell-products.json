@@ -2469,5 +2469,38 @@
     "status": "active",
     "variants": [],
     "media": []
+  },
+  {
+    "id": "demo-fab-softener-5l",
+    "name": "FAB Softener — Fresh & Soft 5L",
+    "cat": "laundry",
+    "sub": "Fabric softener with long-lasting fragrance",
+    "price": 0,
+    "was": null,
+    "size": "5L",
+    "rating": 0,
+    "reviews": 0,
+    "badge": "Bestseller",
+    "img": "/assets/products/fab-softener-1.jpg",
+    "desc": "Long-lasting fabric softener that leaves clothes fresh, soft, and protected. Available in blue, pink, and lavender variants.",
+    "benefits": [
+      "Extra softness on every wash",
+      "Long-lasting fresh fragrance",
+      "Fabric protect formula",
+      "Anti-static — safe for all washes"
+    ],
+    "sku": "DEMO-LND-006",
+    "stock": 20,
+    "lowStockThreshold": 5,
+    "status": "active",
+    "purchaseMode": "quote",
+    "whatsappEnabled": true,
+    "variants": [],
+    "media": [
+      { "id": "fab-softener-1", "type": "image", "url": "/assets/products/fab-softener-1.jpg", "storageKey": null, "altText": "FAB Softener Fresh & Soft 5L blue twin pack", "sortOrder": 0, "isPrimary": true,  "fileName": "fab-softener-1.jpg", "mimeType": "image/jpeg", "fileSize": 0 },
+      { "id": "fab-softener-2", "type": "image", "url": "/assets/products/fab-softener-2.jpg", "storageKey": null, "altText": "FAB Softener pink and lavender 4-pack",     "sortOrder": 1, "isPrimary": false, "fileName": "fab-softener-2.jpg", "mimeType": "image/jpeg", "fileSize": 0 },
+      { "id": "fab-softener-3", "type": "image", "url": "/assets/products/fab-softener-3.jpg", "storageKey": null, "altText": "FAB Softener hero shot with features",    "sortOrder": 2, "isPrimary": false, "fileName": "fab-softener-3.jpg", "mimeType": "image/jpeg", "fileSize": 0 },
+      { "id": "fab-softener-4", "type": "image", "url": "/assets/products/fab-softener-4.jpg", "storageKey": null, "altText": "FAB Softener 8-pack lineup",              "sortOrder": 3, "isPrimary": false, "fileName": "fab-softener-4.jpg", "mimeType": "image/jpeg", "fileSize": 0 }
+    ]
   }
 ]

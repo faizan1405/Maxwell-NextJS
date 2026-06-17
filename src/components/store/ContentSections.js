@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight, MapPin, Phone, Whatsapp } from '../ui/Icons';
 import { Star } from '../ui/Icons';
-import { FadeReveal, Reveal, Stars } from '../ui/index';
+import { FadeReveal, Reveal, Stars, ReviewGridSkeleton, SkeletonLine } from '../ui/index';
 import { SwipeCarousel } from './SwipeCarousel';
 import { BRAND } from '../../lib/storeContext';
 
@@ -83,6 +83,7 @@ export const Reviews = () => {
     return () => { cancelled = true; };
   }, []);
 
+  const isLoading = reviews === null;
   const hasReviews = !!(reviews && reviews.length > 0);
   const avg = hasReviews
     ? (reviews.reduce((s, r) => s + (r.rating || 0), 0) / reviews.length)
@@ -94,7 +95,14 @@ export const Reviews = () => {
         <div className="content-reviews__header">
           <Reveal><span className="content-reviews__subtitle">Loved by customers</span></Reveal>
           <Reveal delay={60}><h2 className="content-reviews__title">Real reviews, real results</h2></Reveal>
-          {hasReviews ? (
+          {isLoading ? (
+            <Reveal delay={110}>
+              <div className="content-reviews__rating" style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
+                <SkeletonLine width={120} height={16} />
+                <SkeletonLine width={90} height={14} />
+              </div>
+            </Reveal>
+          ) : hasReviews ? (
             <Reveal delay={110}>
               <div className="content-reviews__rating">
                 <Stars value={avg} size={20} />
@@ -110,6 +118,11 @@ export const Reviews = () => {
             </Reveal>
           )}
         </div>
+        {isLoading && (
+          <div style={{ marginTop: 24 }}>
+            <ReviewGridSkeleton count={3} />
+          </div>
+        )}
         {hasReviews && (
           <SwipeCarousel
             className="content-reviews__carousel swipe-carousel--reviews"

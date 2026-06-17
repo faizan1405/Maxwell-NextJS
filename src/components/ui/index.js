@@ -81,8 +81,75 @@ export const FadeReveal = ({ children, className = "", delay = 0, y = 16, as = "
 };
 
 /* SkeletonBox: shimmer loading placeholder */
-export const SkeletonBox = ({ className = "", rounded = "rounded-xl" }) => (
-  <div className={`ab-skeleton ${rounded} ${className}`} aria-hidden="true" />
+export const SkeletonBox = ({ className = "", rounded = "rounded-xl", style }) => (
+  <div className={`ab-skeleton ${rounded} ${className}`} aria-hidden="true" style={style} />
+);
+
+/* Skeleton line ─ themed text/line placeholder */
+export const SkeletonLine = ({ width, height, className = "", style }) => (
+  <div
+    className={`ab-skeleton ab-skel-line ${className}`}
+    aria-hidden="true"
+    style={{ ...(width ? { width } : null), ...(height ? { height } : null), ...style }}
+  />
+);
+
+/* ProductCardSkeleton ─ mirrors the real .product-card layout while loading */
+export const ProductCardSkeleton = () => (
+  <div className="ab-skel-product-card" aria-hidden="true">
+    <div className="ab-skeleton ab-skel-product-card__media" />
+    <div className="ab-skel-product-card__body">
+      <SkeletonLine width="35%" height={10} />
+      <SkeletonLine width="80%" height={16} />
+      <SkeletonLine width="60%" height={12} />
+      <SkeletonLine width="45%" height={14} />
+      <div className="ab-skeleton ab-skel-product-card__btn" />
+    </div>
+  </div>
+);
+
+/* Product grid skeleton ─ N skeleton cards in responsive grid */
+export const ProductGridSkeleton = ({ count = 8, variant = "grid" }) => {
+  const wrapperClass = variant === "carousel" ? "ab-skel-product-carousel" : "ab-skel-product-grid";
+  return (
+    <div className={wrapperClass} role="status" aria-label="Loading products">
+      {Array.from({ length: count }).map((_, i) => <ProductCardSkeleton key={i} />)}
+    </div>
+  );
+};
+
+/* ReviewCardSkeleton ─ mirrors review card layout */
+export const ReviewCardSkeleton = () => (
+  <div className="ab-skel-review-card" aria-hidden="true">
+    <div className="ab-skeleton ab-skel-review-card__stars" />
+    <SkeletonLine width="100%" height={12} />
+    <SkeletonLine width="90%" height={12} />
+    <SkeletonLine width="70%" height={12} />
+    <div className="ab-skel-review-card__author">
+      <div className="ab-skeleton ab-skel-circle" style={{ width: 40, height: 40 }} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <SkeletonLine width="50%" height={12} />
+        <SkeletonLine width="35%" height={10} />
+      </div>
+    </div>
+  </div>
+);
+
+export const ReviewGridSkeleton = ({ count = 3 }) => (
+  <div className="ab-skel-review-grid" role="status" aria-label="Loading reviews">
+    {Array.from({ length: count }).map((_, i) => <ReviewCardSkeleton key={i} />)}
+  </div>
+);
+
+/* CategoryCardSkeleton ─ mirrors category showcase card */
+export const CategoryCardSkeleton = () => (
+  <div className="ab-skel-category-card" aria-hidden="true">
+    <div className="ab-skeleton ab-skel-circle" style={{ width: 56, height: 56, borderRadius: 16 }} />
+    <SkeletonLine width="55%" height={18} />
+    <SkeletonLine width="100%" height={12} />
+    <SkeletonLine width="80%" height={12} />
+    <SkeletonLine width="40%" height={12} style={{ marginTop: 'auto' }} />
+  </div>
 );
 
 /* PageEnter: wraps page content with entrance animation */

@@ -7,7 +7,7 @@ import { buildWaUrl, showCart, showWhatsApp, productPurchaseMode } from '../../u
 import {
   Heart, Eye, Sparkles, Plus, Check, Whatsapp, ArrowRight, X, ChevronDown, Search, ChevronLeft, ChevronRight, Cart, Minus, Tag
 } from '../ui/Icons';
-import { Reveal, Stars, BadgeChip } from '../ui/index';
+import { Reveal, Stars, BadgeChip, ProductGridSkeleton, ProductCardSkeleton } from '../ui/index';
 import { ProductReviews } from './ProductReviews';
 import { SwipeCarousel } from './SwipeCarousel';
 
@@ -187,7 +187,7 @@ export const ProductCard = ({ p }) => {
 };
 
 export const Featured = () => {
-  const { products } = useProducts();
+  const { products, productsLoaded } = useProducts();
 
   const isShoppable = (p) => {
     if (!p) return false;
@@ -218,9 +218,11 @@ export const Featured = () => {
   const fallback = shoppable.filter((p) => !ordered.includes(p));
   let best = [...ordered, ...fallback].slice(0, 4);
 
-  if (best.length === 0) return null;
+  // Hide section only after fetch finished with no products. While loading,
+  // keep the section visible and show skeleton cards instead of a blank gap.
+  if (productsLoaded && best.length === 0) return null;
 
-  const goShop = (e) => { 
+  const goShop = (e) => {
     e.preventDefault(); 
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('ab:go-page', { detail: 'shop' }));
@@ -235,15 +237,19 @@ export const Featured = () => {
           <Reveal><span className="featured__label"><Sparkles size={14} /> Customer favourites</span></Reveal>
           <Reveal delay={60}><h2 className="featured__title">Bestsellers</h2></Reveal>
         </div>
-        <SwipeCarousel
-          className="featured__carousel swipe-carousel--products"
-          label="Best seller products"
-          previousLabel="Previous products"
-          nextLabel="Next products"
-          hint="Swipe to explore more"
-        >
-          {best.map((p, i) => <Reveal key={p.id} delay={(i % 4) * 70}><ProductCard p={p} /></Reveal>)}
-        </SwipeCarousel>
+        {!productsLoaded ? (
+          <ProductGridSkeleton count={4} variant="carousel" />
+        ) : (
+          <SwipeCarousel
+            className="featured__carousel swipe-carousel--products"
+            label="Best seller products"
+            previousLabel="Previous products"
+            nextLabel="Next products"
+            hint="Swipe to explore more"
+          >
+            {best.map((p, i) => <Reveal key={p.id} delay={(i % 4) * 70}><ProductCard p={p} /></Reveal>)}
+          </SwipeCarousel>
+        )}
         <div className="featured__footer">
           <button onClick={goShop} className="featured__btn-all">View All Products</button>
         </div>
@@ -303,7 +309,7 @@ const SORTS = [
 ];
 
 export const Shop = ({ activeCat, setActiveCat, query, setQuery, carousel = false }) => {
-  const { products, categories = DEFAULT_CATEGORIES } = useProducts();
+  const { products, productsLoaded, categories = DEFAULT_CATEGORIES } = useProducts();
   const [sort, setSort] = useState("featured");
   const [visibleCount, setVisibleCount] = useState(8);
   const tabs = [{ id: "all", short: "All Products" }, ...categories];
@@ -355,7 +361,9 @@ export const Shop = ({ activeCat, setActiveCat, query, setQuery, carousel = fals
           </div>
         </div>
 
-        {list.length === 0 ? (
+        {!productsLoaded ? (
+          <ProductGridSkeleton count={carousel ? 4 : 8} variant={carousel ? "carousel" : "grid"} />
+        ) : list.length === 0 ? (
           <div className="shop-page__empty">
             <span className="shop-page__empty-icon"><Search size={28} /></span>
             <p className="shop-page__empty-title">No products found</p>

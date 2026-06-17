@@ -5,7 +5,7 @@ import { useCart, useProducts, DEFAULT_CATEGORIES, FREE_SHIP, money, getPrimaryI
 import { 
   Sparkles, ArrowRight, Car, Shield, Plus, Leaf, Truck, Award, Tag 
 } from '../ui/Icons';
-import { Reveal, Stars } from '../ui/index';
+import { Reveal, Stars, SkeletonLine } from '../ui/index';
 import * as Icons from '../ui/Icons';
 
 
@@ -17,10 +17,12 @@ function CatIcon({ name, size }) {
 
 export const Hero = ({ onShopCat }) => {
   const { add } = useCart();
-  const { products } = useProducts();
-  
+  const { products, productsLoaded } = useProducts();
+
   const apc = products.find((p) => p.id === "all-purpose-cleaner") || products.find((p) => p.cat === "household") || products[0];
   const san = products.find((p) => p.id === "hand-surface-sanitiser") || products.find((p) => p.cat === "sanitiser") || products[1] || products[0];
+  const showShowcase = productsLoaded && apc && san;
+  const showShowcaseSkeleton = !productsLoaded;
 
   return (
     <section className="hero">
@@ -77,7 +79,15 @@ export const Hero = ({ onShopCat }) => {
         </div>
 
         {/* Product showcase */}
-        {apc && san && (
+        {showShowcaseSkeleton && (
+          <div className="relative" aria-hidden="true">
+            <div className="ab-skel-hero-showcase">
+              <div className="ab-skeleton ab-skel-hero-showcase__card" />
+              <div className="ab-skeleton ab-skel-hero-showcase__card" />
+            </div>
+          </div>
+        )}
+        {showShowcase && (
           <Reveal delay={120} className="relative">
             <div className="hero-showcase">
               <div className="hero-showcase__bg-blur" />
@@ -140,7 +150,7 @@ export const TrustStrip = () => (
 );
 
 export const CategoryShowcase = ({ onShopCat }) => {
-  const { products, categories = DEFAULT_CATEGORIES } = useProducts();
+  const { products, productsLoaded, categories = DEFAULT_CATEGORIES } = useProducts();
 
   return (
     <section className="category-showcase">
@@ -163,7 +173,14 @@ export const CategoryShowcase = ({ onShopCat }) => {
                 <h3 className="category-showcase__card-title">{c.name}</h3>
                 <p className="category-showcase__card-desc">{c.blurb}</p>
                 <span className="category-showcase__card-link">
-                  Shop {n} products <ArrowRight size={17} />
+                  {productsLoaded ? (
+                    <>Shop {n} products <ArrowRight size={17} /></>
+                  ) : (
+                    <>
+                      <SkeletonLine width={90} height={12} style={{ display: 'inline-block', verticalAlign: 'middle' }} />
+                      <ArrowRight size={17} />
+                    </>
+                  )}
                 </span>
               </button>
             </Reveal>

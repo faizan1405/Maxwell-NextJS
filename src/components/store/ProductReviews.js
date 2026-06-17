@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCustomer } from '../../lib/storeContext';
 import { Star, CheckCircle, Pencil, User } from '../ui/Icons';
-import { Stars } from '../ui/index';
+import { Stars, ReviewCardSkeleton, SkeletonLine } from '../ui/index';
 
 function StarPicker({ value, onChange, size = 28 }) {
   const [hover, setHover] = useState(0);
@@ -170,9 +170,25 @@ export function ProductReviews({ productId }) {
 
   if (!productId) return null;
 
+  const isLoading = reviews === null;
+
   return (
     <div className="product-reviews">
       {/* Summary */}
+      {isLoading && (
+        <div className="product-reviews__summary" aria-hidden="true">
+          <div className="product-reviews__score-wrap" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <SkeletonLine width={60} height={26} />
+            <SkeletonLine width={110} height={14} />
+            <SkeletonLine width={80} height={12} />
+          </div>
+          <div className="product-reviews__bars" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[0, 1, 2, 3, 4].map(i => (
+              <SkeletonLine key={i} width="100%" height={10} />
+            ))}
+          </div>
+        </div>
+      )}
       {reviews?.length > 0 && (
         <div className="product-reviews__summary">
           <div className="product-reviews__score-wrap">
@@ -238,9 +254,9 @@ export function ProductReviews({ productId }) {
       )}
 
       {/* Review list */}
-      {reviews === null && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '24px 0' }}>
-          <span style={{ width: 24, height: 24, borderRadius: '50%', border: '2px solid rgba(38,76,255,.2)', borderTopColor: '#264CFF', animation: 'spin .7s linear infinite', display: 'inline-block' }} />
+      {isLoading && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }} role="status" aria-label="Loading reviews">
+          {[0, 1].map(i => <ReviewCardSkeleton key={i} />)}
         </div>
       )}
 

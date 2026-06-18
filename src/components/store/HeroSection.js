@@ -40,13 +40,13 @@ export const Hero = ({ onShopCat }) => {
           <Reveal delay={70}>
             <h1 className="hero__title">
               Cleaning Products for<br />
-              <span className="hero__title-accent">Businesses, Facilities</span><br />
+              <span className="hero__title-accent">Homes, Vehicles</span><br />
               &amp; Everyday Use
             </h1>
           </Reveal>
           <Reveal delay={140}>
             <p className="hero__desc">
-              Amahle Blue supplies laundry, household, car care, sanitiser, and industrial cleaning products for homes, businesses, car washes, laundries, offices, and professional cleaning teams across South Africa.
+              Amahle Blue supplies laundry, household, car care, and sanitiser products for homes and vehicles across South Africa.
             </p>
           </Reveal>
           <Reveal delay={210}>
@@ -60,7 +60,7 @@ export const Hero = ({ onShopCat }) => {
                 Shop Products <ArrowRight size={18} className="hero__btn-arrow" />
               </a>
               <a href="https://wa.me/27671014345" target="_blank" rel="noopener noreferrer" className="hero__btn-secondary" style={{ textDecoration: 'none' }}>
-                <Icons.Whatsapp size={18} /> Request Bulk Quote
+                <Icons.Whatsapp size={18} /> Chat on WhatsApp
               </a>
             </div>
           </Reveal>
@@ -128,9 +128,9 @@ export const Hero = ({ onShopCat }) => {
 
 const TRUST = [
   { icon: Award, title: "Locally Manufactured", sub: "Made in Gauteng, SA" },
-  { icon: Tag, title: "Bulk & Business Supply", sub: "Wholesale volumes welcome" },
-  { icon: Icons.Whatsapp, title: "Quote Support", sub: "Quick help on WhatsApp" },
-  { icon: Shield, title: "Professional-Grade", sub: "Tested & trusted solutions" },
+  { icon: Truck, title: "Nationwide Delivery", sub: "Fast & reliable shipping" },
+  { icon: Icons.Whatsapp, title: "WhatsApp Support", sub: "Quick help on WhatsApp" },
+  { icon: Shield, title: "Secure Checkout", sub: "100% safe & encrypted" },
 ];
 
 export const TrustStrip = () => (
@@ -157,7 +157,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
       <div className="category-showcase__header">
         <Reveal><span className="category-showcase__label">Shop by category</span></Reveal>
         <Reveal delay={60}><h2 className="category-showcase__title">Find your clean</h2></Reveal>
-        <Reveal delay={110}><p className="category-showcase__desc">Professional-grade solutions — built for homes, vehicles, facilities, and businesses across South Africa.</p></Reveal>
+        <Reveal delay={110}><p className="category-showcase__desc">Professional-grade solutions — built for homes and vehicles across South Africa.</p></Reveal>
       </div>
 
       <div className="category-showcase__grid">

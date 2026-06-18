@@ -25,7 +25,7 @@ export const WhyUs = () => (
     <div>
       <Reveal><span className="why-us__subtitle">Why Amahle Blue</span></Reveal>
       <Reveal delay={60}><h2 className="why-us__title">Premium clean, made right here at home.</h2></Reveal>
-      <Reveal delay={120}><p className="why-us__desc">Amahle Blue was founded to give South African businesses, facilities, and homes cleaning products they can genuinely trust — powerful, consistent, and fairly priced. From industrial degreasers to everyday household solutions, every batch is built for professional results.</p></Reveal>
+      <Reveal delay={120}><p className="why-us__desc">Amahle Blue was founded to give South African homes and businesses cleaning products they can genuinely trust — powerful, consistent, and fairly priced. From industrial degreasers to everyday household solutions, every batch is built for professional results.</p></Reveal>
       <div className="why-us__grid">
         {WHY.map((w, i) => (
           <Reveal key={w.title} delay={i * 70}>

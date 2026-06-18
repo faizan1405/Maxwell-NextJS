@@ -78,7 +78,7 @@ function CategoryContent({ category }) {
             </Reveal>
             <Reveal delay={150}>
               <a 
-                href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I would like to request a quote for your ${category.name}. Please share more details.`)}`}
+                href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I am interested in your ${category.name}. Please share more details.`)}`}
                 target="_blank" 
                 rel="noopener noreferrer" 
                 style={{
@@ -89,7 +89,7 @@ function CategoryContent({ category }) {
                   boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                 }}
               >
-                Request Quote
+                Chat on WhatsApp
               </a>
             </Reveal>
           </div>

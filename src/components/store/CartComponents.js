@@ -58,14 +58,14 @@ export function CartPage({ onGoHome, onCheckout }) {
         <div className="shop-page__empty-icon" style={{ marginBottom: '1.25rem' }}>
           <Bag size={36} />
         </div>
-        <h2 className="checkout-empty__title">Your cart is empty</h2>
-        <p className="checkout-empty__desc">Browse our cleaning, car-care and sanitiser range.</p>
+        <h2 className="checkout-empty__title">Your order request is empty</h2>
+        <p className="checkout-empty__desc">Add products to build your request, then submit it to our sales team for bulk pricing — or enquire on WhatsApp.</p>
         <button
           type="button"
           onClick={onGoHome}
           className="checkout-empty__btn"
         >
-          Start shopping
+          View Product Range
         </button>
       </div>
     );
@@ -76,15 +76,16 @@ export function CartPage({ onGoHome, onCheckout }) {
       <div className="cart-page__header">
         <div className="cart-page__header-inner">
           <button onClick={onGoHome} className="cart-page__back-link">
-            <ArrowLeft size={16} /> Continue Shopping
+            <ArrowLeft size={16} /> Continue browsing
           </button>
           <div className="cart-page__title-row">
             <CartIcon size={22} className="cart-page__title-icon" />
-            <h1 className="cart-page__title">Your Cart</h1>
+            <h1 className="cart-page__title">Your Order Request</h1>
             <span className="cart-page__count">
-              {count} item{count !== 1 ? 's' : ''}
+              {count} product{count !== 1 ? 's' : ''}
             </span>
           </div>
+          <p className="cart-page__subtitle">Review your products below, then submit your request for a quote. Final bulk pricing is confirmed by our sales team.</p>
         </div>
       </div>
 
@@ -138,17 +139,17 @@ export function CartPage({ onGoHome, onCheckout }) {
 
             <div className="cart-page__footer">
               <button onClick={onGoHome} className="cart-page__back-link" style={{ marginBottom: 0 }}>
-                <ArrowLeft size={15} /> Continue Shopping
+                <ArrowLeft size={15} /> Continue browsing
               </button>
               <button onClick={clear} className="cart-page__clear-btn">
-                Clear cart
+                Clear request
               </button>
             </div>
           </div>
 
           {/* Summary sidebar */}
           <div className="order-summary">
-            <h3 className="order-summary__title">Order Summary</h3>
+            <h3 className="order-summary__title">Request Summary</h3>
             <div className="order-summary__list order-summary__list--scrollable">
               {detailed.map(({ product, qty, variation, price, size }) => (
                 <div key={`${product.id}-${variation || ''}`} className="order-summary__row">
@@ -167,15 +168,24 @@ export function CartPage({ onGoHome, onCheckout }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', fontWeight: 800, color: '#111111', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
                 <span>Estimated Total</span><span style={{ color: '#264CFF' }}>{formatZar(total)}</span>
               </div>
+              <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Indicative only — bulk &amp; wholesale pricing confirmed by our sales team on your quote.</p>
               {remaining > 0 && (
-                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Add {formatZar(remaining)} more for free delivery</p>
+                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Add {formatZar(remaining)} more for free delivery in Gauteng</p>
               )}
             </div>
             <button onClick={onCheckout} className="order-summary__btn">
-              <Lock size={16} /> Proceed to Checkout
+              <Lock size={16} /> Continue to Enquiry
             </button>
+            <a
+              href={`${'https://wa.me/27671014345'}?text=${encodeURIComponent('Hello Amahle Blue Sales Team, I would like a quote for the products in my order request.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="order-summary__wa-btn"
+            >
+              Enquire on WhatsApp instead
+            </a>
             <p className="order-summary__secure">
-              <Shield size={13} /> Secure checkout · SSL encrypted
+              <Shield size={13} /> Secure enquiry · SSL encrypted
             </p>
           </div>
         </div>
@@ -342,8 +352,8 @@ export function CheckoutPage({ onBack, onSuccess }) {
       try { data = text ? JSON.parse(text) : {}; }
       catch { data = { error: `Unexpected response from server (status ${res.status}).` }; }
 
-      if (!res.ok) { setError(data.error || 'Failed to place order. Please try again.'); return; }
-      if (!data || !data.id) { setError('Order response was incomplete. Please refresh and check My Orders before retrying.'); return; }
+      if (!res.ok) { setError(data.error || 'Failed to submit your enquiry. Please try again.'); return; }
+      if (!data || !data.id) { setError('Your enquiry response was incomplete. Please refresh and check My Enquiries before retrying.'); return; }
 
       clear();
       try { localStorage.removeItem('ab_products'); } catch { }
@@ -360,7 +370,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
     return (
       <div className="checkout-empty">
         <p>
-          Your cart is empty.{' '}
+          Your order request is empty.{' '}
           <button onClick={onBack}>Go back</button>
         </p>
       </div>
@@ -372,12 +382,13 @@ export function CheckoutPage({ onBack, onSuccess }) {
       <div className="cart-page__header">
         <div className="cart-page__header-inner">
           <button onClick={onBack} className="cart-page__back-link">
-            <ArrowLeft size={16} /> Back to cart
+            <ArrowLeft size={16} /> Back to order request
           </button>
           <div className="cart-page__title-row">
             <Lock size={20} className="cart-page__title-icon" />
-            <h1 className="cart-page__title">Checkout</h1>
+            <h1 className="cart-page__title">Submit Your Enquiry</h1>
           </div>
+          <p className="cart-page__subtitle">Send us your details and we'll confirm bulk pricing, stock and delivery. No payment is taken now.</p>
         </div>
       </div>
 
@@ -389,17 +400,17 @@ export function CheckoutPage({ onBack, onSuccess }) {
             {!isLoggedIn && (
               <div className="checkout-section checkout-auth-prompt">
                 <div>
-                  <p className="title">Sign in for faster checkout</p>
-                  <p className="sub">Save addresses, track orders, and speed up future checkouts</p>
+                  <p className="title">Sign in for faster enquiries</p>
+                  <p className="sub">Save site addresses, track your enquiries, and speed up future quote requests</p>
                 </div>
                 <button type="button" onClick={openAuth}>Sign in</button>
               </div>
             )}
 
-            {/* Customer details */}
+            {/* Business & contact details */}
             <div className="checkout-section">
               <h3 className="checkout-section__title">
-                <User size={17} /> Customer Details
+                <User size={17} /> Business &amp; Contact Details
               </h3>
               <div className="checkout-section__grid">
                 <CkField label="Full name *" value={form.name} onChange={f('name')} placeholder="Your full name" required style={{ gridColumn: '1 / -1' }} />
@@ -444,7 +455,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
             {/* Delivery address */}
             <div className="checkout-section">
               <h3 className="checkout-section__title">
-                <MapPin size={17} /> Delivery Address
+                <MapPin size={17} /> Delivery / Site Address
               </h3>
               <div className="checkout-section__grid">
                 <CkField label="Street address *" value={form.addrLine} onChange={f('addrLine')} placeholder="12 Main Street, Unit 4" required style={{ gridColumn: '1 / -1' }} />
@@ -468,11 +479,11 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
 
 
-            {/* Order notes */}
+            {/* Enquiry notes */}
             <div className="checkout-section">
-              <h3 className="checkout-section__title">Order Notes (optional)</h3>
+              <h3 className="checkout-section__title">Enquiry Notes (optional)</h3>
               <textarea value={form.notes} onChange={f('notes')} rows={3}
-                placeholder="Special instructions, delivery notes, or any other requests…"
+                placeholder="Company name, required quantities/pack sizes, delivery site notes, or any other requirements…"
                 className="checkout-textarea" />
             </div>
 
@@ -486,7 +497,7 @@ export function CheckoutPage({ onBack, onSuccess }) {
 
           {/* Summary sidebar */}
           <div className="order-summary">
-            <h3 className="order-summary__title">Order Summary</h3>
+            <h3 className="order-summary__title">Request Summary</h3>
             <div className="order-summary__list order-summary__list--scrollable">
               {detailed.map(({ product, qty, variation, price, size }) => (
                 <div key={`${product.id}-${variation || ''}`} className="order-summary__item">
@@ -520,15 +531,16 @@ export function CheckoutPage({ onBack, onSuccess }) {
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 800, color: '#111111', borderTop: '1px solid #f1f5f9', paddingTop: '0.5rem', marginTop: '0.25rem' }}>
-                <span>Total</span><span style={{ color: '#264CFF' }}>{formatZar(total)}</span>
+                <span>Estimated Total</span><span style={{ color: '#264CFF' }}>{formatZar(total)}</span>
               </div>
+              <p style={{ fontSize: '11px', color: '#64748b', margin: '0.15rem 0 0' }}>Indicative only — our sales team confirms bulk &amp; wholesale pricing on your quote.</p>
             </div>
 
             <button type="submit" form="ck-form" disabled={placing || mobileMissing} className="order-summary__btn">
-              {placing ? <><Spinner size={18} /> Placing order…</> : <><Lock size={16} /> Place Order</>}
+              {placing ? <><Spinner size={18} /> Submitting enquiry…</> : <><Lock size={16} /> Submit Enquiry</>}
             </button>
             <p className="order-summary__secure">
-              <Shield size={13} /> Secure checkout · SSL encrypted
+              <Shield size={13} /> Secure enquiry · SSL encrypted
             </p>
           </div>
         </div>
@@ -560,8 +572,8 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
   if (!order) {
     return (
       <div className="order-confirmed__error">
-        <p>No recent order found.</p>
-        <button onClick={onGoHome}>Return Home</button>
+        <p>No recent enquiry found.</p>
+        <button onClick={onGoHome}>Back to Product Range</button>
       </div>
     );
   }
@@ -633,9 +645,9 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             <div className="order-confirmed__icon">
               <CheckCircle size={32} />
             </div>
-            <h1 className="order-confirmed__title">Order Confirmed!</h1>
-            <p className="order-confirmed__sub">Thank you for shopping with Amahle Blue.</p>
-            <span className="order-confirmed__number">Order {order.orderNumber}</span>
+            <h1 className="order-confirmed__title">Enquiry Received!</h1>
+            <p className="order-confirmed__sub">Thank you for your enquiry. Our sales team will be in touch to confirm bulk pricing, stock and delivery.</p>
+            <span className="order-confirmed__number">Reference {order.orderNumber}</span>
           </div>
 
           <div className="order-confirmed__body">
@@ -643,13 +655,13 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             {/* Useful Order Info Card */}
             <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '12px', padding: '1rem 1.25rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                <span style={{ color: '#64748b' }}>Order Date & Time</span>
+                <span style={{ color: '#64748b' }}>Enquiry Date & Time</span>
                 <span style={{ fontWeight: 600, color: '#111111' }}>
                   {order.createdAt ? new Date(order.createdAt).toLocaleString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', alignItems: 'center' }}>
-                <span style={{ color: '#64748b' }}>Order Status</span>
+                <span style={{ color: '#64748b' }}>Enquiry Status</span>
                 <span className="acc-badge acc-badge--blue" style={{ fontSize: '11px', textTransform: 'uppercase', fontWeight: 700, padding: '2px 8px', borderRadius: '4px' }}>
                   {order.orderStatus || order.status || 'Pending'}
                 </span>
@@ -658,7 +670,7 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
             {/* Detailed Order Summary Section */}
             <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
-              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#111111', margin: '0 0 1rem 0' }}>Order Summary</h3>
+              <h3 style={{ fontSize: '15px', fontWeight: 800, color: '#111111', margin: '0 0 1rem 0' }}>Products Requested</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {(order.items || []).map((item, idx) => (
                   <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -710,10 +722,10 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
 
             <div className="order-confirmed__actions" style={{ borderTop: '1px solid #f1f5f9', paddingTop: '1.5rem' }}>
               <button onClick={onGoOrders} className="order-confirmed__btn order-confirmed__btn--secondary">
-                View My Orders
+                View My Enquiries
               </button>
               <button onClick={onGoHome} className="order-confirmed__btn order-confirmed__btn--primary">
-                <Home size={16} /> Return to Store
+                <Home size={16} /> Back to Product Range
               </button>
             </div>
 
@@ -721,10 +733,10 @@ export function OrderConfirmedPage({ order, onGoHome, onGoOrders }) {
             <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '10px', padding: '0.875rem 1rem', marginTop: '0.25rem' }}>
               <p style={{ fontSize: '13px', color: '#15803d', margin: 0, lineHeight: 1.6 }}>
                 {isEFT && !isPaid
-                  ? 'Your order is reserved. Once your EFT payment is received and verified by our team (usually within 1–2 business days), your order will be confirmed and dispatched.'
+                  ? 'Your enquiry has been received. Our sales team will confirm bulk pricing, stock and delivery — then send payment details to finalise your order (usually within 1–2 business days).'
                   : isCOD
-                  ? 'Your order has been placed. Our team will contact you to confirm delivery details. Payment is collected at the time of delivery.'
-                  : 'Your order has been placed. Our team will be in touch with updates shortly.'}
+                  ? 'Your enquiry has been received. Our team will contact you to confirm pricing and delivery details for your business.'
+                  : 'Your enquiry has been received. Our sales team will be in touch shortly with pricing and next steps.'}
               </p>
             </div>
           </div>

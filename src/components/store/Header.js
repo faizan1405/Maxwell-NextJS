@@ -40,9 +40,9 @@ export const Wordmark = ({ className = "", light = false, compact = false, onCli
 };
 
 const ANNOUNCEMENTS = [
-  { icon: Truck, text: `Free delivery in Gauteng on orders over ${money(FREE_SHIP)}` },
-  { icon: Award, text: "Proudly manufactured in South Africa 🇿🇦" },
-  { icon: Tag, text: "Bulk & trade pricing available — ask about wholesale" },
+  { icon: Tag, text: "Bulk & wholesale pricing — request a quote for your business" },
+  { icon: Truck, text: "Reliable nationwide supply for businesses across South Africa" },
+  { icon: Award, text: "Trusted South African cleaning products supplier since 2019" },
 ];
 
 export const AnnouncementBar = () => {
@@ -76,9 +76,9 @@ export const AnnouncementBar = () => {
           <span key={i} className="announcement-bar__center-text">{A.text}</span>
         </div>
         <div className="announcement-bar__right">
-          <button onClick={goOrders} className="announcement-bar__link">My Orders</button>
+          <button onClick={goOrders} className="announcement-bar__link">My Enquiries</button>
           <span className="announcement-bar__divider">|</span>
-          <a href="/#contact" className="announcement-bar__link">Help</a>
+          <a href="/#contact" className="announcement-bar__link">Contact Sales</a>
         </div>
       </div>
     </div>
@@ -115,7 +115,7 @@ export function AccountMenu({ customer, onAccount, onOrders, onLogout }) {
             <User size={15} className="account-menu__item-icon" /> My Profile
           </button>
           <button onClick={() => { setOpen(false); onOrders(); }} className="account-menu__item">
-            <Package size={15} className="account-menu__item-icon" /> My Orders
+            <Package size={15} className="account-menu__item-icon" /> My Enquiries
           </button>
           <div className="account-menu__divider-line">
             <button onClick={() => { setOpen(false); onLogout(); }} className="account-menu__item account-menu__item--danger">
@@ -270,7 +270,7 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
               </button>
             )}
             
-            <button onClick={() => { setActiveSection(""); setPage('cart'); }} className={`header__cart-btn ${page === 'cart' ? 'header__cart-btn--active' : ''}`} aria-label="Open cart" aria-current={page === 'cart' ? 'page' : undefined}>
+            <button onClick={() => { setActiveSection(""); setPage('cart'); }} className={`header__cart-btn ${page === 'cart' ? 'header__cart-btn--active' : ''}`} aria-label="Open order request" aria-current={page === 'cart' ? 'page' : undefined}>
               <Cart size={20} />
               {count > 0 && (
                 <span key={count} className="header__cart-count">
@@ -293,10 +293,10 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
             );
           })}
           <a href={waQuoteLink} target="_blank" rel="noopener noreferrer" className="header__quote-btn">
-            Get Quote
+            Request a Quote
           </a>
           <span className="header__nav-info">
-            <Truck size={16} /> Fast nationwide delivery
+            <Truck size={16} /> Bulk supply · nationwide delivery
           </span>
         </nav>
       </header>
@@ -333,7 +333,7 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
               })}
               
               <a href={waQuoteLink} target="_blank" rel="noopener noreferrer" className="mobile-menu-quote-btn">
-                Get Quote
+                Request a Quote
               </a>
 
               <div className="mobile-menu-auth">
@@ -343,7 +343,7 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
                       <User size={16} /> My Account
                     </button>
                     <button onClick={goOrders} className="mobile-menu-auth-btn">
-                      <Package size={16} /> My Orders
+                      <Package size={16} /> My Enquiries
                     </button>
                     <button onClick={() => { logout(); setMenu(false); }} className="mobile-menu-auth-btn mobile-menu-auth-btn--danger">
                       <LogOut size={16} /> Sign out

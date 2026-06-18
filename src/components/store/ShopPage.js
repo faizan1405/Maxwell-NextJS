@@ -189,7 +189,7 @@ export const ProductCard = ({ p }) => {
                   added      ? 'product-card__btn--added' :
                                'product-card__btn--add'
                 }`}>
-                {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Cart</>}
+                {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Order</>}
               </button>
               <a
                 href={buildWaUrl(p, { settings })}
@@ -771,7 +771,7 @@ export const QuickView = () => {
                           onClick={() => { if (!activeOutOfStock) { add(product, qty, selectedVarName); setProduct(null); setTimeout(() => setOpen(true), 150); } }}
                           className={`quickview-add-btn ${activeOutOfStock ? 'quickview-add-btn--oos' : 'quickview-add-btn--active'}`}
                         >
-                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Cart</>}
+                          {activeOutOfStock ? 'Out of Stock' : <><Cart size={18} /> Add to Order</>}
                         </button>
                       )}
                       {waEnabled && (

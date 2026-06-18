@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Truck, Lock, Award, Whatsapp, Facebook, Instagram, MapPin, Phone, Mail } from '../ui/Icons';
+import { Truck, Lock, Award, Whatsapp, Facebook, Instagram, MapPin, Phone, Mail, Tag } from '../ui/Icons';
 import { BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money, useProducts } from '../../lib/storeContext';
 import { FadeReveal } from '../ui/index';
 import { Wordmark } from './Header';
@@ -32,10 +32,10 @@ export const Footer = ({ onShopCat }) => {
       {/* mini trust row */}
       <div className="footer-trust">
         {[
-          { icon: Truck, t: "Nationwide delivery", s: `Free over ${money(FREE_SHIP)} in Gauteng` },
-          { icon: Lock, t: "Secure checkout", s: "Your details stay protected" },
-          { icon: Award, t: "Quality guaranteed", s: "Consistent, tested batches" },
-          { icon: Whatsapp, t: "Talk to us", s: "Quick help on WhatsApp" },
+          { icon: Tag, t: "Bulk supply available", s: "5L, 20L & wholesale volumes" },
+          { icon: Truck, t: "Reliable nationwide delivery", s: `Free over ${money(FREE_SHIP)} in Gauteng` },
+          { icon: Award, t: "Commercial-grade quality", s: "Tested, consistent batches" },
+          { icon: Whatsapp, t: "WhatsApp sales support", s: "Fast quotes & enquiries" },
         ].map((x, i) => (
           <FadeReveal key={x.t} delay={i * 60} className="footer-trust__item">
             <span className="footer-trust__icon"><x.icon size={20} /></span>
@@ -50,7 +50,7 @@ export const Footer = ({ onShopCat }) => {
       <div className="footer-main">
         <div className="footer-about">
           <Wordmark light />
-          <p className="footer-about__desc">Premium, locally-manufactured cleaning, car-care and sanitising solutions. Powerful results with a fresh, clean finish — delivered across South Africa.</p>
+          <p className="footer-about__desc">A South African B2B supplier of commercial &amp; industrial cleaning products — bulk laundry, household, car-care and sanitiser supplies for offices, schools, factories, hospitality and cleaning contractors. Quote-based and wholesale supply, delivered nationwide.</p>
           <div className="footer-socials">
             <a href={BRAND?.facebook} target="_blank" rel="noopener noreferrer" className="footer-socials__link" aria-label="Facebook"><Facebook size={18} /></a>
             <a href={BRAND?.instagram} target="_blank" rel="noopener noreferrer" className="footer-socials__link" aria-label="Instagram"><Instagram size={18} /></a>
@@ -59,7 +59,7 @@ export const Footer = ({ onShopCat }) => {
         </div>
 
         <div className="footer-links">
-          <h4 className="footer-links__title">Shop</h4>
+          <h4 className="footer-links__title">Product Range</h4>
           <ul className="footer-links__list">
             {shopCategories.map(c => (
               <li key={c.id}>
@@ -154,10 +154,10 @@ export const Footer = ({ onShopCat }) => {
 };
 
 export const WhatsappFab = () => (
-  <a href={`${BRAND?.wa}?text=${encodeURIComponent("Hi Amahle Blue, I need some help.")}`} target="_blank" rel="noopener noreferrer"
-    className="wa-fab group" aria-label="Chat on WhatsApp">
+  <a href={`${BRAND?.wa}?text=${encodeURIComponent("Hello Amahle Blue Sales Team, I'd like to request a quote for bulk cleaning products.")}`} target="_blank" rel="noopener noreferrer"
+    className="wa-fab group" aria-label="WhatsApp our sales team">
     <Whatsapp size={26} />
-    <span className="wa-fab__text">Need help?</span>
+    <span className="wa-fab__text">WhatsApp Sales</span>
   </a>
 );
 

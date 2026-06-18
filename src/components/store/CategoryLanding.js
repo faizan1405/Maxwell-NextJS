@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ProductsProvider, CustomerProvider, CartProvider, useProducts } from '../../lib/storeContext';
 import { Header } from './Header';
 import { Footer, WhatsappFab } from './Footer';
@@ -11,6 +11,7 @@ import { Reveal, ProductGridSkeleton } from '../ui/index';
 function CategoryContent({ category }) {
   const { products, productsLoaded } = useProducts();
   const categoryProducts = products.filter(p => p.cat === category.id);
+  const [imgError, setImgError] = useState(false);
 
   // Since we are outside the main SPA (src/app/page.js), any navigation triggered 
   // by the Header or Footer via `ab:go-page` needs to be manually routed via a hard load.
@@ -40,44 +41,58 @@ function CategoryContent({ category }) {
         <div 
           className="category-landing__hero" 
           style={{
-            background: category.bannerImage 
-              ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.6)), url(${category.bannerImage}) center/cover no-repeat`
-              : `linear-gradient(135deg, ${category.accent} 0%, #111 100%)`,
+            background: `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`,
             padding: '8rem 2rem 5rem',
             color: 'white',
             textAlign: 'center',
             borderBottomLeftRadius: '32px',
             borderBottomRightRadius: '32px',
             marginBottom: '4rem',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.08)'
+            boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
+            position: 'relative',
+            overflow: 'hidden'
           }}
         >
-          <Reveal>
-            <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
-              {category.name}
-            </h1>
-          </Reveal>
-          <Reveal delay={100}>
-            <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6, marginBottom: '2rem' }}>
-              {category.description || category.blurb || `Explore our premium range of ${category.name} products.`}
-            </p>
-          </Reveal>
-          <Reveal delay={150}>
-            <a 
-              href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I would like to request a quote for your ${category.name}. Please share more details.`)}`}
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                background: 'white', color: category.accent || '#111',
-                padding: '0.8rem 1.5rem', borderRadius: '100px',
-                fontWeight: '600', fontSize: '1rem', textDecoration: 'none',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-              }}
-            >
-              Request Quote
-            </a>
-          </Reveal>
+          {category.bannerImage && !imgError && (
+            <>
+              <img 
+                src={category.bannerImage} 
+                alt={`${category.name} banner`} 
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                onError={() => setImgError(true)}
+              />
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))', zIndex: 1 }} />
+            </>
+          )}
+          
+          <div style={{ position: 'relative', zIndex: 2 }}>
+            <Reveal>
+              <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
+                {category.name}
+              </h1>
+            </Reveal>
+            <Reveal delay={100}>
+              <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6, marginBottom: '2rem' }}>
+                {category.description || category.blurb || `Explore our premium range of ${category.name} products.`}
+              </p>
+            </Reveal>
+            <Reveal delay={150}>
+              <a 
+                href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I would like to request a quote for your ${category.name}. Please share more details.`)}`}
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                  background: 'white', color: category.accent || '#111',
+                  padding: '0.8rem 1.5rem', borderRadius: '100px',
+                  fontWeight: '600', fontSize: '1rem', textDecoration: 'none',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+                }}
+              >
+                Request Quote
+              </a>
+            </Reveal>
+          </div>
         </div>
 
         {/* Product Grid */}

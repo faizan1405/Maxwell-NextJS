@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useAdmin } from './AdminProvider';
 import * as Icon from '../ui/Icons';
-import { Badge, Btn, Input, Modal, AdminToast, ConfirmDialog } from '../ui/index';
+import { Badge, Btn, Input, Modal, AdminToast, ConfirmDialog, Spinner } from '../ui/index';
 
 export default function CategoriesPage({ setUnsavedChanges }) {
   const { categories, products, addCategory, updateCategory, deleteCategory, updateProduct } = useAdmin();
@@ -13,6 +13,9 @@ export default function CategoriesPage({ setUnsavedChanges }) {
   const [modalMode, setModalMode] = useState(null); // 'add' | 'edit' | 'delete'
   const [activeItem, setActiveItem] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingBanner, setIsUploadingBanner] = useState(false);
+  const [bannerUploadError, setBannerUploadError] = useState('');
+  const bannerFileRef = useRef(null);
   const [toast, setToast] = useState({ visible: false, msg: '', type: 'success' });
   
   // Reassignment for deletion
@@ -55,13 +58,54 @@ export default function CategoriesPage({ setUnsavedChanges }) {
     const item = { name: '', id: '', short: '', icon: 'Box', image: '', bannerImage: '', blurb: '', description: '', seoTitle: '', seoDescription: '', accent: '#111111', status: 'active', displayOrder: 99 };
     setActiveItem(item);
     setOriginalItemSnapshot(item);
+    setBannerUploadError('');
     setModalMode('add');
   }
 
   function handleEdit(c) {
     setActiveItem({ ...c });
     setOriginalItemSnapshot({ ...c });
+    setBannerUploadError('');
     setModalMode('edit');
+  }
+
+  async function handleBannerUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    e.target.value = ''; // reset
+
+    const isImg = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp' || file.type === 'image/avif';
+    if (!isImg) {
+      setBannerUploadError('Unsupported file type. Please use JPG, PNG, or WEBP.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setBannerUploadError('Image is too large. Please upload a compressed banner image.');
+      return;
+    }
+
+    setIsUploadingBanner(true);
+    setBannerUploadError('');
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': file.type,
+          'x-filename': file.name,
+        },
+        body: file,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Upload failed');
+      
+      setActiveItem(prev => ({ ...prev, bannerImage: data.url }));
+    } catch (err) {
+      setBannerUploadError(err.message || 'Upload failed');
+    } finally {
+      setIsUploadingBanner(false);
+    }
   }
 
   function handleDeleteReq(c) {
@@ -262,9 +306,34 @@ export default function CategoriesPage({ setUnsavedChanges }) {
               <Input label="Display Order" type="number" value={activeItem.displayOrder} onChange={e => setActiveItem({ ...activeItem, displayOrder: parseInt(e.target.value) || 0 })} />
             </div>
 
-            <div>
-              <label className="admin-cat-form__field-label">Banner Image URL</label>
-              <input value={activeItem.bannerImage || ''} onChange={e => setActiveItem({ ...activeItem, bannerImage: e.target.value })} placeholder="https://..." className="admin-cat-form__field-input" />
+            <div style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label className="admin-cat-form__field-label" style={{ margin: 0 }}>Banner Image URL</label>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {activeItem.bannerImage && (
+                    <Btn variant="ghost" size="sm" onClick={() => setActiveItem({ ...activeItem, bannerImage: '' })} disabled={isUploadingBanner}>
+                      Clear
+                    </Btn>
+                  )}
+                  <Btn type="button" size="sm" onClick={() => bannerFileRef.current?.click()} disabled={isUploadingBanner}>
+                    {isUploadingBanner ? <><Spinner size={14}/> Uploading...</> : 'Upload Banner Image'}
+                  </Btn>
+                  <input ref={bannerFileRef} type="file" accept=".jpg,.jpeg,.png,.webp,.avif" style={{ display: 'none' }} onChange={handleBannerUpload} />
+                </div>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.75rem' }}>
+                Use a direct image URL or upload a banner image. Webpage links will not display as images. Recommended size: 1920 × 600 px. Best format: WebP.
+              </p>
+              <input value={activeItem.bannerImage || ''} onChange={e => setActiveItem({ ...activeItem, bannerImage: e.target.value })} placeholder="https://..." className="admin-cat-form__field-input" disabled={isUploadingBanner} />
+              {bannerUploadError && <p style={{ color: '#dc2626', fontSize: '0.75rem', marginTop: '0.5rem' }}>{bannerUploadError}</p>}
+              {activeItem.bannerImage && (
+                <div style={{ marginTop: '0.75rem', borderRadius: '6px', overflow: 'hidden', height: '80px', background: '#e2e8f0', position: 'relative' }}>
+                  <img src={activeItem.bannerImage} alt="Banner Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }} />
+                  <div style={{ display: 'none', position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.875rem' }}>
+                    Invalid Image / Webpage URL
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -290,8 +359,8 @@ export default function CategoriesPage({ setUnsavedChanges }) {
             </div>
 
             <div className="admin-cat-form__footer">
-              <Btn type="button" variant="secondary" onClick={handleCloseCategoryModal} disabled={isSaving}>Cancel</Btn>
-              <Btn type="submit" disabled={isSaving}>{isSaving ? 'Saving...' : 'Save Category'}</Btn>
+              <Btn type="button" variant="secondary" onClick={handleCloseCategoryModal} disabled={isSaving || isUploadingBanner}>Cancel</Btn>
+              <Btn type="submit" disabled={isSaving || isUploadingBanner}>{isSaving ? 'Saving...' : 'Save Category'}</Btn>
             </div>
           </form>
         )}

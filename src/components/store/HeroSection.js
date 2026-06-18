@@ -1,12 +1,15 @@
 'use client';
 
 import React from 'react';
-import { useCart, useProducts, DEFAULT_CATEGORIES, FREE_SHIP, money, getPrimaryImg } from '../../lib/storeContext';
-import { 
-  Sparkles, ArrowRight, Car, Shield, Plus, Leaf, Truck, Award, Tag 
+import { useCart, useProducts, BRAND, DEFAULT_CATEGORIES, FREE_SHIP, money, getPrimaryImg } from '../../lib/storeContext';
+import {
+  Sparkles, ArrowRight, Car, Shield, Plus, Leaf, Truck, Award, Tag, CheckCircle
 } from '../ui/Icons';
 import { Reveal, Stars, SkeletonLine } from '../ui/index';
 import * as Icons from '../ui/Icons';
+
+const QUOTE_WA = `${BRAND.wa}?text=${encodeURIComponent("Hello Amahle Blue Sales Team, I would like to request a quote for bulk cleaning products. Please share pricing and availability.")}`;
+const SALES_WA = `${BRAND.wa}?text=${encodeURIComponent("Hello Amahle Blue Sales Team, I have a business enquiry about your cleaning product range.")}`;
 
 
 
@@ -16,7 +19,6 @@ function CatIcon({ name, size }) {
 }
 
 export const Hero = ({ onShopCat }) => {
-  const { add } = useCart();
   const { products, productsLoaded } = useProducts();
 
   const apc = products.find((p) => p.id === "all-purpose-cleaner") || products.find((p) => p.cat === "household") || products[0];
@@ -34,45 +36,51 @@ export const Hero = ({ onShopCat }) => {
         <div className="hero__content">
           <Reveal>
             <span className="hero__badge">
-              <Sparkles size={14} style={{ color: '#0ea5e9' }} /> Proudly made in South Africa
+              <Shield size={14} style={{ color: '#0ea5e9' }} /> South African B2B Cleaning Supplier
             </span>
           </Reveal>
           <Reveal delay={70}>
             <h1 className="hero__title">
-              Cleaning Products for<br />
-              <span className="hero__title-accent">Homes, Vehicles</span><br />
-              &amp; Everyday Use
+              Bulk Cleaning Products for<br />
+              <span className="hero__title-accent">South African</span><br />
+              Businesses
             </h1>
           </Reveal>
           <Reveal delay={140}>
             <p className="hero__desc">
-              Amahle Blue supplies laundry, household, car care, and sanitiser products for homes and vehicles across South Africa.
+              Amahle Blue supplies commercial &amp; industrial cleaning products in bulk to
+              offices, schools, factories, hospitality venues and cleaning contractors —
+              delivered across South Africa on quote-based and wholesale terms.
             </p>
           </Reveal>
           <Reveal delay={210}>
             <div className="hero__actions">
-              <a href="#shop" className="hero__btn-primary" onClick={(e) => {
+              <a href={QUOTE_WA} target="_blank" rel="noopener noreferrer" className="hero__btn-primary" style={{ textDecoration: 'none' }}>
+                Request a Quote <ArrowRight size={18} className="hero__btn-arrow" />
+              </a>
+              <a href="#shop" className="hero__btn-secondary" onClick={(e) => {
                 if (onShopCat) {
                   e.preventDefault();
                   onShopCat("all");
                 }
               }}>
-                Shop Products <ArrowRight size={18} className="hero__btn-arrow" />
+                View Product Range
               </a>
-              <a href="https://wa.me/27671014345" target="_blank" rel="noopener noreferrer" className="hero__btn-secondary" style={{ textDecoration: 'none' }}>
-                <Icons.Whatsapp size={18} /> Chat on WhatsApp
+              <a href={SALES_WA} target="_blank" rel="noopener noreferrer" className="hero__btn-ghost" style={{ textDecoration: 'none' }}>
+                <Icons.Whatsapp size={18} /> WhatsApp Sales Team
               </a>
             </div>
           </Reveal>
           <Reveal delay={280}>
             <div className="hero__stats">
-              <div className="hero__rating">
-                <Stars value={4.8} size={16} />
-                <span className="hero__rating-val">4.8/5</span>
-                <span className="hero__rating-count">· 900+ reviews</span>
+              <div className="hero__trust-badge">
+                <CheckCircle size={16} /> Bulk &amp; wholesale pricing
               </div>
               <div className="hero__trust-badge">
-                <Shield size={16} /> Kills 99.9% of germs
+                <Truck size={16} /> Nationwide delivery
+              </div>
+              <div className="hero__trust-badge">
+                <Award size={16} /> Trusted supplier since 2019
               </div>
             </div>
           </Reveal>
@@ -98,23 +106,20 @@ export const Hero = ({ onShopCat }) => {
               </div>
               <div className="hero-showcase__card-right">
                 <img src={getPrimaryImg(apc)} alt={apc.name} />
-                <button onClick={() => add(apc)} className="hero-showcase__quick-add">
-                  <Plus size={14} /> Quick add
-                </button>
               </div>
 
               {/* Floating chips */}
               <div className="hero-showcase__float-left">
-                <span className="hero-showcase__float-icon"><Leaf size={18} /></span>
+                <span className="hero-showcase__float-icon"><Tag size={18} /></span>
                 <div className="hero-showcase__float-text">
-                  <p className="hero-showcase__float-title">Eco-conscious</p>
-                  <p className="hero-showcase__float-sub">Responsibly made</p>
+                  <p className="hero-showcase__float-title">Bulk supply</p>
+                  <p className="hero-showcase__float-sub">5L &amp; 20L drums</p>
                 </div>
               </div>
               <div className="hero-showcase__float-right">
                 <span className="hero-showcase__float-icon"><Truck size={18} /></span>
                 <div className="hero-showcase__float-text">
-                  <p className="hero-showcase__float-title">Fast delivery</p>
+                  <p className="hero-showcase__float-title">Nationwide delivery</p>
                   <p className="hero-showcase__float-sub">Across South Africa</p>
                 </div>
               </div>
@@ -127,10 +132,10 @@ export const Hero = ({ onShopCat }) => {
 };
 
 const TRUST = [
-  { icon: Award, title: "Locally Manufactured", sub: "Made in Gauteng, SA" },
-  { icon: Truck, title: "Nationwide Delivery", sub: "Fast & reliable shipping" },
-  { icon: Icons.Whatsapp, title: "WhatsApp Support", sub: "Quick help on WhatsApp" },
-  { icon: Shield, title: "Secure Checkout", sub: "100% safe & encrypted" },
+  { icon: Tag, title: "Bulk Supply Available", sub: "5L, 20L & wholesale orders" },
+  { icon: Truck, title: "Nationwide Delivery", sub: "Reliable supply countrywide" },
+  { icon: Icons.Whatsapp, title: "WhatsApp Sales Support", sub: "Fast quotes & enquiries" },
+  { icon: Award, title: "South African Supplier", sub: "Locally manufactured, est. 2019" },
 ];
 
 export const TrustStrip = () => (
@@ -149,15 +154,47 @@ export const TrustStrip = () => (
   </section>
 );
 
+/* ── Industrial Banner — reusable B2B call-to-action strip ─────────────────── */
+export const IndustrialBanner = ({
+  eyebrow = "Commercial & Industrial Cleaning Supplies",
+  title = "Bulk Orders Welcome — Speak to Our Sales Team",
+  desc = "Wholesale cleaning products and reliable supply for businesses across South Africa. Get quote-based pricing on the sizes and volumes your operation needs.",
+  quoteText = "Hello Amahle Blue Sales Team, I'd like to discuss bulk supply and pricing for my business.",
+}) => (
+  <section className="industrial-banner">
+    <div className="industrial-banner__inner">
+      <div className="industrial-banner__pattern" />
+      <div className="industrial-banner__content">
+        <span className="industrial-banner__eyebrow"><Shield size={14} /> {eyebrow}</span>
+        <h2 className="industrial-banner__title">{title}</h2>
+        <p className="industrial-banner__desc">{desc}</p>
+      </div>
+      <div className="industrial-banner__actions">
+        <a
+          href={`${BRAND.wa}?text=${encodeURIComponent(quoteText)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="industrial-banner__btn-primary"
+        >
+          <Icons.Whatsapp size={18} /> Request a Quote
+        </a>
+        <a href={`tel:${BRAND.phoneRaw}`} className="industrial-banner__btn-secondary">
+          Contact Sales · {BRAND.phone}
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
 export const CategoryShowcase = ({ onShopCat }) => {
   const { products, productsLoaded, categories = DEFAULT_CATEGORIES } = useProducts();
 
   return (
     <section className="category-showcase">
       <div className="category-showcase__header">
-        <Reveal><span className="category-showcase__label">Shop by category</span></Reveal>
-        <Reveal delay={60}><h2 className="category-showcase__title">Find your clean</h2></Reveal>
-        <Reveal delay={110}><p className="category-showcase__desc">Professional-grade solutions — built for homes and vehicles across South Africa.</p></Reveal>
+        <Reveal><span className="category-showcase__label">Product catalogue</span></Reveal>
+        <Reveal delay={60}><h2 className="category-showcase__title">Our cleaning product range</h2></Reveal>
+        <Reveal delay={110}><p className="category-showcase__desc">Commercial-grade cleaning supplies available for bulk supply and quote-based orders — built for businesses, schools, offices, factories and cleaning contractors.</p></Reveal>
       </div>
 
       <div className="category-showcase__grid">
@@ -174,7 +211,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
                 <p className="category-showcase__card-desc">{c.blurb}</p>
                 <span className="category-showcase__card-link">
                   {productsLoaded ? (
-                    <>Shop {n} products <ArrowRight size={17} /></>
+                    <>View {n} products <ArrowRight size={17} /></>
                   ) : (
                     <>
                       <SkeletonLine width={90} height={12} style={{ display: 'inline-block', verticalAlign: 'middle' }} />

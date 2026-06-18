@@ -6,6 +6,7 @@ import { Header } from './Header';
 import { Footer, WhatsappFab } from './Footer';
 import { AuthModal } from './AuthModal';
 import { QuickView, ProductCard } from './ShopPage';
+import { IndustrialBanner } from './HeroSection';
 import { Reveal, ProductGridSkeleton } from '../ui/index';
 
 function CategoryContent({ category }) {
@@ -67,30 +68,56 @@ function CategoryContent({ category }) {
           
           <div style={{ position: 'relative', zIndex: 2 }}>
             <Reveal>
-              <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.5rem', letterSpacing: '-0.02em' }}>
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.45rem',
+                background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white', padding: '0.35rem 0.9rem', borderRadius: '100px',
+                fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase',
+                letterSpacing: '0.08em', marginBottom: '1.25rem'
+              }}>
+                Bulk supply &amp; quote-based orders
+              </span>
+            </Reveal>
+            <Reveal>
+              <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '1.25rem', letterSpacing: '-0.02em' }}>
                 {category.name}
               </h1>
             </Reveal>
             <Reveal delay={100}>
-              <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6, marginBottom: '2rem' }}>
-                {category.description || category.blurb || `Explore our premium range of ${category.name} products.`}
+              <p style={{ fontSize: '1.15rem', maxWidth: '680px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6, marginBottom: '2rem' }}>
+                {category.description || category.blurb || `${category.name} for commercial, industrial and business use.`}
+                {' '}Available for bulk supply and quote-based orders across South Africa.
               </p>
             </Reveal>
             <Reveal delay={150}>
-              <a 
-                href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I am interested in your ${category.name}. Please share more details.`)}`}
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                  background: 'white', color: category.accent || '#111',
-                  padding: '0.8rem 1.5rem', borderRadius: '100px',
-                  fontWeight: '600', fontSize: '1rem', textDecoration: 'none',
-                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
-                }}
-              >
-                Chat on WhatsApp
-              </a>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+                <a
+                  href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue Sales Team, I would like to request a quote for your ${category.name}. Please share bulk pricing and availability.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                    background: 'white', color: category.accent || '#111',
+                    padding: '0.8rem 1.6rem', borderRadius: '100px',
+                    fontWeight: 700, fontSize: '1rem', textDecoration: 'none',
+                    boxShadow: '0 4px 15px rgba(0,0,0,0.15)'
+                  }}
+                >
+                  Request a Quote
+                </a>
+                <a
+                  href="/shop"
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                    background: 'transparent', color: 'white',
+                    padding: '0.8rem 1.6rem', borderRadius: '100px',
+                    fontWeight: 700, fontSize: '1rem', textDecoration: 'none',
+                    border: '1px solid rgba(255,255,255,0.5)'
+                  }}
+                >
+                  View Product Range
+                </a>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -114,6 +141,13 @@ function CategoryContent({ category }) {
             </div>
           )}
         </div>
+
+        <IndustrialBanner
+          eyebrow="Reliable Supply for Businesses"
+          title={`Bulk ${category.name} for your business`}
+          desc={`Speak to our sales team for wholesale pricing on ${category.name.toLowerCase()}. Quote-based supply for offices, schools, factories, hospitality and cleaning contractors across South Africa.`}
+          quoteText={`Hello Amahle Blue Sales Team, I'd like bulk pricing for your ${category.name}.`}
+        />
       </main>
 
       <Footer />

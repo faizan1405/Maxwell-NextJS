@@ -51,10 +51,47 @@
   margin-top: 2rem;
   display: grid;
   gap: 1rem;
-  
+
   @include sm {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.why-us__who {
+  margin-top: 2rem;
+  border-top: 1px solid $slate-100;
+  padding-top: 1.75rem;
+}
+
+.why-us__who-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $slate-500;
+  margin-bottom: 1rem;
+}
+
+.why-us__who-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.why-us__who-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: $radius-full;
+  border: 1px solid $slate-200;
+  background-color: white;
+  padding: 0.5rem 0.9rem;
+  font-size: 13px;
+  font-weight: 700;
+  color: $slate-700;
+
+  svg { color: $emerald-600; }
 }
 
 .why-card {

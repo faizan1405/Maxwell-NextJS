@@ -11,6 +11,12 @@ import { Reveal, Stars, BadgeChip, ProductGridSkeleton, ProductCardSkeleton } fr
 import { ProductReviews } from './ProductReviews';
 import { SwipeCarousel } from './SwipeCarousel';
 
+/* ── B2B defaults for product detail (used when a product has no explicit data) ── */
+const DEFAULT_SUITABLE_FOR = [
+  "Offices", "Schools", "Cleaning Contractors", "Hospitality",
+  "Industrial Facilities", "Retail Stores", "Warehouses",
+];
+
 /* ── Global QuickView Event Emitter ── */
 export const openQuickView = (product) => {
   if (typeof window !== 'undefined') {
@@ -137,6 +143,11 @@ export const ProductCard = ({ p }) => {
           <button onClick={() => openQuickView(p)}>{p.name}</button>
         </h3>
         <p className="product-card__sub">{p.sub}</p>
+        {hasVariants && p.variants.length > 0 && (
+          <p className="product-card__sizes">
+            <Tag size={12} /> Pack sizes: {p.variants.map(v => v.name).join(' · ')}
+          </p>
+        )}
         <div className="product-card__rating">
           <Stars value={p.rating} size={13} />
           <span className="product-card__rating-val">{p.rating}</span>
@@ -160,25 +171,35 @@ export const ProductCard = ({ p }) => {
           {lowStock && <span className="product-card__stock-low">{hasVariants && p.variants.length > 1 ? 'Limited stock' : `Only ${displayStock} left`}</span>}
         </div>
         <div className="product-card__btn-row" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-          {cartEnabled && !contactForPrice && (
-            <button onClick={handleAdd} disabled={outOfStock}
-              className={`product-card__btn ${
-                outOfStock ? 'product-card__btn--oos' :
-                added      ? 'product-card__btn--added' :
-                             'product-card__btn--add'
-              }`}>
-              {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Cart</>}
-            </button>
-          )}
-          {waEnabled && (
+          {(waEnabled || contactForPrice) && (
             <a
               href={buildWaUrl(p, { settings })}
               target="_blank"
               rel="noopener noreferrer"
               className="product-card__btn product-card__btn--quote"
             >
-              <Whatsapp size={16} /> Get Quote on WhatsApp
+              <Whatsapp size={16} /> Request a Quote
             </a>
+          )}
+          {cartEnabled && !contactForPrice && (
+            <>
+              <button onClick={handleAdd} disabled={outOfStock}
+                className={`product-card__btn ${
+                  outOfStock ? 'product-card__btn--oos' :
+                  added      ? 'product-card__btn--added' :
+                               'product-card__btn--add'
+                }`}>
+                {outOfStock ? 'Out of Stock' : added ? <><Check size={16} /> Added!</> : <><Plus size={16} /> Add to Cart</>}
+              </button>
+              <a
+                href={buildWaUrl(p, { settings })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="product-card__btn product-card__btn--quote-ghost"
+              >
+                <Whatsapp size={15} /> Get bulk pricing
+              </a>
+            </>
           )}
         </div>
       </div>
@@ -234,8 +255,8 @@ export const Featured = () => {
     <section className="featured">
       <div className="featured__container">
         <div className="featured__header">
-          <Reveal><span className="featured__label"><Sparkles size={14} /> Customer favourites</span></Reveal>
-          <Reveal delay={60}><h2 className="featured__title">Bestsellers</h2></Reveal>
+          <Reveal><span className="featured__label"><Sparkles size={14} /> Popular with businesses</span></Reveal>
+          <Reveal delay={60}><h2 className="featured__title">Top-selling supplies</h2></Reveal>
         </div>
         {!productsLoaded ? (
           <ProductGridSkeleton count={4} variant="carousel" />
@@ -267,13 +288,13 @@ export const BulkPromo = () => {
           <div className="bulk-promo__pattern" />
           <div className="bulk-promo__content">
             <div>
-              <span className="bulk-promo__label"><Tag size={14} /> For businesses</span>
-              <h2 className="bulk-promo__title">Need products in bulk?</h2>
-              <p className="bulk-promo__desc">Request a quote for your business, laundry, car wash, facility, or cleaning team.</p>
+              <span className="bulk-promo__label"><Tag size={14} /> Wholesale &amp; bulk supply</span>
+              <h2 className="bulk-promo__title">Ordering for a business?</h2>
+              <p className="bulk-promo__desc">Get wholesale pricing on bulk cleaning supplies for offices, schools, factories, hospitality, facilities and cleaning contractors. Submit a business enquiry and our sales team will send a quote.</p>
             </div>
             <div className="bulk-promo__actions">
-              <a href={`${BRAND.wa}?text=${encodeURIComponent("Hello Amahle Blue, I would like to request a quote for your cleaning products. Please share more details.")}`} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
-                <Whatsapp size={18} /> Get Quote on WhatsApp
+              <a href={`${BRAND.wa}?text=${encodeURIComponent("Hello Amahle Blue Sales Team, I would like to request bulk/wholesale pricing for my business. Please send a quote.")}`} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
+                <Whatsapp size={18} /> Request a Quote
               </a>
               <a href="/#contact" onClick={(e) => {
                 e.preventDefault();
@@ -332,8 +353,8 @@ export const Shop = ({ activeCat, setActiveCat, query, setQuery, carousel = fals
     <section id="shop" className="shop-page">
       <div className="shop-page__container">
         <div className="shop-page__header">
-          <Reveal><span className="shop-page__label">The full range</span></Reveal>
-          <Reveal delay={60}><h2 className="shop-page__title">Shop all products</h2></Reveal>
+          <Reveal><span className="shop-page__label">Product catalogue</span></Reveal>
+          <Reveal delay={60}><h2 className="shop-page__title">Browse our full product range</h2></Reveal>
         </div>
 
         <div className="shop-page__controls">
@@ -649,6 +670,32 @@ export const QuickView = () => {
                 ))}
               </ul>
 
+              {/* B2B: Suitable for usage areas */}
+              <div className="quickview-suitable">
+                <span className="quickview-suitable__label"><Tag size={14} /> Suitable for</span>
+                <div className="quickview-suitable__tags">
+                  {((product.suitableFor && product.suitableFor.length) ? product.suitableFor : DEFAULT_SUITABLE_FOR).map((t) => (
+                    <span key={t} className="quickview-suitable__tag">{t}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* B2B: Bulk supply banner */}
+              <div className="quickview-bulk">
+                <div className="quickview-bulk__text">
+                  <strong>Bulk supply available</strong>
+                  <span>5L, 20L &amp; wholesale volumes — request quote-based pricing for your business.</span>
+                </div>
+                <a
+                  href={buildWaUrl(product, { settings })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="quickview-bulk__btn"
+                >
+                  <Whatsapp size={16} /> Request a Quote
+                </a>
+              </div>
+
               {product.variants && product.variants.length > 0 && (
                 <div className="quickview-variants">
                   <span className="quickview-variants-label">Select Size</span>
@@ -734,7 +781,7 @@ export const QuickView = () => {
                           rel="noopener noreferrer"
                           className="quickview-add-btn quickview-add-btn--quote"
                         >
-                          <Whatsapp size={18} /> Get Quote on WhatsApp
+                          <Whatsapp size={18} /> Request a Quote on WhatsApp
                         </a>
                       )}
                     </div>

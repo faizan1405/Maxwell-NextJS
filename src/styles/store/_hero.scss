@@ -110,10 +110,31 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  
+
   @include sm {
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
+  }
+}
+
+.hero__btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: $radius-full;
+  padding: 0.875rem 1.5rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: $emerald-600;
+  transition: all $transition-base;
+
+  svg { color: #25D366; }
+
+  &:hover {
+    color: $cobalt;
+    transform: translateY(-1px);
   }
 }
 
@@ -590,6 +611,143 @@
   
   svg {
     transition: transform $transition-fast;
+  }
+}
+
+/* ── Industrial Banner (reusable B2B CTA strip) ────────────────────────────── */
+.industrial-banner {
+  margin: 0 auto;
+  max-width: 1280px;
+  padding: 1.5rem 1rem;
+
+  @include sm {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.industrial-banner__inner {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+  border-radius: $radius-3xl;
+  background: linear-gradient(120deg, #0B2E6B 0%, #1B3ACC 55%, #264CFF 100%);
+  padding: 2.5rem 2rem;
+  color: white;
+  box-shadow: 0 30px 60px -30px rgba(11, 46, 107, 0.6);
+
+  @include lg {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2.75rem 3rem;
+  }
+}
+
+.industrial-banner__pattern {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+  background-image: linear-gradient(135deg, rgba(255,255,255,0.08) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.08) 75%, transparent 75%);
+  background-size: 24px 24px;
+}
+
+.industrial-banner__content {
+  position: relative;
+  z-index: 1;
+  max-width: 42rem;
+}
+
+.industrial-banner__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: $grass;
+}
+
+.industrial-banner__title {
+  margin: 0.75rem 0 0;
+  font-family: $font-display;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.industrial-banner__desc {
+  margin: 0.85rem 0 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.industrial-banner__actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+
+  @include sm {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  @include lg {
+    width: auto;
+    flex-shrink: 0;
+  }
+}
+
+.industrial-banner__btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: $radius-full;
+  background-color: white;
+  padding: 0.9rem 1.6rem;
+  font-size: 15px;
+  font-weight: 800;
+  color: $cobalt-700;
+  box-shadow: $shadow-lg;
+  transition: all $transition-base;
+
+  svg { color: #25D366; }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.industrial-banner__btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  border-radius: $radius-full;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0.9rem 1.6rem;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  transition: all $transition-base;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: white;
   }
 }
 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import { ProductsProvider, CustomerProvider, CartProvider, useCustomer, useCart } from '../lib/storeContext';
 import { Header } from '../components/store/Header';
-import { Hero, TrustStrip, CategoryShowcase } from '../components/store/HeroSection';
+import { Hero, TrustStrip, CategoryShowcase, IndustrialBanner } from '../components/store/HeroSection';
 import { Featured, BulkPromo, Shop, QuickView } from '../components/store/ShopPage';
 import { CartPage, CheckoutPage, OrderConfirmedPage } from '../components/store/CartComponents';
 import { AuthModal } from '../components/store/AuthModal';
@@ -220,6 +220,11 @@ function StoreRouter() {
         <Header onNavCat={onNavCat} activeCat={activeCat} />
         <main className="ab-page-enter bg-white" style={{ paddingBottom: '5rem' }}>
           <Shop activeCat={activeCat} setActiveCat={setActiveCat} query={query} setQuery={setQuery} />
+          <IndustrialBanner
+            eyebrow="Wholesale Cleaning Products"
+            title="Need bulk pricing for your business?"
+            desc="Tell our sales team what you need and we'll send a quote. Reliable supply for offices, schools, factories, hospitality and cleaning contractors across South Africa."
+          />
         </main>
         <Footer onShopCat={onShopCat} />
         <Toast />
@@ -265,6 +270,7 @@ function StoreRouter() {
         <Hero onShopCat={onShopCat} />
         <TrustStrip />
         <CategoryShowcase onShopCat={onShopCat} />
+        <IndustrialBanner />
         <Featured />
         <BulkPromo />
         <WhyUs />

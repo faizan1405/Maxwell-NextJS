@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight, MapPin, Phone, Whatsapp } from '../ui/Icons';
+import { Award, Sparkles, Shield, Leaf, CheckCircle, Mail, ArrowRight, MapPin, Phone, Whatsapp, Tag } from '../ui/Icons';
 import { Star } from '../ui/Icons';
 import { FadeReveal, Reveal, Stars, ReviewGridSkeleton, SkeletonLine } from '../ui/index';
 import { SwipeCarousel } from './SwipeCarousel';
@@ -12,20 +12,23 @@ function deriveInitials(name) {
 }
 
 const WHY = [
-  { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
-  { icon: Sparkles, title: "Powerful, fresh results", body: "High-active formulations that cut grease, lift stains and leave a clean, fresh finish.", color: "#0EA5E9" },
-  { icon: Shield, title: "Tested & trusted", body: "Every batch is quality-checked for consistent performance you can rely on.", color: "#36F700" },
-  { icon: Leaf, title: "Bulk & Trade Ready", body: "Supplying 5L and 20L drums at competitive wholesale rates to keep your business running.", color: "#0B2E6B" },
+  { icon: Award, title: "South African supplier", body: "Locally manufactured in Boksburg, Gauteng since 2019 — a reliable supply partner for businesses nationwide.", color: "#1D4ED8" },
+  { icon: Tag, title: "Bulk supply available", body: "5L, 20L and wholesale volumes at competitive trade pricing to keep your operation fully stocked.", color: "#0B2E6B" },
+  { icon: Shield, title: "Commercial-grade quality", body: "High-active, batch-tested formulations built for offices, schools, factories, hospitality and cleaning contractors.", color: "#36F700" },
+  { icon: Whatsapp, title: "WhatsApp sales support", body: "Talk directly to our sales team for quotes, bulk pricing and product advice — fast responses, no run-around.", color: "#0EA5E9" },
 ];
 
-
+const WHO = [
+  "Offices", "Schools", "Cleaning Contractors", "Hospitality",
+  "Factories", "Warehouses", "Retail Stores", "Healthcare Facilities",
+];
 
 export const WhyUs = () => (
   <section id="about" className="content-section why-us">
     <div>
-      <Reveal><span className="why-us__subtitle">Why Amahle Blue</span></Reveal>
-      <Reveal delay={60}><h2 className="why-us__title">Premium clean, made right here at home.</h2></Reveal>
-      <Reveal delay={120}><p className="why-us__desc">Amahle Blue was founded to give South African homes and businesses cleaning products they can genuinely trust — powerful, consistent, and fairly priced. From industrial degreasers to everyday household solutions, every batch is built for professional results.</p></Reveal>
+      <Reveal><span className="why-us__subtitle">Why choose Amahle Blue</span></Reveal>
+      <Reveal delay={60}><h2 className="why-us__title">A trusted B2B cleaning products supplier.</h2></Reveal>
+      <Reveal delay={120}><p className="why-us__desc">Amahle Blue supplies South African businesses with commercial and industrial cleaning products they can rely on — powerful, consistent and fairly priced. From industrial degreasers to bulk laundry and sanitiser, we keep companies, schools, offices, factories and cleaning teams running.</p></Reveal>
       <div className="why-us__grid">
         {WHY.map((w, i) => (
           <Reveal key={w.title} delay={i * 70}>
@@ -37,6 +40,16 @@ export const WhyUs = () => (
           </Reveal>
         ))}
       </div>
+      <Reveal delay={120}>
+        <div className="why-us__who">
+          <span className="why-us__who-label">Suitable for businesses, schools, offices &amp; contractors</span>
+          <div className="why-us__who-tags">
+            {WHO.map((t) => (
+              <span key={t} className="why-us__who-tag"><CheckCircle size={14} /> {t}</span>
+            ))}
+          </div>
+        </div>
+      </Reveal>
     </div>
 
     <Reveal delay={120} className="why-images">
@@ -57,7 +70,7 @@ export const WhyUs = () => (
       <div className="why-images__badge">
         <span className="why-images__badge-icon"><Award size={22} /></span>
         <div className="why-images__badge-text">
-          <strong>Made in South Africa</strong>
+          <strong>Bulk Supply · Made in SA</strong>
           <span>Est. 2019 · Gauteng</span>
         </div>
       </div>

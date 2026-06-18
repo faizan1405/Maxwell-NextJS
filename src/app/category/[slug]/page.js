@@ -1,13 +1,13 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { connectToDatabase } from '../../../lib/mongoose';
-import { Category } from '../../../models/Category';
+import { Category } from '../../../lib/models';
 import { buildPageMetadata } from '../../../lib/seo';
 import CategoryLanding from '../../../components/store/CategoryLanding';
 
 export async function generateMetadata({ params }) {
-  const { slug } = params;
-  
+  const { slug } = await params;
+
   await connectToDatabase();
   const category = await Category.findOne({ id: slug }).lean();
   
@@ -26,8 +26,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CategoryDynamicPage({ params }) {
-  const { slug } = params;
-  
+  const { slug } = await params;
+
   await connectToDatabase();
   const category = await Category.findOne({ id: slug }).lean();
   

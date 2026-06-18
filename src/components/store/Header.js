@@ -130,12 +130,9 @@ export function AccountMenu({ customer, onAccount, onOrders, onLogout }) {
 
 const NAV = [
   { label: "Home", href: "/", page: "home" },
-  { label: "Shop", href: "/shop", page: "shop" },
-  { label: "Household", href: "/category/household", cat: "household", page: "shop" },
-  { label: "Car Care", href: "/category/car", cat: "car", page: "shop" },
-  { label: "Sanitisers", href: "/category/sanitiser", cat: "sanitiser", page: "shop" },
-  { label: "About", href: "/#about", page: "home", section: "about" },
-  { label: "Contact", href: "/#contact", page: "home", section: "contact" },
+  { label: "Products", href: "/shop", page: "shop" },
+  { label: "About", href: "/about", page: "about" },
+  { label: "Contact", href: "/contact", page: "contact" },
 ];
 
 export const Header = ({ onNavCat, activeCat = "all" }) => {
@@ -292,6 +289,9 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
               </a>
             );
           })}
+          <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="header__quote-btn">
+            Get Quote
+          </a>
           <span className="header__nav-info">
             <Truck size={16} /> Fast nationwide delivery
           </span>
@@ -328,6 +328,11 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
                   </a>
                 );
               })}
+              
+              <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="mobile-menu-quote-btn">
+                Get Quote
+              </a>
+
               <div className="mobile-menu-auth">
                 {isLoggedIn ? (
                   <div className="mobile-menu-auth-items">

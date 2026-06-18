@@ -457,6 +457,26 @@
     }
   }
 
+  &__quote-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 2.25rem;
+    padding: 0 1.25rem;
+    border-radius: $radius-full;
+    background-color: $cobalt;
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.2s;
+    margin-left: 1rem;
+
+    &:hover {
+      background-color: $cobalt-700;
+    }
+  }
+
   &__nav-info {
     margin-left: auto;
     display: inline-flex;
@@ -597,6 +617,27 @@
 
 .mobile-menu-nav-arrow {
   color: $slate-300;
+}
+
+.mobile-menu-quote-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 1rem 0;
+  padding: 0.875rem;
+  border-radius: $radius-full;
+  background-color: $cobalt;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $cobalt-700;
+  }
 }
 
 .mobile-menu-auth {

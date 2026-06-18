@@ -135,6 +135,9 @@ const NAV = [
   { label: "Contact", href: "/contact", page: "contact" },
 ];
 
+const WA_QUOTE_TEXT = "Hello Amahle Blue, I would like to request a quote for your cleaning products. Please share more details.";
+const waQuoteLink = `${BRAND.wa}?text=${encodeURIComponent(WA_QUOTE_TEXT)}`;
+
 export const Header = ({ onNavCat, activeCat = "all" }) => {
   const { count, setOpen } = useCart();
   const { customer, isLoggedIn, openAuth, authOpen, logout, page, setPage } = useCustomer();
@@ -289,7 +292,7 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
               </a>
             );
           })}
-          <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="header__quote-btn">
+          <a href={waQuoteLink} target="_blank" rel="noopener noreferrer" className="header__quote-btn">
             Get Quote
           </a>
           <span className="header__nav-info">
@@ -329,7 +332,7 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
                 );
               })}
               
-              <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="mobile-menu-quote-btn">
+              <a href={waQuoteLink} target="_blank" rel="noopener noreferrer" className="mobile-menu-quote-btn">
                 Get Quote
               </a>
 

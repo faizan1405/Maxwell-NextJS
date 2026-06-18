@@ -229,6 +229,34 @@ function StoreRouter() {
     );
   }
 
+  if (page === "about") {
+    return (
+      <>
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
+        <main className="ab-page-enter bg-white" style={{ paddingBottom: '5rem', paddingTop: '3rem' }}>
+          <WhyUs />
+        </main>
+        <Footer onShopCat={onShopCat} />
+        <Toast />
+        <WhatsappFab />
+      </>
+    );
+  }
+
+  if (page === "contact") {
+    return (
+      <>
+        <Header onNavCat={onNavCat} activeCat={activeCat} />
+        <main className="ab-page-enter bg-white" style={{ paddingBottom: '5rem', paddingTop: '3rem' }}>
+          <Contact />
+        </main>
+        <Footer onShopCat={onShopCat} />
+        <Toast />
+        <WhatsappFab />
+      </>
+    );
+  }
+
   // Default: Home
   return (
     <>

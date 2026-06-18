@@ -59,9 +59,9 @@ export const Hero = ({ onShopCat }) => {
               }}>
                 Shop the range <ArrowRight size={18} className="hero__btn-arrow" />
               </a>
-              <button onClick={() => onShopCat && onShopCat("car")} className="hero__btn-secondary">
+              <a href="/category/car" className="hero__btn-secondary" style={{ textDecoration: 'none' }}>
                 <Car size={18} /> Explore car care
-              </button>
+              </a>
             </div>
           </Reveal>
           <Reveal delay={280}>
@@ -165,7 +165,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
           const n = products.filter((p) => p.cat === c.id).length;
           return (
             <Reveal key={c.id} delay={i * 80}>
-              <button onClick={() => onShopCat && onShopCat(c.id)} className="category-showcase__card group">
+              <a href={`/category/${c.id}`} className="category-showcase__card group" style={{ textDecoration: 'none', display: 'block' }}>
                 <div className="category-showcase__card-blob" style={{ background: c.accent }} />
                 <span className="category-showcase__card-icon" style={{ background: `linear-gradient(135deg, ${c.accent}, ${c.accent}cc)` }}>
                   <CatIcon name={c.icon} size={26} />
@@ -182,7 +182,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
                     </>
                   )}
                 </span>
-              </button>
+              </a>
             </Reveal>
           );
         })}

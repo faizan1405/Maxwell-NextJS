@@ -131,9 +131,9 @@ export function AccountMenu({ customer, onAccount, onOrders, onLogout }) {
 const NAV = [
   { label: "Home", href: "/", page: "home" },
   { label: "Shop", href: "/shop", page: "shop" },
-  { label: "Household", href: "/shop?category=household", cat: "household", page: "shop" },
-  { label: "Car Care", href: "/shop?category=car", cat: "car", page: "shop" },
-  { label: "Sanitisers", href: "/shop?category=sanitiser", cat: "sanitiser", page: "shop" },
+  { label: "Household", href: "/category/household", cat: "household", page: "shop" },
+  { label: "Car Care", href: "/category/car", cat: "car", page: "shop" },
+  { label: "Sanitisers", href: "/category/sanitiser", cat: "sanitiser", page: "shop" },
   { label: "About", href: "/#about", page: "home", section: "about" },
   { label: "Contact", href: "/#contact", page: "home", section: "contact" },
 ];
@@ -187,12 +187,15 @@ export const Header = ({ onNavCat, activeCat = "all" }) => {
   };
 
   const go = (e, item) => {
+    if (item.cat) {
+      // Allow native navigation to /category/[slug]
+      return;
+    }
+    
     e.preventDefault();
     setMenu(false);
 
-    if (item.cat && onNavCat) {
-      onNavCat(item.cat);
-    } else if (item.section) {
+    if (item.section) {
       setActiveSection(item.section);
       setPage('home', { url: `/#${item.section}` });
       scrollToSection(item.section);

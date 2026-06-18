@@ -63,10 +63,15 @@ export const Footer = ({ onShopCat }) => {
           <ul className="footer-links__list">
             {shopCategories.map(c => (
               <li key={c.id}>
-                <button onClick={() => onShopCat && onShopCat(c.id)} className="footer-links__link">{c.name}</button>
+                <a href={`/category/${c.id}`} className="footer-links__link" style={{ textDecoration: 'none' }}>{c.name}</a>
               </li>
             ))}
-            <li><button onClick={() => onShopCat && onShopCat("all")} className="footer-links__link">All Products</button></li>
+            <li><a href="/shop" onClick={(e) => {
+              if (onShopCat) {
+                e.preventDefault();
+                onShopCat("all");
+              }
+            }} className="footer-links__link" style={{ textDecoration: 'none' }}>All Products</a></li>
           </ul>
         </div>
 

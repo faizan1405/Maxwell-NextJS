@@ -52,7 +52,7 @@ export default function CategoriesPage({ setUnsavedChanges }) {
   }, [isDirty, setUnsavedChanges]);
 
   function handleAdd() {
-    const item = { name: '', id: '', short: '', icon: 'Box', image: '', blurb: '', accent: '#111111', status: 'active', displayOrder: 99 };
+    const item = { name: '', id: '', short: '', icon: 'Box', image: '', bannerImage: '', blurb: '', description: '', seoTitle: '', seoDescription: '', accent: '#111111', status: 'active', displayOrder: 99 };
     setActiveItem(item);
     setOriginalItemSnapshot(item);
     setModalMode('add');
@@ -263,8 +263,23 @@ export default function CategoriesPage({ setUnsavedChanges }) {
             </div>
 
             <div>
+              <label className="admin-cat-form__field-label">Banner Image URL</label>
+              <input value={activeItem.bannerImage || ''} onChange={e => setActiveItem({ ...activeItem, bannerImage: e.target.value })} placeholder="https://..." className="admin-cat-form__field-input" />
+            </div>
+
+            <div>
               <label className="admin-cat-form__field-label">Short Description / Blurb</label>
               <textarea value={activeItem.blurb || ''} onChange={e => setActiveItem({ ...activeItem, blurb: e.target.value })} rows={2} className="admin-cat-form__field-textarea" />
+            </div>
+
+            <div>
+              <label className="admin-cat-form__field-label">Full Page Description</label>
+              <textarea value={activeItem.description || ''} onChange={e => setActiveItem({ ...activeItem, description: e.target.value })} rows={4} className="admin-cat-form__field-textarea" />
+            </div>
+
+            <div className="admin-cat-form__grid-2">
+              <Input label="SEO Title" value={activeItem.seoTitle || ''} onChange={e => setActiveItem({ ...activeItem, seoTitle: e.target.value })} placeholder="Optional override" />
+              <Input label="SEO Description" value={activeItem.seoDescription || ''} onChange={e => setActiveItem({ ...activeItem, seoDescription: e.target.value })} placeholder="Optional override" />
             </div>
 
             <div className="admin-cat-form__active">

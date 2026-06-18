@@ -268,12 +268,12 @@ export const BulkPromo = () => {
           <div className="bulk-promo__content">
             <div>
               <span className="bulk-promo__label"><Tag size={14} /> For businesses</span>
-              <h2 className="bulk-promo__title">Buying in bulk? Unlock wholesale pricing.</h2>
-              <p className="bulk-promo__desc">Carwashes, laundromats, contract cleaners and resellers — get trade rates on 5L and bulk drum volumes, supplied reliably across South Africa.</p>
+              <h2 className="bulk-promo__title">Need products in bulk?</h2>
+              <p className="bulk-promo__desc">Request a quote for your business, laundry, car wash, facility, or cleaning team.</p>
             </div>
             <div className="bulk-promo__actions">
-              <a href={BRAND.wa} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
-                <Whatsapp size={18} /> Request a bulk quote
+              <a href={`${BRAND.wa}?text=${encodeURIComponent("Hello Amahle Blue, I would like to request a quote for your cleaning products. Please share more details.")}`} target="_blank" rel="noopener noreferrer" className="bulk-promo__btn-primary">
+                <Whatsapp size={18} /> Get Quote on WhatsApp
               </a>
               <a href="/#contact" onClick={(e) => {
                 e.preventDefault();

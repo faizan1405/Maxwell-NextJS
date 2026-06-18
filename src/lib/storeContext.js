@@ -18,12 +18,12 @@ export const BRAND = {
 };
 
 export const DEFAULT_CATEGORIES = [
-  { id: "household", name: "Household", short: "Household", icon: "Home", blurb: "Everyday surfaces, floors, fabrics & fresh-smelling rooms.", accent: "#1D4ED8" },
-  { id: "industrial", name: "Industrial", short: "Industrial", icon: "Spray", blurb: "Heavy-duty degreasers, cleaners and specialty solutions for industrial use.", accent: "#B45309" },
-  { id: "car", name: "Car Care", short: "Car Care", icon: "Car", blurb: "Showroom shine for tyres, dashboards & trim.", accent: "#0B2E6B" },
-  { id: "car-exterior", name: "Car Exterior", short: "Car Exterior", icon: "Car", blurb: "Tar removers, bumper black, chassis coatings & exterior detailing.", accent: "#1E3A5F" },
-  { id: "sanitiser", name: "Sanitisers", short: "Sanitisers", icon: "Shield", blurb: "High-purity protection that kills 99.9% of germs.", accent: "#36F700" },
-  { id: "laundry", name: "Laundry Products", short: "Laundry", icon: "Sparkles", blurb: "Washing powders and laundry solutions for homes and businesses.", accent: "#0891B2" },
+  { id: "household", name: "Household Cleaning", short: "Household", icon: "Home", blurb: "Everyday surfaces, floors, fabrics & fresh-smelling rooms.", accent: "#1D4ED8" },
+  { id: "industrial", name: "Industrial Cleaning", short: "Industrial", icon: "Spray", blurb: "Heavy-duty cleaning solutions for factories, workshops, warehouses, commercial spaces, and professional cleaning teams.", accent: "#B45309" },
+  { id: "car", name: "Car Care & Detailing", short: "Car Care", icon: "Car", blurb: "Vehicle cleaning and detailing products for car washes, dealerships, workshops, and professional use.", accent: "#0B2E6B" },
+  { id: "car-exterior", name: "Car Polish & Exterior Care", short: "Car Exterior", icon: "Car", blurb: "Tar removers, bumper black, chassis coatings & exterior detailing.", accent: "#1E3A5F" },
+  { id: "sanitiser", name: "Sanitisers & Hygiene", short: "Sanitisers", icon: "Shield", blurb: "High-purity protection that kills 99.9% of germs.", accent: "#36F700" },
+  { id: "laundry", name: "Laundry Products", short: "Laundry", icon: "Sparkles", blurb: "Laundry cleaning products designed for fresh, powerful, and reliable washing performance for households, laundries, and bulk users.", accent: "#0891B2" },
 ];
 
 export const FREE_SHIP = 750;

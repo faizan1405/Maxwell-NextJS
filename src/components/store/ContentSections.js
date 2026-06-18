@@ -15,7 +15,7 @@ const WHY = [
   { icon: Award, title: "Locally manufactured", body: "Formulated and bottled in Boksburg, Gauteng since 2019 — proudly South African.", color: "#1D4ED8" },
   { icon: Sparkles, title: "Powerful, fresh results", body: "High-active formulations that cut grease, lift stains and leave a clean, fresh finish.", color: "#0EA5E9" },
   { icon: Shield, title: "Tested & trusted", body: "Every batch is quality-checked for consistent performance you can rely on.", color: "#36F700" },
-  { icon: Leaf, title: "Eco-conscious", body: "Responsible raw materials and biodegradable options — strong on dirt, kinder to the planet.", color: "#0B2E6B" },
+  { icon: Leaf, title: "Bulk & Trade Ready", body: "Supplying 5L and 20L drums at competitive wholesale rates to keep your business running.", color: "#0B2E6B" },
 ];
 
 
@@ -25,7 +25,7 @@ export const WhyUs = () => (
     <div>
       <Reveal><span className="why-us__subtitle">Why Amahle Blue</span></Reveal>
       <Reveal delay={60}><h2 className="why-us__title">Premium clean, made right here at home.</h2></Reveal>
-      <Reveal delay={120}><p className="why-us__desc">Amahle Blue was founded to give South African homes and businesses cleaning products they can genuinely trust — powerful, consistent and fairly priced. From everyday surfaces to showroom car care, every bottle is held to the same standard.</p></Reveal>
+      <Reveal delay={120}><p className="why-us__desc">Amahle Blue was founded to give South African businesses, facilities, and homes cleaning products they can genuinely trust — powerful, consistent, and fairly priced. From industrial degreasers to everyday household solutions, every batch is built for professional results.</p></Reveal>
       <div className="why-us__grid">
         {WHY.map((w, i) => (
           <Reveal key={w.title} delay={i * 70}>
@@ -279,7 +279,7 @@ export const Newsletter = () => {
           <div className="newsletter__inner">
             <span className="newsletter__badge"><Mail size={14} /> Join the list</span>
             <h2 className="newsletter__title">Get Amahle Blue product updates</h2>
-            <p className="newsletter__desc">Subscribe for product updates, availability, and business announcements.</p>
+            <p className="newsletter__desc">Subscribe for product updates, bulk availability, and business announcements.</p>
             {successMsg ? (
               <div className="newsletter__success"><CheckCircle size={18} /> {successMsg}</div>
             ) : (

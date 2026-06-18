@@ -39,14 +39,14 @@ export const Hero = ({ onShopCat }) => {
           </Reveal>
           <Reveal delay={70}>
             <h1 className="hero__title">
-              A cleaner home,<br />
-              <span className="hero__title-accent">car &amp; everything</span><br />
-              in between.
+              Cleaning Products for<br />
+              <span className="hero__title-accent">Businesses, Facilities</span><br />
+              &amp; Everyday Use
             </h1>
           </Reveal>
           <Reveal delay={140}>
             <p className="hero__desc">
-              Premium cleaning, car-care &amp; sanitising solutions — formulated and bottled in Gauteng. Powerful results, fresh finish, delivered to your door.
+              Amahle Blue supplies laundry, household, car care, sanitiser, and industrial cleaning products for homes, businesses, car washes, laundries, offices, and professional cleaning teams across South Africa.
             </p>
           </Reveal>
           <Reveal delay={210}>
@@ -57,10 +57,10 @@ export const Hero = ({ onShopCat }) => {
                   onShopCat("all");
                 }
               }}>
-                Shop the range <ArrowRight size={18} className="hero__btn-arrow" />
+                Shop Products <ArrowRight size={18} className="hero__btn-arrow" />
               </a>
-              <a href="/category/car" className="hero__btn-secondary" style={{ textDecoration: 'none' }}>
-                <Car size={18} /> Explore car care
+              <a href="https://wa.me/27671014345" target="_blank" rel="noopener noreferrer" className="hero__btn-secondary" style={{ textDecoration: 'none' }}>
+                <Icons.Whatsapp size={18} /> Request Bulk Quote
               </a>
             </div>
           </Reveal>
@@ -128,9 +128,9 @@ export const Hero = ({ onShopCat }) => {
 
 const TRUST = [
   { icon: Award, title: "Locally Manufactured", sub: "Made in Gauteng, SA" },
-  { icon: Truck, title: `Free Delivery over ${money(FREE_SHIP)}`, sub: "Fast nationwide shipping" },
-  { icon: Shield, title: "Kills 99.9% of Germs", sub: "High-purity sanitisers" },
-  { icon: Tag, title: "Bulk & Trade Pricing", sub: "Wholesale volumes welcome" },
+  { icon: Tag, title: "Bulk & Business Supply", sub: "Wholesale volumes welcome" },
+  { icon: Icons.Whatsapp, title: "Quote Support", sub: "Quick help on WhatsApp" },
+  { icon: Shield, title: "Professional-Grade", sub: "Tested & trusted solutions" },
 ];
 
 export const TrustStrip = () => (
@@ -157,7 +157,7 @@ export const CategoryShowcase = ({ onShopCat }) => {
       <div className="category-showcase__header">
         <Reveal><span className="category-showcase__label">Shop by category</span></Reveal>
         <Reveal delay={60}><h2 className="category-showcase__title">Find your clean</h2></Reveal>
-        <Reveal delay={110}><p className="category-showcase__desc">One standard of quality — built for homes, vehicles and businesses across South Africa.</p></Reveal>
+        <Reveal delay={110}><p className="category-showcase__desc">Professional-grade solutions — built for homes, vehicles, facilities, and businesses across South Africa.</p></Reveal>
       </div>
 
       <div className="category-showcase__grid">

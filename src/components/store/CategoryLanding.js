@@ -58,9 +58,25 @@ function CategoryContent({ category }) {
             </h1>
           </Reveal>
           <Reveal delay={100}>
-            <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6 }}>
+            <p style={{ fontSize: '1.15rem', maxWidth: '650px', margin: '0 auto', opacity: 0.95, lineHeight: 1.6, marginBottom: '2rem' }}>
               {category.description || category.blurb || `Explore our premium range of ${category.name} products.`}
             </p>
+          </Reveal>
+          <Reveal delay={150}>
+            <a 
+              href={`https://wa.me/27671014345?text=${encodeURIComponent(`Hello Amahle Blue, I would like to request a quote for your ${category.name}. Please share more details.`)}`}
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+                background: 'white', color: category.accent || '#111',
+                padding: '0.8rem 1.5rem', borderRadius: '100px',
+                fontWeight: '600', fontSize: '1rem', textDecoration: 'none',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
+              }}
+            >
+              Request Quote
+            </a>
           </Reveal>
         </div>
 

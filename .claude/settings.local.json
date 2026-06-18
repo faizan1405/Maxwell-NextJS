@@ -7,7 +7,14 @@
       "Bash(rm ~/.agents/skills/ui-ux-pro-max/data ~/.agents/skills/ui-ux-pro-max/scripts)",
       "Bash(cp -r .claude/skills/ui-ux-pro-max/data ~/.agents/skills/ui-ux-pro-max/)",
       "Bash(cp -r .claude/skills/ui-ux-pro-max/scripts ~/.agents/skills/ui-ux-pro-max/)",
-      "Bash(cp .claude/skills/ui-ux-pro-max/SKILL.md ~/.agents/skills/ui-ux-pro-max/SKILL.md)"
+      "Bash(cp .claude/skills/ui-ux-pro-max/SKILL.md ~/.agents/skills/ui-ux-pro-max/SKILL.md)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "mcp__claude_ai_Vercel__list_teams",
+      "PowerShell(winget --version)",
+      "PowerShell(if \\($?\\) { \"winget available\" })",
+      "PowerShell(winget install --id GitHub.cli --silent --accept-source-agreements --accept-package-agreements)",
+      "PowerShell($gh = \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\"; if \\(Test-Path $gh\\) { & $gh --version; \"---AUTH---\"; & $gh auth status } else { \"gh.exe not at default path\"; \\(Get-Command gh -ErrorAction SilentlyContinue\\).Source })"
     ]
   }
 }

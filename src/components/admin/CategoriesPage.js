@@ -102,7 +102,11 @@ export default function CategoriesPage({ setUnsavedChanges }) {
       
       setActiveItem(prev => ({ ...prev, bannerImage: data.url }));
     } catch (err) {
-      setBannerUploadError(err.message || 'Upload failed');
+      if (err.message && err.message.includes('BLOB_READ_WRITE_TOKEN is not configured')) {
+        setBannerUploadError('Image upload is not configured. Please add BLOB_READ_WRITE_TOKEN in Vercel environment variables.');
+      } else {
+        setBannerUploadError(err.message || 'Upload failed');
+      }
     } finally {
       setIsUploadingBanner(false);
     }

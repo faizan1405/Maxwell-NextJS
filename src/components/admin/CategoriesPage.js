@@ -89,24 +89,18 @@ export default function CategoriesPage({ setUnsavedChanges }) {
     setBannerUploadError('');
 
     try {
-      const res = await fetch('/api/upload', {
+      const formData = new FormData();
+      formData.append('file', file);
+      const res = await fetch('/api/admin/upload-category-banner', {
         method: 'POST',
-        headers: {
-          'Content-Type': file.type,
-          'x-filename': file.name,
-        },
-        body: file,
+        body: formData,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Upload failed');
-      
+      if (!res.ok || !data.success) throw new Error(data.error || 'Upload failed');
+
       setActiveItem(prev => ({ ...prev, bannerImage: data.url }));
     } catch (err) {
-      if (err.message && err.message.includes('BLOB_READ_WRITE_TOKEN is not configured')) {
-        setBannerUploadError('Image upload is not configured. Please add BLOB_READ_WRITE_TOKEN in Vercel environment variables.');
-      } else {
-        setBannerUploadError(err.message || 'Upload failed');
-      }
+      setBannerUploadError(err.message || 'Upload failed');
     } finally {
       setIsUploadingBanner(false);
     }

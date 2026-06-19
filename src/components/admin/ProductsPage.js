@@ -369,16 +369,21 @@ function ProductForm({ open, onClose, initial, onSave, setUnsavedChanges }) {
         const maxBytes = isVid ? MEDIA_LIMITS.maxVideoBytes : MEDIA_LIMITS.maxImageBytes;
         if (item.fileSize > maxBytes) throw new Error(`Exceeds ${isVid?'50':'5'} MB limit`);
 
-        const res = await fetch('/api/upload', {
-          method:  'POST',
-          headers: {
-            'Content-Type': item.mimeType,
-            'x-filename':   item.fileName,
-          },
-          body: item._file,
+        const formData = new FormData();
+        formData.append('file', item._file);
+        const res = await fetch('/api/admin/upload-product-media', {
+          method: 'POST',
+          body: formData,
         });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Upload failed');
+        let data = {};
+        try { data = await res.json(); } catch { /* non-JSON error body */ }
+        if (!res.ok || !data.success) {
+          const msg = data.error || `Upload failed (HTTP ${res.status})`;
+          if (process.env.NODE_ENV !== 'production') {
+            console.error('[product-media upload]', { status: res.status, file: item.fileName, response: data });
+          }
+          throw new Error(msg);
+        }
 
         setMediaItems(prev => prev.map(m => m.id !== item.id ? m : {
           ...m, url: data.url, storageKey: data.storageKey||null,

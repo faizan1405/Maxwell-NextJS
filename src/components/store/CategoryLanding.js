@@ -42,7 +42,13 @@ function CategoryContent({ category }) {
         <div 
           className="category-landing__hero" 
           style={{
-            background: `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`,
+            backgroundColor: category.accent || '#111',
+            backgroundImage: (category.bannerImage && !imgError)
+              ? `url(${category.bannerImage})`
+              : `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             padding: '8rem 2rem 5rem',
             color: 'white',
             textAlign: 'center',
@@ -57,13 +63,17 @@ function CategoryContent({ category }) {
         >
           {category.bannerImage && !imgError && (
             <>
-              <img 
-                src={category.bannerImage} 
-                alt={`${category.name} banner`} 
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, display: 'block' }}
+              {/* Hidden preloader: visible banner comes from the parent backgroundImage above.
+                  This img only exists so onError can flip to the gradient fallback if the URL fails. */}
+              <img
+                src={category.bannerImage}
+                alt=""
+                aria-hidden="true"
+                style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
                 onError={() => setImgError(true)}
               />
-              <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))', zIndex: 1 }} />
+              {/* Dark gradient overlay for text readability — sits above the background image */}
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))', zIndex: 1 }} />
             </>
           )}
           

@@ -51,7 +51,8 @@ function CategoryContent({ category }) {
             marginBottom: '4rem',
             boxShadow: '0 10px 40px rgba(0,0,0,0.08)',
             position: 'relative',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            minHeight: '320px'
           }}
         >
           {category.bannerImage && !imgError && (
@@ -59,7 +60,7 @@ function CategoryContent({ category }) {
               <img 
                 src={category.bannerImage} 
                 alt={`${category.name} banner`} 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0, display: 'block' }}
                 onError={() => setImgError(true)}
               />
               <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))', zIndex: 1 }} />

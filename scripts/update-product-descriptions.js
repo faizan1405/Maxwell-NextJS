@@ -17,6 +17,10 @@
  *   node scripts/update-product-descriptions.js --apply    # backup + apply to MongoDB
  *   node scripts/update-product-descriptions.js --apply --force-all   # rewrite even long descs
  *
+ * LENGTH
+ *   --medium   (default) concise ~3-sentence description (~350-480 chars)
+ *   --long     fuller multi-sentence description (~700-870 chars)
+ *
  * OUTPUT
  *   scripts/backups/products-backup-<timestamp>.json   full pre-update snapshot
  *   scripts/backups/preview-<timestamp>.json           id / old / new for every change
@@ -110,6 +114,29 @@ const DEFAULT_PROFILE = {
   operators: 'households, businesses and cleaning contractors',
 };
 
+// Concise intros + trimmed use-lists for the medium-length description.
+const SHORT_INTRO = {
+  household: 'a versatile everyday cleaner that delivers fresh, professional results around the home and in busy commercial spaces',
+  industrial: 'a heavy-duty, industrial-strength formula built for tough cleaning and maintenance jobs',
+  car: 'a quality vehicle-care product for a clean, well-presented finish on cars, bakkies and commercial vehicles',
+  'car-exterior': 'an exterior vehicle-care product that lifts dirt and road film while protecting paintwork',
+  'car-polish': 'a professional polish that restores shine and protects vehicle surfaces',
+  'car-shampoo': 'a rich, high-foam car shampoo that cuts through road grime for a streak-free finish',
+  sanitiser: 'an effective hygiene and sanitising product for clean, safe environments',
+  laundry: 'a reliable laundry product for fresh, clean results load after load',
+};
+
+const SHORT_USES = {
+  household: 'homes, offices, guesthouses, restaurants and cleaning companies',
+  industrial: 'workshops, factories, warehouses, garages and fleet maintenance',
+  car: 'car washes, detailers, dealerships and fleet operators',
+  'car-exterior': 'car washes, detailers, dealerships and fleet operators',
+  'car-polish': 'detailers, valet services and dealerships',
+  'car-shampoo': 'car washes, detailers, dealerships and fleet operators',
+  sanitiser: 'offices, schools, clinics, restaurants and public facilities',
+  laundry: 'homes, guesthouses, hotels, salons and commercial laundries',
+};
+
 // Parse a size string ("5L", "20kg", "750ml") into litres/kg to judge bulk.
 function isBulkSize(size) {
   if (!size) return false;
@@ -135,6 +162,48 @@ function cleanText(s) {
 function lc(s) {
   const t = cleanText(s);
   return t ? t.charAt(0).toLowerCase() + t.slice(1) : t;
+}
+
+// Build a MEDIUM, professional B2B description (~3 sentences).
+function generateMediumDescription(p) {
+  const profile = CATEGORY_PROFILES[p.cat] || DEFAULT_PROFILE;
+  const name = cleanText(p.name) || 'This product';
+  const size = cleanText(p.size);
+  const sub = cleanText(p.sub);
+  const bulk = isBulkSize(size);
+  const intro = SHORT_INTRO[p.cat] || `a quality ${profile.label} product for consistent, professional results`;
+  const uses = SHORT_USES[p.cat] || profile.uses;
+  const benefits = Array.isArray(p.benefits)
+    ? p.benefits.map(cleanText).filter(Boolean)
+    : [];
+
+  const nameHasSize =
+    size && name.toLowerCase().replace(/\s+/g, '').includes(size.toLowerCase().replace(/\s+/g, ''));
+
+  const sentences = [];
+
+  // 1. What it is (+ optional sub line).
+  let opener = `${name}${size && !nameHasSize ? ` (${size})` : ''} is ${intro}.`;
+  if (sub) opener += ` ${sub.endsWith('.') ? sub : sub + '.'}`;
+  sentences.push(opener);
+
+  // 2. Who/where + a couple of benefits.
+  if (benefits.length) {
+    const list = benefits.slice(0, 2).map(lc);
+    const joined = list.length > 1 ? `${list[0]} and ${list[1]}` : list[0];
+    sentences.push(`Ideal for ${uses}, it offers ${joined}.`);
+  } else {
+    sentences.push(`Ideal for ${uses}, it is easy to use and dependable across repeat use.`);
+  }
+
+  // 3. Bulk / quote close.
+  sentences.push(
+    bulk
+      ? `Supplied in a ${size} pack and available for bulk supply on request — contact us for a quote on commercial quantities.`
+      : `Available for bulk and commercial supply on request — contact us for a quote.`
+  );
+
+  return sentences.join(' ');
 }
 
 // Build a long, professional B2B description from the product fields.
@@ -216,7 +285,13 @@ async function main() {
 
   const apply = process.argv.includes('--apply');
   const forceAll = process.argv.includes('--force-all');
+  const mode = process.argv.includes('--long') ? 'long' : 'medium';
+  const generate = mode === 'long' ? generateDescription : generateMediumDescription;
+  // A desc already within the target band for this mode is left alone (unless --force-all).
+  const inTargetBand = (len) =>
+    mode === 'long' ? len >= MIN_GOOD_LENGTH : len >= 300 && len <= 560;
   const ts = new Date().toISOString().replace(/[:.]/g, '-');
+  console.log(`Length mode: ${mode}`);
 
   if (!existsSync(BACKUP_DIR)) mkdirSync(BACKUP_DIR, { recursive: true });
 
@@ -241,14 +316,13 @@ async function main() {
 
     for (const p of all) {
       const currentDesc = cleanText(p.desc);
-      const longEnough = currentDesc.length >= MIN_GOOD_LENGTH;
 
-      if (longEnough && !forceAll) {
+      if (inTargetBand(currentDesc.length) && !forceAll) {
         stats.skipped++;
         continue;
       }
 
-      const newDesc = generateDescription(p);
+      const newDesc = generate(p);
       const set = { desc: newDesc, updatedAt: Date.now() };
 
       const hasBenefits = Array.isArray(p.benefits) && p.benefits.length > 0;

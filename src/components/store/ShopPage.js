@@ -14,7 +14,7 @@ import { SwipeCarousel } from './SwipeCarousel';
 /* ── B2B defaults for product detail (used when a product has no explicit data) ── */
 const DEFAULT_SUITABLE_FOR = [
   "Offices", "Schools", "Cleaning Contractors", "Hospitality",
-  "Industrial Facilities", "Retail Stores", "Warehouses",
+  "Industrial Facilities", "Manufacturing Plants", "Warehouses",
 ];
 
 /* ── Global QuickView Event Emitter ── */
@@ -145,7 +145,7 @@ export const ProductCard = ({ p }) => {
         <p className="product-card__sub">{p.sub}</p>
         {hasVariants && p.variants.length > 0 && (
           <p className="product-card__sizes">
-            <Tag size={12} /> Pack sizes: {p.variants.map(v => v.name).join(' · ')}
+            <Tag size={12} /> Bulk sizes: {p.variants.map(v => v.name).join(' · ')}
           </p>
         )}
         <div className="product-card__rating">
@@ -684,7 +684,7 @@ export const QuickView = () => {
               <div className="quickview-bulk">
                 <div className="quickview-bulk__text">
                   <strong>Bulk supply available</strong>
-                  <span>5L, 20L &amp; wholesale volumes — request quote-based pricing for your business.</span>
+                  <span>5L, 25L, 210L &amp; 1000L volumes — request quote-based pricing for your business.</span>
                 </div>
                 <a
                   href={buildWaUrl(product, { settings })}

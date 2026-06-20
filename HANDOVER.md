@@ -49,7 +49,7 @@ Go to **Products** in the admin panel.
 ### Adding a New Product
 1. Click **Add Product**.
 2. Fill in: Name, Category, Price, Description, Images.
-3. If the product has variants (e.g. 500ml and 1L), enable variants and add each size with its own price and stock level.
+3. If the product has variants (e.g. 5L and 25L), enable variants and add each size with its own price and stock level.
 4. Set the **Stock** quantity.
 5. Toggle **Active** to make it visible in the shop.
 

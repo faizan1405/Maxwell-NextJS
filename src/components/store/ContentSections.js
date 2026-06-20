@@ -20,7 +20,7 @@ const WHY = [
 
 const WHO = [
   "Offices", "Schools", "Cleaning Contractors", "Hospitality",
-  "Factories", "Warehouses", "Retail Stores", "Healthcare Facilities",
+  "Factories", "Warehouses", "Manufacturing Plants", "Healthcare Facilities",
 ];
 
 export const WhyUs = () => (

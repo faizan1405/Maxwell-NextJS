@@ -96,7 +96,7 @@ const CATEGORY_PROFILES = {
   sanitiser: {
     label: 'hygiene & sanitising',
     intro: 'an effective hygiene and sanitising product that supports clean, safe environments and good hand- and surface-hygiene practice',
-    uses: 'offices, schools, clinics, restaurants, gyms, retail stores and public facilities',
+    uses: 'offices, schools, clinics, restaurants, gyms, commercial spaces and public facilities',
     operators: 'businesses, schools, healthcare facilities and hygiene-conscious operators',
   },
   laundry: {

@@ -290,6 +290,7 @@ const CategorySchema = new Schema({
   blurb: { type: String, default: '' },
   description: { type: String, default: '' },
   bannerImage: { type: String, default: null },
+  mobileBannerImage: { type: String, default: null },
   seoTitle: { type: String, default: '' },
   seoDescription: { type: String, default: '' },
   accent: { type: String, default: '#111111' },

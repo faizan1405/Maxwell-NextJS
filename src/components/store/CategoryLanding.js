@@ -43,9 +43,6 @@ function CategoryContent({ category }) {
           className="category-landing__hero" 
           style={{
             backgroundColor: category.accent || '#111',
-            backgroundImage: (category.bannerImage && !imgError)
-              ? `url(${category.bannerImage})`
-              : `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -61,17 +58,34 @@ function CategoryContent({ category }) {
             minHeight: '320px'
           }}
         >
+          <style dangerouslySetInnerHTML={{__html: `
+            .category-landing__hero {
+              background-image: ${(category.bannerImage && !imgError) ? `url(${category.bannerImage})` : `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`};
+            }
+            @media (max-width: 767px) {
+              .category-landing__hero {
+                background-image: ${(category.mobileBannerImage && !imgError) ? `url(${category.mobileBannerImage})` : (category.bannerImage && !imgError) ? `url(${category.bannerImage})` : `linear-gradient(135deg, ${category.accent || '#111'} 0%, #111 100%)`};
+                background-position: center top;
+              }
+            }
+          `}} />
           {category.bannerImage && !imgError && (
             <>
-              {/* Hidden preloader: visible banner comes from the parent backgroundImage above.
-                  This img only exists so onError can flip to the gradient fallback if the URL fails. */}
+              {/* Hidden preloader for desktop */}
               <img
                 src={category.bannerImage}
-                alt=""
-                aria-hidden="true"
+                alt={`${category.name} cleaning products banner`}
                 style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
                 onError={() => setImgError(true)}
               />
+              {/* Hidden preloader for mobile */}
+              {category.mobileBannerImage && (
+                <img
+                  src={category.mobileBannerImage}
+                  alt={`${category.name} cleaning products mobile banner`}
+                  style={{ position: 'absolute', width: 1, height: 1, opacity: 0, pointerEvents: 'none' }}
+                />
+              )}
               {/* Dark gradient overlay for text readability — sits above the background image */}
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7))', zIndex: 1 }} />
             </>

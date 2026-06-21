@@ -55,7 +55,7 @@ export default function CategoriesPage({ setUnsavedChanges }) {
   }, [isDirty, setUnsavedChanges]);
 
   function handleAdd() {
-    const item = { name: '', id: '', short: '', icon: 'Box', image: '', bannerImage: '', blurb: '', description: '', seoTitle: '', seoDescription: '', accent: '#111111', status: 'active', displayOrder: 99 };
+    const item = { name: '', id: '', short: '', icon: 'Box', image: '', bannerImage: '', mobileBannerImage: '', blurb: '', description: '', seoTitle: '', seoDescription: '', accent: '#111111', status: 'active', displayOrder: 99 };
     setActiveItem(item);
     setOriginalItemSnapshot(item);
     setBannerUploadError('');
@@ -330,6 +330,21 @@ export default function CategoriesPage({ setUnsavedChanges }) {
                   <div style={{ display: 'none', position: 'absolute', inset: 0, alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '0.875rem' }}>
                     Invalid Image / Webpage URL
                   </div>
+                </div>
+              )}
+            </div>
+
+            <div style={{ padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '8px', background: '#f8fafc', marginTop: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                <label className="admin-cat-form__field-label" style={{ margin: 0 }}>Mobile Banner Image URL</label>
+              </div>
+              <p style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.75rem' }}>
+                Optional. Override the banner image on mobile devices.
+              </p>
+              <input value={activeItem.mobileBannerImage || ''} onChange={e => setActiveItem({ ...activeItem, mobileBannerImage: e.target.value })} placeholder="/assets/household-mobile-banner.jpg" className="admin-cat-form__field-input" disabled={isUploadingBanner} />
+              {activeItem.mobileBannerImage && (
+                <div style={{ marginTop: '0.75rem', borderRadius: '6px', overflow: 'hidden', height: '80px', background: '#e2e8f0', position: 'relative', width: '60px' }}>
+                  <img src={activeItem.mobileBannerImage} alt="Mobile Banner Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; }} />
                 </div>
               )}
             </div>

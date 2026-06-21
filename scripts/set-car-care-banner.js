@@ -26,8 +26,8 @@ async function run() {
   const db = client.db();
   
   const result = await db.collection('categories').updateOne(
-    { id: 'industrial' },
-    { $set: { mobileBannerImage: '/assets/industrial-mobile-banner.jpg' } }
+    { id: 'sanitiser' },
+    { $set: { mobileBannerImage: '/assets/sanitiser-mobile-banner.jpg' } }
   );
   
   console.log(`Matched ${result.matchedCount} document(s) and modified ${result.modifiedCount} document(s).`);
